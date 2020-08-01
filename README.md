@@ -1,2 +1,2 @@
 # tivrfoa
-my blog
+[my blog](myblog)
