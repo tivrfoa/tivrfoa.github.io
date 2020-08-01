@@ -12,15 +12,15 @@ Hi! :]
 	- I also created an website in PHP and MySQL
   - 2009: Rails Summit Latin America (Sao Paulo - Brazil)
     - I loved Ruby, but only looked at it briefly
-  - 2010: Oracle Certified Professional, Java SE Programmer
+  - 2010: Oracle Certified Professional, Java SE 6 Programmer
   - 2010: Bank clerk
   - 2012-current: I moved to the Bank's IT department
     - Programming languages I use:
 	  - Cobol
 	  - Java ([Quarkus](https://github.com/quarkusio/quarkus))
-	  - Natural (Software AG)
 	  - Javascript (AngularJS, Angular)
 	  - Typescript
+	  - Natural (Software AG)
 	- Databases:
 	  - DB2
 	  - Oracle
