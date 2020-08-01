@@ -4,6 +4,6 @@
 
 layout: home
 ---
-[Back to home page](README.md)
+[Back to home page](https://tivrfoa.github.io/)
 
 [Welcome to Jekyll](https://tivrfoa.github.io/myblog/jekyll/update/2020/07/30/welcome-to-jekyll.html)
