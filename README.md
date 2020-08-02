@@ -1,5 +1,5 @@
 # Blog
-[my blog](myblog)
+[my blog](blog)
 
 ## Open Source Contributions
 
