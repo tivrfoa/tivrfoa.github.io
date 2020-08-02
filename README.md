@@ -1,6 +1,9 @@
 # Blog
 [my blog](myblog)
 
+## Open Source Contributions
+
+  - TODO
 
 ## About me
 
@@ -16,10 +19,10 @@ Hi! :]
   - 2010: Bank clerk
   - 2012-current: I moved to the Bank's IT department
     - Programming languages I use:
-	  - Cobol
 	  - Java ([Quarkus](https://github.com/quarkusio/quarkus))
 	  - Javascript (AngularJS, Angular)
 	  - Typescript
+	  - Cobol
 	  - Natural (Software AG)
 	- Databases:
 	  - DB2
