@@ -244,10 +244,16 @@ Micronaut 2.0.0.M2 | Quarkus 1.3.1.Final (imperative) | Quarkus 1.3.1.Final (rea
 
 Micronaut 2.0.0.M2 | Quarkus 1.3.1.Final (imperative) | Quarkus 1.3.1.Final (reactive) | Native Quarkus 1.3.1.Final (imperative) | Native Quarkus 1.3.1.Final (reactive) | Native Micronaut 2.0.0.M2
 ------------------ | -------------------------------- | ------------------------------ | --------------------------------------- | ------------------------------------- | -------------------------
-233,6 MiB | 270,6 MiB | 200,1 MiB | 52 MiB | 42 MiB | ?¹
+233,6 MiB | 270,6 MiB | 200,1 MiB | 52 MiB | 42 MiB | 73,5 MiB ¹
 
-¹ Maybe I did something wrong when I created Micronaut native image, because
-running with -Xmx128m `./micronaut-example -Xmx128m` I got the error:
+¹ You need to run the Micronaut native image like this:<br>
+```shell
+./micronaut-example -Xmx128m -Dio.netty.allocator.maxOrder=8
+```
+
+If you don't pass the parameter `-Dio.netty.allocator.maxOrder=8`, you
+will get the error below. Thank you Adam Kobor for
+[mentioning this.](https://mobile.twitter.com/akobor/status/1292552404882382849)
 ```log
 11:47:11.021 [nioEventLoopGroup-1-9] ERROR i.m.h.s.netty.RoutingInBoundHandler - Micronaut Server Error - No request state present. Cause: Direct buffer memory
 java.lang.OutOfMemoryError: Direct buffer memory
