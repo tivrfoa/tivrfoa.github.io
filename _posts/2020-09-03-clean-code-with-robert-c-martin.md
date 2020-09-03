@@ -90,7 +90,7 @@ simple. If you're doing test-driven development that's just kind of the
 way that works.
 
 
-### What is the most dangerous cold smell?
+### What is the most dangerous code smell?
 
 Well, the most prevalent code smell is `long method`.<br>
 It's not the most dangerous, but it does the most damage because it's
