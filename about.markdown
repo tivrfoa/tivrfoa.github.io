@@ -16,7 +16,7 @@ Hi! :]
   - 2010: Bank clerk
   - 2012-current: I moved to the Bank's IT department
     - Programming languages I use:
-	  - Java ([Quarkus](https://github.com/quarkusio/quarkus))
+	  - Java
 	  - Javascript (AngularJS, Angular)
 	  - Typescript
 	  - Cobol
@@ -26,6 +26,7 @@ Hi! :]
 	  - Oracle
 	  - MySQL
 	  - MongoDB
+	  - Adabas ( Have you ever heard of it? =D )
   - 2020: I started to study Rust
 
 
