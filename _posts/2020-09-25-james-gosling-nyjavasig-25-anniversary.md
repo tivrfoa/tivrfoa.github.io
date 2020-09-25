@@ -5,7 +5,7 @@ date:   2020-09-25 9:26:44 -0300
 categories: java software
 ---
 
-[![James Gosling on NYJavaSIG 25th Java Anniversary](img/nyjavasig-25-anniversary.png)](https://www.youtube.com/watch?v=Yo-_x_px9h0)
+[![James Gosling on NYJavaSIG 25th Java Anniversary](/assets/images/nyjavasig-25-anniversary.png)](https://www.youtube.com/watch?v=Yo-_x_px9h0)
 
 Here I just marked some topics that James Gosling talked about.<br>
 But you really should whatch the whole video.<br>
@@ -90,7 +90,7 @@ Then I had to search about James coding style, and I found a nice answer below:
 [I've heard James Gosling has a very distinctive Java coding style. In what ways does it differ from more idiomatic Java?](https://www.quora.com/Ive-heard-James-Gosling-has-a-very-distinctive-Java-coding-style-In-what-ways-does-it-differ-from-more-idiomatic-Java)
 > What I see is that sometimes he would omit braces from if and while loops, if the content of the block was only one line (sometimes even putting it on the same line). There is also sometimes the tendency to close a brace and start a new line for "else if", and also to omit blank lines between methods.
 
-And one source code attributed to James. ** I can't say if it really is**:
+And one source code attributed to James. **I can't say if it really is**:
 [BitReorder.java](https://gopherproxy.meulie.net/gopher.rbfh.de/0/Code/LinuxMagazin/2008/10/sprachen/BibReorder.java)
 
 ```java
