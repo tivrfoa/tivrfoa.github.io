@@ -8,7 +8,7 @@ categories: java software
 [![James Gosling on NYJavaSIG 25th Java Anniversary](/assets/images/nyjavasig-25-anniversary.png)](https://www.youtube.com/watch?v=Yo-_x_px9h0)
 
 Here I just marked some topics that James Gosling talked about.<br>
-But you really should whatch the whole video.<br>
+But you really should watch the whole video.<br>
 Brian Goetz, Sharat Chander and Venkat Subramaniam are really great.<br>
 Epic Event indeed!!!
 
