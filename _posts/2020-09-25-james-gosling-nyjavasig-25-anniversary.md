@@ -197,7 +197,7 @@ public class BibReorder {
 
 In the video below, James explains what he means with code density:
 
-[James Gosling: Java, JVM, Emacs, and the Early Days of Computing | Lex Fridman Podcast #126](https://youtu.be/IT__Nrr3PNI?t=699)
+<a href="https://youtu.be/IT__Nrr3PNI?t=699">James Gosling: Java, JVM, Emacs, and the Early Days of Computing | Lex Fridman Podcast #126</a>
 
 >I find that I'm at odds with many of the people around me over issues about like
 >how you lay out a piece of software. Software engineers get really cranky about
