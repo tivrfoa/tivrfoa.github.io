@@ -24,7 +24,8 @@ Epic Event indeed!!!
 
 [51:02](https://youtu.be/Yo-_x_px9h0?t=3062) - Brian Goetz asked if James wants to go back and work on Java with them.
 
-[51:47](https://youtu.be/Yo-_x_px9h0?t=3107) - People on Amazon telling him about coding style and where he should place braces! Oh my gosh ...
+[51:47](https://youtu.be/Yo-_x_px9h0?t=3107) - People on Amazon telling him about coding style and where he should place braces! Oh my gosh ...<br>
+Check this [update](#update-2020-09-26) where James explains what he means by code density.
 
 [1:02:03](https://youtu.be/Yo-_x_px9h0?t=3723) - Performance and value types
 
@@ -191,3 +192,21 @@ public class BibReorder {
  HashMap<String,BibliographyTag> tags = new HashMap<String, BibliographyTag>();
 }
 ```
+
+### Update 2020-09-26
+
+In the video below, James explains what he means with code density:
+
+[James Gosling: Java, JVM, Emacs, and the Early Days of Computing | Lex Fridman Podcast #126](https://youtu.be/IT__Nrr3PNI?t=699)
+
+>I find that I'm at odds with many of the people around me over issues about like
+>how you lay out a piece of software. Software engineers get really cranky about
+>how they format their programs you know, where they put new lines ... **And I tend
+>to go for a style that's very dense, to maximize the ammount that I can see at once.**
+>So I like to be able to see a whole function and to understand what it does, rather
+>than have to go scroll scroll scroll and remember right.
+>
+>I'm sort of an odd person to be programming because I don't think very well
+>verbally, I am just naturally a slow reader, **I'm what most people would call
+>a visual thinker.** **When I look a program I see pictures.** It's almost like
+>a piece of machinery with you this connnected to that ...
