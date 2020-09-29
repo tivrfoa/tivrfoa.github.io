@@ -128,8 +128,8 @@ future time you must allocate the amount of storage you need, as in:
 >
 >```	myPoints = new Point[10];```
 >
->The C notion of a pointer to an array of memory elements is gone, and with it,
-the arbitrary pointer arithmetic that leads to unreliable code in C. No longer
+>**The C notion of a pointer to an array of memory elements is gone, and with it,
+the arbitrary pointer arithmetic that leads to unreliable code in C**. No longer
 can you walk off the end of an array, possibly trashing memory and leading to
 the famous “delayed-crash” syndrome, where a memory-access violation today
 manifests itself hours or days later. Programmers can be confident that array
@@ -152,5 +152,44 @@ function.** Once you have allocated an object, the run-time system keeps track o
 the object’s status and automatically reclaims memory when objects are no
 longer in use, freeing memory for future use.
 
+> The Java memory manager keeps track of references to objects. When an object has
+no more references, the object is a candidate for garbage collection.
 
-### TODO ...
+### The Background Garbage Collector
+
+>The Java garbage collector achieves high performance by taking advantage of
+the nature of a user’s behavior when **interacting** with software applications
+such as the HotJava browser. The typical user of the typical interactive
+application has many natural pauses where they’re contemplating the scene in
+front of them or thinking of what to do next. The Java run-time system takes
+advantage of these idle periods and runs the garbage collector in a low priority
+thread when no other threads are competing for CPU cycles.
+
+This is an interesting part, because here he's targeting interactive applications.<br>
+Ok, but this idle period is sometimes non-existent or very rare for many **non-interactive** applications, then I language with a garbage collector would not be the best approach.
+
+### No More Typedefs, Defines, or Preprocessor
+
+>Source code written in Java is *simple*. There is no preprocessor, no #define and
+related capabilities, no typedef, and absent those features, no longer any need
+for header files. Instead of header files, Java language source files provide the
+definitions of other classes and their methods.
+>
+>A major problem with C and C++ is the amount of context you need to
+understand another programmer’s code: you have to read all related header
+files, all related #defines, and all related typedefs before you can even begin
+to analyze a program. In essence, programming with #defines and typedefs
+results in every programmer inventing a new programming language that’s
+incomprehensible to anybody other than its creator, thus defeating the goals of
+good programming practices.
+
+<blockquote>
+	<p style="padding: 15px; border-radius: 5px;">
+	In essence, programming with #defines and typedefs results in every programmer inventing a new programming language that’s incomprehensible to anybody other than its creator, thus defeating the goals of good programming practices.
+	</p>
+</blockquote>
+
+I really like James Gosling approach to simplicity, and Java being simple for sure is one of the reasons of its success.
+
+
+### TODO CONTINUE ...
