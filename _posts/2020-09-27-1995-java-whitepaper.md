@@ -183,9 +183,9 @@ results in every programmer inventing a new programming language that’s
 incomprehensible to anybody other than its creator, thus defeating the goals of
 good programming practices.
 
-<blockquote>
-	<p style="padding: 15px; border-radius: 5px;">
-	In essence, programming with #defines and typedefs results in every programmer inventing a new programming language that’s incomprehensible to anybody other than its creator, thus defeating the goals of good programming practices.
+<blockquote style="margin-left: 60px; border-left: none; font-size: x-large;">
+	<p style="padding: 15px; border-radius: 5px; margin-left: 20px; background: #eee;">
+	In essence, programming with #defines and typedefs results in every programmer **inventing a new programming language** that’s incomprehensible to anybody other than its creator, thus defeating the goals of good programming practices.
 	</p>
 </blockquote>
 
