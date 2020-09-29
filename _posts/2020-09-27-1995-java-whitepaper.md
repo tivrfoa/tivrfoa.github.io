@@ -185,7 +185,7 @@ good programming practices.
 
 <blockquote style="margin-left: 60px; border-left: none; font-size: x-large;">
 	<p style="padding: 15px; border-radius: 5px; margin-left: 20px; background: #eee;">
-	In essence, programming with #defines and typedefs results in every programmer <span style="font-weight: bold;">inventing a new programming language</style> that’s incomprehensible to anybody other than its creator, thus defeating the goals of good programming practices.
+	In essence, programming with #defines and typedefs results in every programmer <span style="font-weight: bold;">inventing a new programming language</span> that’s incomprehensible to anybody other than its creator, thus defeating the goals of good programming practices.
 	</p>
 </blockquote>
 
