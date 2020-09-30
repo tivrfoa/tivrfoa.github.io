@@ -6,7 +6,7 @@ permalink: /english-words/
 
 I decided to create this list with new English words that I learned.
 
-https://ygdp.yale.edu/phenomena/double-is
+[https://ygdp.yale.edu/phenomena/double-is](https://ygdp.yale.edu/phenomena/double-is)
 
 >The double-IS construction involves two instances of the verb is occurring together, as in sentence (1):
 >
@@ -24,7 +24,7 @@ mesh:
   3. to become entangled.
 eg: The object oriented paradigm meshes well with the needs of client-server and distributed software.
 
-trappings: the accessories and adornments that characterize or symbolize a condition, office, etc.
+trappings: the accessories and adornments that characterize or symbolize a condition, office, etc.<br>
 eg: Unfortunately, “object oriented” remains misunderstood, over-marketed as the silver bullet that will solve all our software ills, or takes on the `trappings` of a religion.
 
 adamant: refusing to be persuaded or to change one's mind.
