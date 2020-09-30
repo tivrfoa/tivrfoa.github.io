@@ -23,7 +23,7 @@ I watched a great video by Jacob Sorber with a very clear explanation about the 
 
 ```
       1|6|D
-	  /   \ 
+      /   \ 
  0001|0110|1101
 ```
 
