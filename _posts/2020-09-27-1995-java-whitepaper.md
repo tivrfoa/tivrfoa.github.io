@@ -183,13 +183,35 @@ results in every programmer inventing a new programming language that’s
 incomprehensible to anybody other than its creator, thus defeating the goals of
 good programming practices.
 
-<blockquote style="margin-left: 60px; border-left: none; font-size: x-large;">
-	<p style="padding: 15px; border-radius: 5px; margin-left: 20px; background: #eee;">
+<blockquote style="margin-left: 10%; border-left: none; font-size: x-large;">
+	<p style="padding: 15px; border-radius: 5px; background: #eee;">
 	In essence, programming with #defines and typedefs results in every programmer <span style="font-weight: bold;">inventing a new programming language</span> that’s incomprehensible to anybody other than its creator, thus defeating the goals of good programming practices.
 	</p>
 </blockquote>
 
 I really like James Gosling approach to simplicity, and Java being simple for sure is one of the reasons of its success.
+
+
+### No More Goto Statements
+
+>As mentioned above, multi-level break and continue remove most of
+the need for goto statements.
+
+### Object Technology in Java
+
+To be truly considered "object oriented", a programming language should support at a minimum four characteristics:
+
+  - Encapsulation: implements information hiding and modularity (abstraction)
+  - Polymorphism: the same message sent to different objects results in behavior that’s dependent on the nature of the object receiving the message;
+  - Inheritance: you define new classes and behavior based on existing classes to obtain code re-use and code organization
+  - Dynamic binding
+
+### Classes
+
+A class is a software construct that defines the instance variables and methods of an object. A class in and of itself is not an object. A class is a template that defines how an object will look and behave when the object is created or instantiated from the specification declared by the class.
+
+
+
 
 
 ### TODO CONTINUE ...
