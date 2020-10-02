@@ -190,7 +190,7 @@ good programming practices.
 	</p>
 </blockquote>
 
-I really like James Gosling approach to simplicity, and Java being simple for sure is one of the reasons of its success.
+*note: I really like James Gosling approach to simplicity, and Java being simple for sure is one of the reasons of its success.*
 
 
 ### No More Goto Statements
@@ -219,11 +219,79 @@ When you declare a new class in Java, you can indicate the level of access
 permitted to its instance variables and methods. Java provides four levels of
 access specifiers. Three of the levels must be explicitly specified if you wish to
 use them. They are public, protected, and private.
+
 The fourth level doesn’t have a name—it’s often called “friendly” and is the
 access level you obtain if you don’t specify otherwise. The “friendly” access
 level indicates that your instance variables and methods are accessible to all
 objects within the same package, but inaccessible to objects outside the
 package.
 
+### Abstract Classes
+
+`note:` with the Java 8 inclusion of default methods in interfaces, the difference between abstract classes and interfaces blurred a little.
+
+So instead of quotting the paper, I'll quote from
+[https://docs.oracle.com/javase/tutorial/java/IandI/abstract.html](https://docs.oracle.com/javase/tutorial/java/IandI/abstract.html)
+
+#### Abstract Classes Compared to Interfaces
+
+Abstract classes are similar to interfaces. You cannot instantiate them, and they may contain a mix of methods declared with or without an implementation. However, with abstract classes, you can declare fields that are not static and final, and define public, protected, and private concrete methods. With interfaces, all fields are automatically public, static, and final, and all methods that you declare or define (as default methods) are public. In addition, you can extend only one class, whether or not it is abstract, whereas you can implement any number of interfaces.
+
+Which should you use, abstract classes or interfaces?
+
+ - Consider using abstract classes if any of these statements apply to your situation:
+
+   - You want to share code among several closely related classes.
+   - You expect that classes that extend your abstract class have many common methods or fields, or require access modifiers other than public (such as protected and private).
+   - You want to declare non-static or non-final fields. This enables you to define methods that can access and modify the state of the object to which they belong.
+ - Consider using interfaces if any of these statements apply to your situation:
+   - You expect that unrelated classes would implement your interface. For example, the interfaces Comparable and Cloneable are implemented by many unrelated classes.
+   - You want to specify the behavior of a particular data type, but not concerned about who implements its behavior.
+   - You want to take advantage of multiple inheritance of type.
+   
+   
+### Byte Codes
+
+Java bytecodes are designed to be easy to interpret on any machine, or to dynamically translate into native machine code if required by performance demands.
+
+Java eliminates the portability issue in C and C++ by defining standard behavior that will apply to the data types across all platforms. Java specifies the sizes of all its primitive data types and the behavior of arithmetic on them. Here are the data types:
+
+```
+byte          8-bit two’s complement
+short         16-bit two’s complement
+int           32-bit two’s complement
+long          64-bit two’s complement
+
+float         32-bit IEEE 754 floating point
+double        64-bit IEEE 754 floating point
+
+char          16-bit Unicode character
+```
+
+### Interpreted and Dynamic
+
+The notion of a separate “link” phase after compilation is pretty well absent from the Java environment. Linking, which is actually the process of loading new classes by the Class Loader, is a more incremental and lightweight process.
+
+
+### The Byte Code Verification Process
+
+The Java run-time system doesn’t trust the incoming code, but subjects it to bytecode verification.
+
+The tests range from simple verification that the format of a code fragment is
+correct, to passing each code fragment through a simple theorem prover to
+establish that it plays by the rules:
+
+  - it doesn’t forge pointers,
+  - it doesn’t violate access restrictions,
+  - it accesses objects as what they are (for example, InputStream objects are always used as InputStreams and never as anything else).
+
+`note:` there's probably a bit overhead with this runtime verification, but it's likely done only once.
+
+
+### The Byte Code Verifier
+
+![The Byte Code Verifier](/assets/imagesjava-bytecode-verifier.png)
+
+By the time the bytecode verifier has done its work, the Java interpreter can proceed, knowing that the code will run securely. Knowing these properties makes the Java interpreter much faster, because it doesn’t have to check anything. There are no operand type checks and no stack overflow checks. The interpreter can thus function at full speed without compromising reliability.
 
 ### TODO CONTINUE ...
