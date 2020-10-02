@@ -290,7 +290,7 @@ establish that it plays by the rules:
 
 ### The Byte Code Verifier
 
-![The Byte Code Verifier](/assets/imagesjava-bytecode-verifier.png)
+![The Byte Code Verifier](/assets/images/java-bytecode-verifier.png)
 
 By the time the bytecode verifier has done its work, the Java interpreter can proceed, knowing that the code will run securely. Knowing these properties makes the Java interpreter much faster, because it doesn’t have to check anything. There are no operand type checks and no stack overflow checks. The interpreter can thus function at full speed without compromising reliability.
 
