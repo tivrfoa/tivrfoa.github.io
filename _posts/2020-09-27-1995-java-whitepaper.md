@@ -5,6 +5,17 @@ date:   2020-09-27 20:26:44 -0300
 categories: java software jvm
 ---
 
+<style>
+.myquote {
+	margin-left: 10%;
+	border-left: none;
+	font-size: x-large;
+	padding: 15px;
+	border-radius: 5px;
+	background: #eee;
+}
+</style>
+
 [https://www.stroustrup.com/1995_Java_whitepaper.pdf](https://www.stroustrup.com/1995_Java_whitepaper.pdf)
 
 The paper is from October, 1995
@@ -230,7 +241,7 @@ package.
 
 `note:` with the Java 8 inclusion of default methods in interfaces, the difference between abstract classes and interfaces blurred a little.
 
-So instead of quotting the paper, I'll quote from
+So instead of quoting the paper, I'll quote from
 [https://docs.oracle.com/javase/tutorial/java/IandI/abstract.html](https://docs.oracle.com/javase/tutorial/java/IandI/abstract.html)
 
 #### Abstract Classes Compared to Interfaces
@@ -293,5 +304,32 @@ establish that it plays by the rules:
 ![The Byte Code Verifier](/assets/images/java-bytecode-verifier.png)
 
 By the time the bytecode verifier has done its work, the Java interpreter can proceed, knowing that the code will run securely. Knowing these properties makes the Java interpreter much faster, because it doesn’t have to check anything. There are no operand type checks and no stack overflow checks. The interpreter can thus function at full speed without compromising reliability.
+
+### Integrated Thread Synchronization
+
+If you wish your objects to be thread-safe, any methods that may change the values of instance variables should be declared synchronized. This ensures that only one method can change the state of an object at any time. Java monitors are re-entrant: a method can acquire the same monitor more than once, and everything will still work.
+
+
+### Performance
+
+```
+new Object                                         119,000 per second
+new C() (class with several methods)               89,000 per second
+o.f() (method f invoked on object o)               590,000 per second
+o.sf() (synchronized method f invoked on object o) 61,500 per second
+```
+
+`note: I wonder how theses numbers are today.<br>
+Other interesting observation is synchronized method calls are much slower!`
+
+Thus, we see that creating a new object requires approximately 8.4 μsec, creating a new class containing several methods consumes about 11 μsec, and invoking a method on an object requires roughly 1.7 μsec.
+
+While these performance numbers for interpreted bytecodes are usually more than adequate to run interactive graphical end-user applications, situations may arise where higher performance is required. In such cases, the Java bytecodes can be translated on the fly (at run time) into machine code for the particular CPU on which the application is executing. For those accustomed to the normal design of a compiler and dynamic loader, this is somewhat like putting the final machine code generator in the dynamic loader.
+
+The bytecode format was designed with generating machine codes in mind, so the actual process of generating machine code is generally simple. Reasonably good code is produced: it does automatic register allocation and the compiler does some optimization when it produces the bytecodes.
+
+<blockquote class="myquote">
+	<p>**Performance of bytecodes converted to machine code is roughly the same as native C or C++.**</p>
+</blockquote>
 
 ### TODO CONTINUE ...
