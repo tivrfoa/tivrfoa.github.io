@@ -10,6 +10,7 @@ categories: java software jvm
 	margin-left: 10%;
 	border-left: none;
 	font-size: x-large;
+	font-weight: bold;
 	padding: 15px;
 	border-radius: 5px;
 	background: #eee;
@@ -329,7 +330,7 @@ While these performance numbers for interpreted bytecodes are usually more than 
 The bytecode format was designed with generating machine codes in mind, so the actual process of generating machine code is generally simple. Reasonably good code is produced: it does automatic register allocation and the compiler does some optimization when it produces the bytecodes.
 
 <blockquote class="myquote">
-	<p>**Performance of bytecodes converted to machine code is roughly the same as native C or C++.**</p>
+	<p>Performance of bytecodes converted to machine code is roughly the same as native C or C++.</p>
 </blockquote>
 
 ### TODO CONTINUE ...
