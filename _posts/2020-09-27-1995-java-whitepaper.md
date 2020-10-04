@@ -320,7 +320,7 @@ o.f() (method f invoked on object o)               590,000 per second
 o.sf() (synchronized method f invoked on object o) 61,500 per second
 ```
 
-`note: I wonder how theses numbers are today.<br>
+`note:` I wonder how theses numbers are today.<br>
 Other interesting observation is synchronized method calls are much slower!`
 
 Thus, we see that creating a new object requires approximately 8.4 μsec, creating a new class containing several methods consumes about 11 μsec, and invoking a method on an object requires roughly 1.7 μsec.
@@ -332,5 +332,11 @@ The bytecode format was designed with generating machine codes in mind, so the a
 <blockquote class="myquote">
 	<p>Performance of bytecodes converted to machine code is roughly the same as native C or C++.</p>
 </blockquote>
+
+### The Java Language Compared
+
+The Java language environment creates an extremely attractive *middle ground* between very high-level and portable but slow scripting languages and very low level and fast but non-portable and unreliable compiled languages. The Java language fits somewhere in the middle of this space. In addition to being extremely simple to program, highly portable and architecture neutral, the Java language provides a level of performance that’s entirely adequate for all but the **most compute-intensive applications.**
+
+![Java Comparison with other languages](/assets/images/java-compared-to-other-languages.png)
 
 ### TODO CONTINUE ...

@@ -31,3 +31,4 @@ adamant: refusing to be persuaded or to change one's mind.
 
 fifty-fifty: the same in share or proportion.
 
+*firmament*: the field or sphere of an interest or activity.
