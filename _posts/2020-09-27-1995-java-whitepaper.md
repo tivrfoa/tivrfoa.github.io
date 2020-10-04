@@ -320,8 +320,8 @@ o.f() (method f invoked on object o)               590,000 per second
 o.sf() (synchronized method f invoked on object o) 61,500 per second
 ```
 
-`note:` I wonder how theses numbers are today.<br>
-Other interesting observation is synchronized method calls are much slower!`
+`note:` *I wonder how theses numbers are today.*<br>
+*Other interesting observation is synchronized method calls are much slower!*
 
 Thus, we see that creating a new object requires approximately 8.4 μsec, creating a new class containing several methods consumes about 11 μsec, and invoking a method on an object requires roughly 1.7 μsec.
 
@@ -339,4 +339,3 @@ The Java language environment creates an extremely attractive *middle ground* be
 
 ![Java Comparison with other languages](/assets/images/java-compared-to-other-languages.png)
 
-### TODO CONTINUE ...

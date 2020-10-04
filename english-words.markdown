@@ -12,23 +12,28 @@ I decided to create this list with new English words that I learned.
 >
 >1) The funny thing is is that Lisa was there too.
 
+
+### 2020-10
+
+*firmament*: the field or sphere of an interest or activity.
+
+*amorphous*: having no definite form : SHAPELESS
+
 ### 2020-09
 
-foisted: impose an unwelcome or unnecessary person or thing on.
+*foisted*: impose an unwelcome or unnecessary person or thing on.
 
-abreast: side by side and facing the same way.
+*abreast*: side by side and facing the same way.
 
-mesh:
+*mesh*:
   1. (of the teeth of a gearwheel) lock together or be engaged with another gearwheel;
   2. to cause to work closely together; coordinate;
   3. to become entangled.
 eg: The object oriented paradigm meshes well with the needs of client-server and distributed software.
 
-trappings: the accessories and adornments that characterize or symbolize a condition, office, etc.<br>
+*trappings*: the accessories and adornments that characterize or symbolize a condition, office, etc.<br>
 eg: Unfortunately, “object oriented” remains misunderstood, over-marketed as the silver bullet that will solve all our software ills, or takes on the `trappings` of a religion.
 
-adamant: refusing to be persuaded or to change one's mind.
+*adamant*: refusing to be persuaded or to change one's mind.
 
-fifty-fifty: the same in share or proportion.
-
-*firmament*: the field or sphere of an interest or activity.
+*fifty-fifty*: the same in share or proportion.
