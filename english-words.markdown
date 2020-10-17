@@ -19,6 +19,10 @@ I decided to create this list with new English words that I learned.
 
 *amorphous*: having no definite form : SHAPELESS
 
+*scourge*: something or someone that causes great suffering or a lot of trouble.
+
+eg: Memory unsafety is currently a scourge for our industry.
+
 ### 2020-09
 
 *foisted*: impose an unwelcome or unnecessary person or thing on.
