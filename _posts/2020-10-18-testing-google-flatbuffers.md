@@ -193,10 +193,15 @@ $ cargo run --bin monster_example
 ### References
 
 [FlatBuffers - Use in Java](http://google.github.io/flatbuffers/flatbuffers_guide_use_java.html)
+
 [failed to execute goal org.apache.maven.plugins:maven-gpg-plugin](https://stackoverflow.com/a/32112910/339561)
+
 [FlatBuffers Java API](https://mvnrepository.com/artifact/com.google.flatbuffers/flatbuffers-java)
+
 [ByteBuffer.duplicate](https://docs.oracle.com/javase/9/docs/api/java/nio/ByteBuffer.html#duplicate--)
+
 [monster_example.rs](https://github.com/google/flatbuffers/blob/master/tests/rust_usage_test/bin/monster_example.rs)
+
 [flatbuffers crate](https://crates.io/crates/flatbuffers)
 
 Chai T. Rex
