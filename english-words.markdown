@@ -19,9 +19,15 @@ I decided to create this list with new English words that I learned.
 
 *amorphous*: having no definite form : SHAPELESS
 
+
 *scourge*: something or someone that causes great suffering or a lot of trouble.
 
 eg: Memory unsafety is currently a scourge for our industry.
+
+*stash*: store (something) safely and secretly in a specified place.
+
+*in tandem*: together or in conjuntion.<br>
+  eg: Given a nominal exchange rate the price of two goods which are relatively good substitutes should move in **tandem**.
 
 ### 2020-09
 
