@@ -4,27 +4,50 @@ title: About Me
 permalink: /about/
 ---
 
-## Open Source Contributions
+Hi! :]
+
+#### Open Source Contributions
 
   - [JBang](https://github.com/jbangdev/jbang)
   - TODO more contributions
 
+#### Skills
 
-Hi! :]
+  The programming language that I know the most is **Java** (*Quarkus, Spring Boot, Spring*).<br>
+  I also have working experience with the programming languages below,
+  but I **don't** want to work with them:<br>
 
-  - 2005-2009: College
-    - I started programming in college
-    - Here I learned to develop in Java
-	- I also created an website in PHP and MySQL
+  *JavaScript (AngularJS), TypeScript, Cobol, Natural (Software AG), PHP (long time ago ...)*
+
+  If you would like to hire me, I'm interested in working either with Java
+  or **Rust** (I'm still learning it.).
+
+  I'm also very good with SQL (I write SQL almost daily).
+
+#### Formal Education
+
+  - 2005-2009: College - Information Systems
+    - Here I started programming;
+	- Learned to develop in Java;
+	- I also created an website using PHP and MySQL.
+
+#### Certifications
+
+  - 2010: Oracle Certified Professional, Java SE 6 Programmer
+
+#### Conferences
+
   - 2009: Rails Summit Latin America (Sao Paulo - Brazil)
     - I loved Ruby, but only looked at it briefly
-  - 2010: Oracle Certified Professional, Java SE 6 Programmer
+
+#### Work Experience
+
   - 2010: Bank clerk
   - 2012-current: I moved to the Bank's IT department
     - Programming languages I use:
 	  - Java
-	  - Javascript (AngularJS, Angular)
-	  - Typescript
+	  - JavaScript
+	  - TypeScript
 	  - Cobol
 	  - Natural (Software AG)
 	- Databases:
@@ -33,8 +56,6 @@ Hi! :]
 	  - MySQL
 	  - MongoDB
 	  - Adabas ( Have you ever heard of it? =D )
-  - 2020: I started to study Rust
-
 
 [Mastering Markdown](https://guides.github.com/features/mastering-markdown/)
 
