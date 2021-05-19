@@ -4,6 +4,12 @@ title: About Me
 permalink: /about/
 ---
 
+## Open Source Contributions
+
+  - [JBang](https://github.com/jbangdev/jbang)
+  - TODO more contributions
+
+
 Hi! :]
 
   - 2005-2009: College
