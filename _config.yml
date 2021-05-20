@@ -21,7 +21,7 @@
 title: tivrfoa blog
 email: lescoutinhovr@hotmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Java, Quarkus, Rust, Typescript, Javascript
+  Java developer learning Rust
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://tivrfoa.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: tivrfoa
