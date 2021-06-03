@@ -6,14 +6,14 @@ permalink: /about/
 
 Hi! :]
 
-#### Open Source Contributions
+#### **Open Source Contributions**
 
   - [JBang](https://github.com/jbangdev/jbang)
   - TODO more contributions
 
-#### Skills
+#### **Skills**
 
-  The programming language that I know the most is **Java** (*Quarkus, Spring Boot, Spring*).<br>
+  The programming language that I know the most is **Java**.<br>
   I also have working experience with the programming languages below,
   but I **don't** want to work with them:<br>
 
@@ -24,23 +24,24 @@ Hi! :]
 
   I'm also very good with SQL (I write SQL almost daily).
 
-#### Formal Education
+#### **College**
 
-  - 2005-2009: College - Information Systems
+  - 2005-2009 - Information Systems
     - Here I started programming;
-	- Learned to develop in Java;
-	- I also created an website using PHP and MySQL.
+	- I learned to develop in Java;
+	- I also created a website, using PHP and MySQL, for a conference that would take place in the city.
+  The site allowed attendees to choose which courses and lectures they would like to attend.
 
-#### Certifications
+#### **Certifications**
 
   - 2010: Oracle Certified Professional, Java SE 6 Programmer
 
-#### Conferences
+#### **Conferences**
 
   - 2009: Rails Summit Latin America (Sao Paulo - Brazil)
     - I loved Ruby, but only looked at it briefly
 
-#### Work Experience
+#### **Work Experience**
 
   - 2010: Bank clerk
   - 2012-current: I moved to the Bank's IT department
@@ -54,7 +55,6 @@ Hi! :]
 	  - DB2
 	  - Oracle
 	  - MySQL
-	  - MongoDB
 	  - Adabas ( Have you ever heard of it? =D )
 
 [Mastering Markdown](https://guides.github.com/features/mastering-markdown/)
