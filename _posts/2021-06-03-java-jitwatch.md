@@ -5,13 +5,11 @@ date:   2021-06-03 13:40:00 -0300
 categories: java jit jitwatch
 ---
 
-From the project [wiki page](https://github.com/AdoptOpenJDK/jitwatch/wiki):
-
->Description
->
 >A tool for understanding the behaviour of the Java HotSpot Just-In-Time (JIT) compiler during the execution of your program.
 >
 >Works by processing the hotspot.log file output by the JVM.
+
+  source: project [wiki page](https://github.com/AdoptOpenJDK/jitwatch/wiki)
 
 I found this tool because I was trying to understand the just in time (JIT) compilation performed by Java.
 
