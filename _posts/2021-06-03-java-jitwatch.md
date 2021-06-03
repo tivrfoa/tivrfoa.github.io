@@ -89,7 +89,7 @@ mvn compile exec:java
 
 **Configuring sources and classes**
 
-Before loading the log file, it's important to configure the source and classes, eg:
+Before loading the log file, it's important to configure the sources and classes, eg:
 
 ![JITWatch Configuration](/assets/images/jitwatch-configuration.png)
 
@@ -111,3 +111,11 @@ Then `Open Log` and finally `Start`.
 
 - Method in Assembly - C2 Level 4
 [![Method in Assembly - C2 Level 4](/assets/images/method-in-assembly-c2-level4.png)](/assets/images/method-in-assembly-c2-level4.png)
+
+Nice video on YouTube showing [JITWatch Compiler Threads](https://www.youtube.com/watch?v=p0mWUgRcCHQ)
+
+- Compiler Thread Activity - Compiler Queues
+[![Compiler Thread Activity - Compiler Queues](/assets/images/compiler-thread-activity-compiler-queues.png)](/assets/images/compiler-thread-activity-compiler-queues.png)
+
+- Compiler Thread Activity - Timings
+[![Compiler Thread Activity - Timings](/assets/images/compiler-thread-activity-timings.png)](/assets/images/compiler-thread-activity-timings.png)
