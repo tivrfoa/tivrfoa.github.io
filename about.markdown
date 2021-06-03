@@ -8,7 +8,7 @@ Hi! :]
 
 #### **Open Source Contributions**
 
-  - [JBang](https://github.com/jbangdev/jbang)
+  - [JBang](https://github.com/jbangdev/jbang/commits?author=tivrfoa)
   - TODO more contributions
 
 #### **Skills**
