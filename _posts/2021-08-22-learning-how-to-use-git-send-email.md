@@ -130,6 +130,15 @@ It's nice that it automatically create a patch series, eg:
 >
 > [https://news.ycombinator.com/item?id=24935979](https://news.ycombinator.com/item?id=24935979)
 
+### Save your app specific password
+
+Gabriel Staples has a great [answer](https://stackoverflow.com/a/68238913/339561) for the question [How to configure and use git send-email to work with gmail to email patches to developers](https://stackoverflow.com/questions/68238912/how-to-configure-and-use-git-send-email-to-work-with-gmail-to-email-patches-to).<br>
+One of the things he explains is how to use `git credentials`:
+
+>Since you added the [credential] helper = store entry to your ~/.gitconfig file above, git will now automatically store your app-specific password for future use in a new file called ~/.git-credentials. If you open that file, you'll see a URL string with your password embedded in it in plain text. It will look like this:
+>
+>smtp://EMAIL%40gmail.com:16-DIGIT-PASSWORD@smtp.gmail.com%3a587
+
 
 # References
 
