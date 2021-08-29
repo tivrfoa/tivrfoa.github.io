@@ -14,6 +14,8 @@ A great resource to learn how to use Mutt is the video:<br>
 
 ### My Configuration
 
+`.config/mutt/muttrc`
+
 ```sh
 set ssl_starttls=yes
 set ssl_force_tls = yes
