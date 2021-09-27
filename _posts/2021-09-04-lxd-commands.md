@@ -175,6 +175,14 @@ lxc console ubuntu2110
 lxc console ubuntu2110 --type=vga
 ```
 
+## How do I copy a file from host into a LXD container?
+
+[https://discuss.linuxcontainers.org/t/how-do-i-copy-a-file-from-host-into-a-lxd-container/2066](https://discuss.linuxcontainers.org/t/how-do-i-copy-a-file-from-host-into-a-lxd-container/2066)
+
+```sh
+lxc file push myfile.txt mycontainer/home/ubuntu/
+```
+
 ## List Storages
 
 ```sh
