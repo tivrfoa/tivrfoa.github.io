@@ -183,6 +183,24 @@ lxc console ubuntu2110 --type=vga
 lxc file push myfile.txt mycontainer/home/ubuntu/
 ```
 
+## How do I copy a file/directory from host into a LXD container?
+
+[https://askubuntu.com/questions/1048217/how-do-i-copy-a-file-directory-from-host-into-a-lxd-container](https://askubuntu.com/questions/1048217/how-do-i-copy-a-file-directory-from-host-into-a-lxd-container)
+
+```sh
+# Suppose we want to copy file.txt from host to /home/ubuntu/ directory of the container1
+
+lxc file push file.txt container1/home/ubuntu/
+
+# to copy a directory from host to container, use -r
+
+lxc file push -r direcoty/ vm1/home/ubuntu/
+
+# to copy file from container to host, use pull
+
+lxc file pull vm1/home/ubuntu/file.txt .
+```
+
 ## List Storages
 
 ```sh
