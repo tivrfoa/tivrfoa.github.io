@@ -57,7 +57,7 @@ properties can be overriden, eg:
 Of course this should be done with caution, because you might
 be breaking your dependencies.
 
-You can explicit declare the dependency in your `pom.xml`, eg:
+You can also explicit declare the dependency in your `pom.xml`, eg:
 
 ```xml
 <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
