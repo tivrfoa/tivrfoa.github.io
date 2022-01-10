@@ -57,6 +57,17 @@ properties can be overriden, eg:
 Of course this should be done with caution, because you might
 be breaking your dependencies.
 
+You can explicit declare the dependency in your `pom.xml`, eg:
+
+```xml
+<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-core</artifactId>
+    <version>2.17.1</version>
+</dependency>
+```
+
 ### Maven Enforcer Plugin
 
 >If you have a #Maven parent POM for your org or project, here's an enforcer rule to put into it which will ban any current of future usage of vulnerable #log4j2 versions.
