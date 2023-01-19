@@ -19,6 +19,8 @@ function generated lots of comments on Twitter:
 <p>I had an interesting conversation with ChatGPT about the code.</p>
 
 I wonder what C# developers thing about ChatGPT's suggestions!
+<br>
+Please comment here: [https://twitter.com/tivrfoa/status/1616058016075243523](https://twitter.com/tivrfoa/status/1616058016075243523)
 
 <div style="background-color: #a2b9bc; padding: 15px; border-radius: 10px; margin-bottom: 10px">
 Me: Can you improve the code below?
