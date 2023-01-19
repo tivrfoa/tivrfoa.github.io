@@ -102,7 +102,7 @@ private static string GetPercentageRounds(double percentage)
 <br>
 Alternatively, you can use the string interpolation feature of C# to achieve the same result with less memory allocation, like this:
 
-```C#
+```c#
 private static string GetPercentageRounds(double percentage)
 {
     int numRounds = (int)Math.Round(percentage * 10);
