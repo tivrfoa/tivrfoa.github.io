@@ -16,10 +16,11 @@ function generated lots of comments on Twitter:
 [https://github.com/MinBZK/woo-besluit-broncode-digid-app/blob/master/Source/DigiD.iOS/Services/NFCService.cs#L182](https://github.com/MinBZK/woo-besluit-broncode-digid-app/blob/master/Source/DigiD.iOS/Services/NFCService.cs#L182)
 
 
-I had an interesting conversation with ChatGPT about the code.<p>
-I wonder what C# developers thing about ChatGPT's suggestions.
+<p>I had an interesting conversation with ChatGPT about the code.</p>
 
-<div style="background-color: #a2b9bc; padding: 15px; border-radius: 10px">
+I wonder what C# developers thing about ChatGPT's suggestions!
+
+<div style="background-color: #a2b9bc; padding: 15px; border-radius: 10px; margin-bottom: 10px">
 Me: Can you improve the code below?
 </div>
 
@@ -64,7 +65,7 @@ private static string GetPercentageRounds(double percentage)
 <p>This version uses the Math.Round method to round the percentage to the nearest whole number, and then uses that number to determine how many rounds of 🔵 to include in the returned string.</p>
 <p>It also uses the string constructor that takes a character and a count to create a new string made up of that character repeated that many times. This eliminates the need for multiple if statements and makes the code more readable and maintainable.</p>
 
-<div style="background-color: #a2b9bc; padding: 15px; border-radius: 10px">
+<div style="background-color: #a2b9bc; padding: 15px; border-radius: 10px; margin-bottom: 10px">
 Me: Which of the two versions do you think is better?
 </div>
 
@@ -74,7 +75,7 @@ The first version uses multiple if statements to check a range of values and ret
 <p>It also uses the string constructor that takes a character and a count to create a new string made up of that character repeated that many times. This eliminates the need for multiple if statements and makes the code more readable and maintainable.
 So, the second version of the code is more efficient and readable.</p>
 
-<div style="background-color: #a2b9bc; padding: 15px; border-radius: 10px">
+<div style="background-color: #a2b9bc; padding: 15px; border-radius: 10px; margin-bottom: 10px">
 Me: Doesn't the second version creates new String objects on every call, hence causing an impact in GC?
 </div>
 
