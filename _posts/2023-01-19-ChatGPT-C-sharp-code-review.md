@@ -16,8 +16,12 @@ function generated lots of comments on Twitter:
 [https://github.com/MinBZK/woo-besluit-broncode-digid-app/blob/master/Source/DigiD.iOS/Services/NFCService.cs#L182](https://github.com/MinBZK/woo-besluit-broncode-digid-app/blob/master/Source/DigiD.iOS/Services/NFCService.cs#L182)
 
 
+I had an interesting conversation with ChatGPT about the code.<p>
+I wonder what C# developers thing about ChatGPT's suggestions.
 
+<div style="background-color: #a2b9bc">
 Me: Can you improve the code below?
+</div>
 
 ```c#
         private static string GetPercentageRounds(double percentage)
@@ -57,23 +61,26 @@ private static string GetPercentageRounds(double percentage)
 }
 ```
 
-This version uses the Math.Round method to round the percentage to the nearest whole number, and then uses that number to determine how many rounds of 🔵 to include in the returned string.
+This version uses the Math.Round method to round the percentage to the nearest whole number, and then uses that number to determine how many rounds of 🔵 to include in the returned string.<p>
 It also uses the string constructor that takes a character and a count to create a new string made up of that character repeated that many times. This eliminates the need for multiple if statements and makes the code more readable and maintainable.
 
-
+<div style="background-color: #a2b9bc">
 Me: Which of the two versions do you think is better?
+</div>
 
 ChatGPT: In my opinion, the second version of the code is better.
-The first version uses multiple if statements to check a range of values and return a string based on that range. This can quickly become unwieldy if you need to add more ranges or if the ranges themselves are complex.
-On the other hand, The second version uses the Math.Round method to round the percentage to the nearest whole number, and then uses that number to determine how many rounds of 🔵 to include in the returned string. This is more efficient and easy to read.
+The first version uses multiple if statements to check a range of values and return a string based on that range. This can quickly become unwieldy if you need to add more ranges or if the ranges themselves are complex.<p>
+On the other hand, The second version uses the Math.Round method to round the percentage to the nearest whole number, and then uses that number to determine how many rounds of 🔵 to include in the returned string. This is more efficient and easy to read.<p>
 It also uses the string constructor that takes a character and a count to create a new string made up of that character repeated that many times. This eliminates the need for multiple if statements and makes the code more readable and maintainable.
 So, the second version of the code is more efficient and readable.
 
+<div style="background-color: #a2b9bc">
 Me: Doesn't the second version creates new String objects on every call, hence causing an impact in GC?
+</div>
 
 
-ChatGPT: Yes, you are correct that the second version of the code creates new String objects on every call, which can have an impact on the garbage collector (GC) if called frequently. Creating new objects generates memory allocation and garbage collection can cause your application to pause.
-The GC impact can be mitigated by reusing StringBuilder object that can be cleared and reused for every call,
+ChatGPT: Yes, you are correct that the second version of the code creates new String objects on every call, which can have an impact on the garbage collector (GC) if called frequently. Creating new objects generates memory allocation and garbage collection can cause your application to pause.<p>
+The GC impact can be mitigated by reusing StringBuilder object that can be cleared and reused for every call,<p>
 Here's an example of how it can be implemented:
 
 ```c#
@@ -88,7 +95,7 @@ private static string GetPercentageRounds(double percentage)
 }
 ```
 
-This version uses a static StringBuilder object that is created once at the start of the program and is reused for every call. The StringBuilder.Clear method is used to clear the contents of the StringBuilder object before it is reused, and the StringBuilder.Append method is used to append the appropriate number of 🔵 and ⚪ characters to the object. The ToString method is used to convert the StringBuilder object to a string, which is then returned. This eliminates the need for creating new string object for every call.
+This version uses a static StringBuilder object that is created once at the start of the program and is reused for every call. The StringBuilder.Clear method is used to clear the contents of the StringBuilder object before it is reused, and the StringBuilder.Append method is used to append the appropriate number of 🔵 and ⚪ characters to the object. The ToString method is used to convert the StringBuilder object to a string, which is then returned. This eliminates the need for creating new string object for every call.<p>
 
 Alternatively, you can use the string interpolation feature of C# to achieve the same result with less memory allocation, like this:
 
