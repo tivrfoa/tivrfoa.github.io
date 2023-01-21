@@ -585,6 +585,26 @@ You should also note that this feature has an overhead on performance, if you do
 
 You can check the official documentation for more information and options: https://logging.apache.org/log4j/2.x/manual/configuration.html
 
+<div class="me_quote">
+What's the performance impact that Log can have in an application?
+</div>
+
+Logging can have a performance impact on an application, depending on the amount of logging, the logging level, and the logging implementation.
+
+- Quantity of logs: The more logs you have, the greater the performance impact will be. This is because each log statement generates a log event that needs to be processed. High-frequency logging, such as logging every time an iteration of a loop is executed, can cause a significant performance impact.
+
+- Log level: The logging level also affects performance. Logging at higher levels (such as debug or trace) generates more log events than logging at lower levels (such as warning or error). So, if you are logging at a high level, you may want to consider reducing the logging level to reduce the performance impact.
+
+- Logging implementation: The logging implementation can also have an impact on performance. For example, synchronous logging, where each log statement blocks until the log event has been written, can slow down an application. Asynchronous logging, where log events are written in a separate thread, can help to reduce the performance impact.
+
+- Buffering: Buffering log events can also help to improve performance by reducing the number of I/O operations required to write log events to disk.
+
+- Memory-mapped files: Memory-mapped files can improve performance by allowing for fast and efficient file access, but it also has some limitations. For example, it's only supported on certain platforms and it can cause the JVM to run out of memory if the file size exceeds the available memory.
+
+Overall, it's important to measure the performance impact of logging in your specific application and make adjustments as needed.
+
+It's also recommended to use a logging library that provides advanced features such as log filtering, buffering and memory-mapped files, like Log4j2.
+
 
 
 ## Code Repository based on the ChatGPT help =)
