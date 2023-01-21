@@ -927,3 +927,5 @@ java.lang.IllegalThreadStateException
 [https://logging.apache.org/log4j/2.x/manual/configuration.html](https://logging.apache.org/log4j/2.x/manual/configuration.html)
 
 [Log4j MemoryMappedFile and RollingRandomAccessFile](https://stackoverflow.com/a/34902543/339561)
+
+[How do I set log4j level on the command line?](https://stackoverflow.com/questions/7126709/how-do-i-set-log4j-level-on-the-command-line)
