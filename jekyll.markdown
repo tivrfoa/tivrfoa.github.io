@@ -9,6 +9,10 @@ Nice playlist about Github Pages and Jekyll:
 
 [List of supported languages and lexers](https://github.com/rouge-ruby/rouge/wiki/List-of-supported-languages-and-lexers)
 
+### How to Override CSS Styles in Jekyll
+
+[How to Override CSS Styles in Jekyll](https://tomkadwill.com/2017/12/16/how-to-override-css-styles-in-jekyll.html)
+
 ### emoji
   1. [Jemoji](https://github.com/jekyll/jemoji)
   2. [emoji](https://github.com/ikatyang/emoji-cheat-sheet/blob/master/README.md)
