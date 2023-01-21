@@ -41,6 +41,97 @@ thanks,
 greg k-h
 ```
 
+### rust: Enable incremental compilation
+
+Signed-off-by: Asahi Lina <>
+
+[https://github.com/AsahiLinux/linux/commit/6cb6d0b4fbbe5d99e82829e9c20618f85b5d890a.patch](https://github.com/AsahiLinux/linux/commit/6cb6d0b4fbbe5d99e82829e9c20618f85b5d890a.patch)
+
+```patch
+From 6cb6d0b4fbbe5d99e82829e9c20618f85b5d890a Mon Sep 17 00:00:00 2001
+From: Asahi Lina <lina@asahilina.net>
+Date: Sat, 21 Jan 2023 01:26:39 +0900
+Subject: [PATCH] rust: Enable incremental compilation
+
+Signed-off-by: Asahi Lina <lina@asahilina.net>
+---
+ Makefile                       |  7 +++++++
+ drivers/gpu/drm/asahi/Makefile |  2 +-
+ scripts/Makefile.build         | 10 ++++++++++
+ scripts/mod/modpost.c          |  1 +
+ 4 files changed, 19 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 0992f827888dd9..17eda4de633d63 100644
+--- a/Makefile
++++ b/Makefile
+@@ -120,6 +120,13 @@ endif
+ 
+ export KBUILD_CHECKSRC
+ 
++# Enable Rust incremental compilation.
++#
++# Use 'make RUST_INCREMENTAL=1' to enable it.
++ifeq ("$(origin RUST_INCREMENTAL)", "command line")
++  KBUILD_RUST_INCREMENTAL := $(RUST_INCREMENTAL)
++endif
++
+ # Enable "clippy" (a linter) as part of the Rust compilation.
+ #
+ # Use 'make CLIPPY=1' to enable it.
+diff --git a/drivers/gpu/drm/asahi/Makefile b/drivers/gpu/drm/asahi/Makefile
+index e6724866798760..18f6169ffdccae 100644
+--- a/drivers/gpu/drm/asahi/Makefile
++++ b/drivers/gpu/drm/asahi/Makefile
+@@ -1,3 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0
+ 
+-obj-$(CONFIG_DRM_ASAHI) += asahi.o
++obj-$(CONFIG_DRM_ASAHI) += asahi.a
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index c46daa410d35d5..bb3b62f32ef448 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -279,6 +279,7 @@ rust_allowed_features := allocator_api,array_from_fn,bench_black_box,core_ffi_c,
+ 
+ rust_common_cmd = \
+ 	RUST_MODFILE=$(modfile) $(RUSTC_OR_CLIPPY) $(rust_flags) \
++	$(if $(RUST_INCREMENTAL),-Cincremental=$(obj)/rust_incremental,) \
+ 	-Zallow-features=$(rust_allowed_features) \
+ 	-Zcrate-attr=no_std \
+ 	-Zcrate-attr='feature($(rust_allowed_features))' \
+@@ -306,6 +307,15 @@ quiet_cmd_rustc_o_rs = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
+ $(obj)/%.o: $(src)/%.rs FORCE
+ 	$(call if_changed_dep,rustc_o_rs)
+ 
++quiet_cmd_rustc_a_rs = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
++      cmd_rustc_a_rs = \
++	$(rust_common_cmd) --emit=dep-info,link -Ccodegen-units=32 $<; \
++	mv $(dir $@)/$(patsubst %.a,lib%.rlib,$(notdir $@)) $@; \
++	$(rust_handle_depfile)
++
++$(obj)/%.a: $(src)/%.rs FORCE
++	$(call if_changed_dep,rustc_a_rs)
++
+ quiet_cmd_rustc_rsi_rs = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
+       cmd_rustc_rsi_rs = \
+ 	$(rust_common_cmd) --emit=dep-info -Zunpretty=expanded $< >$@; \
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index 2c80da0220c326..853f0a502d1abe 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -774,6 +774,7 @@ static const char *const section_white_list[] =
+ 	".fmt_slot*",			/* EZchip */
+ 	".gnu.lto*",
+ 	".discard.*",
++	".rmeta",
+ 	NULL
+ };
+ 
+
+```
+
+
 ### [PATCH 1/5] rust: types: introduce `ScopeGuard`
 
 ```rust
@@ -451,3 +542,14 @@ index ff73f9240ca1..519a6ec43644 100644
      type Target = T;
 
 ```
+
+
+## GPU Driver written in Rust
+
+[https://github.com/AsahiLinux/linux/tree/asahi/drivers/gpu/drm/asahi](https://github.com/AsahiLinux/linux/tree/asahi/drivers/gpu/drm/asahi)
+
+[https://github.com/AsahiLinux/linux/blob/asahi/drivers/gpu/drm/asahi/gpu.rs](https://github.com/AsahiLinux/linux/blob/asahi/drivers/gpu/drm/asahi/gpu.rs)
+
+
+
+
