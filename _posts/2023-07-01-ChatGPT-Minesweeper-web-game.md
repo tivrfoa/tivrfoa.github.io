@@ -16,11 +16,12 @@ So the good part (and maybe bad part for some people =)) is that developers
 are still needed!
 
 For example:
- - The first code was inneficcient, in that it recreated all the elements
+ - The first code was ineficcient, in that it recreated all the elements
 for every single cell selection;
  - Sometimes you really need to talk code with ChatGPT, to guide him to the
  correct solution.
 
+Play the [final version](assets/html/11-me-fixing-timer.html)!
 
 # Here's the full conversation:
 
