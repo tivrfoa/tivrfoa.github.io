@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Minesweeper</title>
+  <style>
+    .board {
+      display: inline-block;
+    }
+
+    .row {
+      display: flex;
+    }
+
+    .cell {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #999;
+      text-align: center;
+      vertical-align: middle;
+      background-color: #ccc;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .cell.revealed {
+      background-color: #eee;
+    }
+
+    .mine {
+      background-color: red;
+    }
+
+    .timer {
+      margin-top: 10px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="board"></div>
+  <div class="timer">Time: 0</div>
+
+  <script>
+    // Game configuration
+    const rows = 20;
+    const cols = 30;
+    const mines = 100;
+
+    // Game state
+    let board = [];
+    let revealedCount = 0;
+    let gameOver = false;
+    let timerInterval;
+    let time = 0;
+
+    // Initialize the board
+    function initializeBoard() {
+      board = [];
+      revealedCount = 0;
+      gameOver = false;
+      time = 0;
+
+      // Create an empty board
+      for (let i = 0; i < rows; i++) {
+        board.push([]);
+        for (let j = 0; j < cols; j++) {
+          board[i].push({
+            isMine: false,
+            neighborMines: 0,
+            revealed: false,
+            elementId: `cell-${i}-${j}`
+          });
+        }
+      }
+
+      // Add mines to the board
+      let placedMines = 0;
+      while (placedMines < mines) {
+        const row = Math.floor(Math.random() * rows);
+        const col = Math.floor(Math.random() * cols);
+        if (!board[row][col].isMine) {
+          board[row][col].isMine = true;
+          placedMines++;
+        }
+      }
+
+      // Calculate neighbor mine counts
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+          if (!board[i][j].isMine) {
+            let count = 0;
+            for (let dx = -1; dx <= 1; dx++) {
+              for (let dy = -1; dy <= 1; dy++) {
+                const newRow = i + dx;
+                const newCol = j + dy;
+                if (
+                  newRow >= 0 && newRow < rows &&
+                  newCol >= 0 && newCol < cols &&
+                  board[newRow][newCol].isMine
+                ) {
+                  count++;
+                }
+              }
+            }
+            board[i][j].neighborMines = count;
+          }
+        }
+      }
+
+      renderBoard();
+      startTimer();
+    }
+
+    // Render the board
+    function renderBoard() {
+      const boardElement = document.querySelector('.board');
+      boardElement.innerHTML = '';
+
+      for (let i = 0; i < rows; i++) {
+        const rowElement = document.createElement('div');
+        rowElement.classList.add('row');
+
+        for (let j = 0; j < cols; j++) {
+          const cell = document.createElement('div');
+          const cellId = board[i][j].elementId;
+
+          cell.classList.add('cell');
+          cell.id = cellId;
+          cell.dataset.row = i;
+          cell.dataset.col = j;
+
+          if (gameOver || board[i][j].revealed) {
+            if (board[i][j].isMine) {
+              cell.classList.add('mine');
+              cell.textContent = 'X';
+            } else if (board[i][j].neighborMines > 0) {
+              cell.textContent = board[i][j].neighborMines;
+            }
+          }
+
+          if (board[i][j].revealed) {
+            cell.classList.add('revealed');
+          }
+
+          cell.addEventListener('click', handleCellClick);
+          rowElement.appendChild(cell);
+        }
+
+        boardElement.appendChild(rowElement);
+      }
+    }
+
+    // Update the cell element based on the game state
+    function updateCellElement(row, col) {
+      const cellId = board[row][col].elementId;
+      const cellElement = document.getElementById(cellId);
+
+      cellElement.classList.remove('revealed');
+
+      if (gameOver || board[row][col].revealed) {
+        if (board[row][col].isMine) {
+          cellElement.classList.add('mine');
+          cellElement.textContent = 'X';
+        } else if (board[row][col].neighborMines > 0) {
+          cellElement.textContent = board[row][col].neighborMines;
+        }
+      }
+
+      if (board[row][col].revealed) {
+        cellElement.classList.add('revealed');
+      }
+    }
+
+    // Handle cell click event
+    function handleCellClick(event) {
+      if (gameOver) {
+        return;
+      }
+
+      const row = parseInt(event.target.dataset.row);
+      const col = parseInt(event.target.dataset.col);
+
+      if (board[row][col].revealed) {
+        return;
+      }
+
+      if (board[row][col].isMine) {
+        gameOver = true;
+        revealBoard();
+        stopTimer();
+        alert('Game Over!');
+      } else {
+        revealCell(row, col);
+        checkWin();
+        updateCellElement(row, col);
+      }
+    }
+
+    // Reveal the cell and its neighbors
+	function revealCell(row, col) {
+	  if (
+		row < 0 || row >= rows ||
+		col < 0 || col >= cols ||
+		board[row][col].revealed ||
+		board[row][col].isMine
+	  ) {
+		return;
+	  }
+
+	  board[row][col].revealed = true;
+	  revealedCount++;
+
+	  if (board[row][col].neighborMines === 0) {
+		for (let dx = -1; dx <= 1; dx++) {
+		  for (let dy = -1; dy <= 1; dy++) {
+			const newRow = row + dx;
+			const newCol = col + dy;
+
+			if (
+			  newRow >= 0 && newRow < rows &&
+			  newCol >= 0 && newCol < cols
+			) {
+			  revealCell(newRow, newCol);
+			}
+		  }
+		}
+	  }
+
+	  updateCellElement(row, col);
+	}
+
+    // Reveal the entire board
+    function revealBoard() {
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+          board[i][j].revealed = true;
+          updateCellElement(i, j);
+        }
+      }
+    }
+
+    // Check if the player has won
+    function checkWin() {
+      const totalCells = rows * cols;
+      const nonMineCells = totalCells - mines;
+
+      if (revealedCount === nonMineCells) {
+        gameOver = true;
+        revealBoard();
+        stopTimer();
+        alert('You Win!');
+      }
+    }
+
+    // Start the timer
+    function startTimer() {
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    // Stop the timer
+    function stopTimer() {
+      clearInterval(timerInterval);
+    }
+
+    // Update the timer
+    function updateTimer() {
+      time++;
+      const timerElement = document.querySelector('.timer');
+      timerElement.textContent = 'Time: ' + time;
+    }
+
+    // Initialize the game
+    initializeBoard();
+  </script>
+</body>
+</html>
+
