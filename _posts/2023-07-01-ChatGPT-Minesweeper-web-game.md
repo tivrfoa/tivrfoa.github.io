@@ -21,7 +21,7 @@ for every single cell selection;
  - Sometimes you really need to talk code with ChatGPT, to guide him to the
  correct solution.
 
-Play the [final version](assets/html/11-me-fixing-timer.html)!
+Play the [final version](/assets/html/11-me-fixing-timer.html)!
 
 # Here's the full conversation:
 
