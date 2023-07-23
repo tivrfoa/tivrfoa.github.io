@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Essentials Vitamins by ChatGPT"
+title:  "Essential Vitamins by ChatGPT"
 date:   2023-07-23 08:30:00 -0300
 categories: nutrition vitamins ChatGPT AI
 ---
