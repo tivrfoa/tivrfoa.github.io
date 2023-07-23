@@ -204,13 +204,10 @@ how long should we be exposed to the Sun to produce enough vitamin D?
 
 The amount of time needed to produce enough vitamin D through sun exposure can vary based on several factors, including the time of day, geographical location, season, skin color, and the amount of skin exposed to the sun. Here are some general guidelines:
 
-    Time of Day: The best time to get vitamin D from the sun is when the sun is highest in the sky, which is typically between 10 am and 2 pm. During this time, UVB rays, which are responsible for triggering vitamin D synthesis, are more intense.
-
-    Geographical Location: The closer you are to the equator, the more direct and intense the sunlight, making it easier to produce vitamin D. In contrast, at higher latitudes (further away from the equator), the angle of the sun is lower, reducing the effectiveness of vitamin D production.
-
-    Season: Vitamin D synthesis is more efficient during sunny seasons like spring and summer when the sun's rays are stronger. In fall and winter, especially in regions with limited sunlight, vitamin D production through sun exposure can be challenging.
-
-    Skin Color: People with darker skin have more melanin, which provides some natural protection against UVB rays. As a result, individuals with darker skin may require longer sun exposure to produce sufficient vitamin D compared to those with lighter skin.
+  - Time of Day: The best time to get vitamin D from the sun is when the sun is highest in the sky, which is typically between 10 am and 2 pm. During this time, UVB rays, which are responsible for triggering vitamin D synthesis, are more intense.
+  - Geographical Location: The closer you are to the equator, the more direct and intense the sunlight, making it easier to produce vitamin D. In contrast, at higher latitudes (further away from the equator), the angle of the sun is lower, reducing the effectiveness of vitamin D production.
+  - Season: Vitamin D synthesis is more efficient during sunny seasons like spring and summer when the sun's rays are stronger. In fall and winter, especially in regions with limited sunlight, vitamin D production through sun exposure can be challenging.
+  - Skin Color: People with darker skin have more melanin, which provides some natural protection against UVB rays. As a result, individuals with darker skin may require longer sun exposure to produce sufficient vitamin D compared to those with lighter skin.
 
     Amount of Skin Exposed: The more skin you expose to the sun, the more vitamin D you can produce. However, it's essential to balance sun exposure to avoid sunburn and skin damage.
 
