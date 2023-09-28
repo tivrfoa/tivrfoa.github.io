@@ -37,14 +37,14 @@ Because of the way this benchmark challenge works, there's no way to have more t
 So there's a problem in his validation code.
 
 The Rust version also passed that limit, because it had a bug that it inserts ~500
-records before the stress test begin, and it was not deleting those records.
+records before the stress test begins, and it was not deleting those records.
 
 
 TL;DR:
 
 What happened is that he used a faster hardware (Apple M2 Pro) than the
 one used in the challenge. With his hardware, the stress test was not really
-stressing that much, and both solutions would have the same number of insertions,
+stressing that much, and both solutions would have had the same number of insertions,
 if not by the bugs mentioned above.
 
 The same happened with MrPowerGamerBR:<br>
@@ -67,15 +67,15 @@ On the remaining of the post I'll show the numbers that I got running on my
 
 |Code|Requests|KO|Insertions|
 |----|--------|--|----------|
-|[Java docker-compose.yml](Java-docker-compose.yml)| 68647    | 63543  | 19931 |
-|[Java docker-compose-local.yml](Java-docker-compose-local.yml) | 93545    | 13015  | 26815 |
-|[Java docker-compose-native.yml](Java-docker-compose-native.yml) | 99665    | 20730  | 39260 |
-|[Java outside docker](Java-outside-docker) | 114975   | 0      | 46569 |
-|[Rust](Rust)| 113360 | 4855 | 43278 |
+|[Java docker-compose.yml](#Java-docker-compose.yml)| 68647    | 63543  | 19931 |
+|[Java docker-compose-local.yml](#Java-docker-compose-local.yml) | 93545    | 13015  | 26815 |
+|[Java docker-compose-native.yml](#Java-docker-compose-native.yml) | 99665    | 20730  | 39260 |
+|[Java outside docker](#Java-outside-docker) | 114975   | 0      | 46569 |
+|[Rust](#Rust)| 113360 | 4855 | 43278 |
 |[Rust before Akita changes](https://github.com/tivrfoa/rbrust/tree/original-version)      | 109916   | 7373   | 41512 |
 |[Rust without duplicate format](https://github.com/tivrfoa/rbrust/tree/fix-duplicate-format-and-unnecessary-clone)  | 116811   | 0      | 46570 |
-|[Rust Axum Sqlx](Rust-Axum-Sqlx) | 114823 | 169 | 46409 |
-|[Rust Axum Sqlx outside docker](Rust-Axum-Sqlx-outside-docker)  | 114995 | 0 | 46578 |
+|[Rust Axum Sqlx](#Rust-Axum-Sqlx) | 114823 | 169 | 46409 |
+|[Rust Axum Sqlx outside docker](#Rust-Axum-Sqlx-outside-docker)  | 114995 | 0 | 46578 |
 
 *ps: you should always confirm these results running on your machine. The numbers will be different, because of different hardwares, but the relative difference should be close ...
 And sadly, some results are not consistent between two runs, because there's a randomization in the stress test¹.*
@@ -630,12 +630,12 @@ number of insertions. But there are at least three important things that were
 not talked about: response time distribution, the resources needed to run
 the app and time elapsed.
 
-## Response Time Distribution
+### Response Time Distribution
 
-Basically you want most responses to be < 800ms, so if lots of responses are greater
+Basically, you want most responses to be < 800ms, so if lots of responses are greater
 than that, you're delivering a worse user experience.
 
-## App CPU and Memory
+### App CPU and Memory
 
 Languages with a runtime require more cpu and memory. The runtime is another
 program that is competing for resources with you application. There's no free
@@ -645,7 +645,7 @@ Why is this important?
   - You can give the extra cpu and memory to other resources;
   - Save money on your cloud provider bill.
 
-## Time Elapsed
+### Time Elapsed
 
 This one is connected with `Response Time Distribution`.
 
@@ -673,7 +673,7 @@ Benchmarking is hard and takes time ..., but I learned a lot doing it =)
 The app itself is simple, just 4 endpoints, but the amount of possible configurations is big!
 
 And as the workhorse for this benchmark was actually PostgreSQL, if there's a
-language winner here it is C! =D
+language winner here, it is C! =D
 
 ![PostgreSQL](/assets/images/postgres-C.png)
 
@@ -707,15 +707,13 @@ https://planetscale.com/learn/courses/mysql-for-developers/schema/generated-colu
 
 ## Nginx
 
-[https://hub.docker.com/_/nginx](https://hub.docker.com/_/nginx)
-
 https://www.digitalocean.com/community/tutorials/understanding-nginx-http-proxying-load-balancing-buffering-and-caching
 
 https://stackoverflow.com/questions/63077100/how-much-memory-and-cpu-nginx-and-nodejs-in-each-container-needs
 
 https://www.nginx.com/resources/wiki/start/topics/examples/full/
 
-https://www.nginx.com/blog/avoiding-top-10-nginx-configuration-mistakes/#:~:text=The%20worker_connections%20directive%20sets%20the,(the%20default%20is%20512).
+https://www.nginx.com/blog/avoiding-top-10-nginx-configuration-mistakes/
 
 https://www.nginx.com/blog/http-keepalives-and-web-performance/
 
