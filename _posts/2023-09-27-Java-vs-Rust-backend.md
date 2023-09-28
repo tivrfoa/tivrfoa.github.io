@@ -40,7 +40,7 @@ The Rust version also passed that limit, because it had a bug that it inserts ~5
 records before the stress test begins, and it was not deleting those records.
 
 
-TL;DR:
+**TL;DR:**
 
 What happened is that he used a faster hardware (Apple M2 Pro) than the
 one used in the challenge. With his hardware, the stress test was not really
@@ -68,8 +68,8 @@ On the remaining of the post I'll show the numbers that I got running on my
 |Code|Requests|KO|Insertions|
 |----|--------|--|----------|
 |[Java docker-compose.yml](#java-docker---compose.yml)| 68647    | 63543  | 19931 |
-|[Java docker-compose-local.yml](#java-docker---compose-local.yml) | 93545    | 13015  | 26815 |
-|[Java docker-compose-native.yml](#java-docker---compose-native.yml) | 99665    | 20730  | 39260 |
+|[Java docker-compose-local.yml](#java-docker---compose---local.yml) | 93545    | 13015  | 26815 |
+|[Java docker-compose-native.yml](#java-docker---compose---native.yml) | 99665    | 20730  | 39260 |
 |[Java outside docker](#java-outside-docker) | 114975   | 0      | 46569 |
 |[Rust](#rust)| 113360 | 4855 | 43278 |
 |[Rust before Akita changes](https://github.com/tivrfoa/rbrust/tree/original-version)      | 109916   | 7373   | 41512 |
