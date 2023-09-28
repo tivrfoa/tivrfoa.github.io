@@ -67,14 +67,14 @@ On the remaining of the post I'll show the numbers that I got running on my
 
 |Code|Requests|KO|Insertions|
 |----|--------|--|----------|
-|[Java docker-compose.yml](#java-docker-compose.yml)| 68647    | 63543  | 19931 |
-|[Java docker-compose-local.yml](#java-docker-compose-local.yml) | 93545    | 13015  | 26815 |
-|[Java docker-compose-native.yml](#java-docker-compose-native.yml) | 99665    | 20730  | 39260 |
+|[Java docker-compose.yml](#java-docker---compose.yml)| 68647    | 63543  | 19931 |
+|[Java docker-compose-local.yml](#java-docker---compose-local.yml) | 93545    | 13015  | 26815 |
+|[Java docker-compose-native.yml](#java-docker---compose-native.yml) | 99665    | 20730  | 39260 |
 |[Java outside docker](#java-outside-docker) | 114975   | 0      | 46569 |
 |[Rust](#rust)| 113360 | 4855 | 43278 |
 |[Rust before Akita changes](https://github.com/tivrfoa/rbrust/tree/original-version)      | 109916   | 7373   | 41512 |
 |[Rust without duplicate format](https://github.com/tivrfoa/rbrust/tree/fix-duplicate-format-and-unnecessary-clone)  | 116811   | 0      | 46570 |
-|[Rust Axum Sqlx](#rust-sxum-sqlx) | 114823 | 169 | 46409 |
+|[Rust Axum Sqlx](#rust-axum-sqlx) | 114823 | 169 | 46409 |
 |[Rust Axum Sqlx outside docker](#rust-axum-sqlx-outside-docker)  | 114995 | 0 | 46578 |
 
 *ps: you should always confirm these results running on your machine. The numbers will be different, because of different hardwares, but the relative difference should be close ...
