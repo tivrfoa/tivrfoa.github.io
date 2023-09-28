@@ -5,8 +5,6 @@ date:   2023-09-27 08:30:00 -0300
 categories: Rust Java benchmark
 ---
 
-# Java Faster than Rust?!
-
 A post claimed that Java was faster than Rust in a backend challenge:
 
 **"How to use Java superpowers to beat Rust in a backend challenge"**
@@ -617,10 +615,10 @@ Fabio Akita did a wonderful video (in Portuguese) about this benchmark:
 [16 Linguagens em 16 Dias: Minha Saga da Rinha de Backend](https://www.youtube.com/watch?v=EifK2a_5K_U)
 
 His conclusion was great, but I think some people might be lead to think that the language
-does not matter much. (and maybe that's indeed what he wanted/thinks)
+does not matter much.
 
-Basically he points that you could have achieved great performance with any
-programming language for that benchmark, so you should choose the one you're most confortable with.
+He points that you could have achieved great performance with any
+programming language for that benchmark, so you should choose the one you're most comfortable with.
 
 That is true in many cases, but it's flawed in many others.
 
@@ -679,6 +677,25 @@ language winner here, it is C! =D
 You can find some tests that I did here:
 [https://github.com/tivrfoa/rinha-backend-2023-rust-axum-sqlx/commits/playing-with-docker-resources](https://github.com/tivrfoa/rinha-backend-2023-rust-axum-sqlx/commits/playing-with-docker-resources) and here [https://github.com/tivrfoa/rinha-backend-2023-rust-axum-sqlx/commits/use-hashmap-gambiarra-xD](https://github.com/tivrfoa/rinha-backend-2023-rust-axum-sqlx/commits/use-hashmap-gambiarra-xD)
 
+# Extra! About the benchmark
+
+It was very well done!
+
+There were some flaws in the testing, and the number of insertions should not be randomized, but it was still nice.
+
+Using `docker stats` I saw that this benchmark was not much about memory, but more about CPU!
+
+The cpu is fine until 70%, then the app receive lots of requests, and `termo` search is a really CPU intensive one!
+
+You should assign at least 1 CPU to the database, which leaves you with just 0.5 left.
+
+## About the winning solution
+
+I consider that the winning solution has a bug: eventual consistency!
+
+It uses a queue to do batch inserting every two seconds, but this breaks the search termo request!
+
+If you insert a record and do a search within this two seconds, it will not return that record!
 
 # References
 
