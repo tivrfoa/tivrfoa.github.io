@@ -680,9 +680,9 @@ language winner here, it is C! =D
 You can find some tests that I did here:
 [https://github.com/tivrfoa/rinha-backend-2023-rust-axum-sqlx/commits/playing-with-docker-resources](https://github.com/tivrfoa/rinha-backend-2023-rust-axum-sqlx/commits/playing-with-docker-resources) and here [https://github.com/tivrfoa/rinha-backend-2023-rust-axum-sqlx/commits/use-hashmap-gambiarra-xD](https://github.com/tivrfoa/rinha-backend-2023-rust-axum-sqlx/commits/use-hashmap-gambiarra-xD)
 
-# Extra! About the benchmark
+# Extra! About the Backend Challenge
 
-It was very well done!
+It was very well done! Congratulations to Francisco Zanfranceschi and the other people involved!!!
 
 There were some flaws in the testing, and the number of insertions should not be randomized, but it was still nice.
 
