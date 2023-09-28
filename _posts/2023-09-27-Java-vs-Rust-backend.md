@@ -67,9 +67,9 @@ On the remaining of the post I'll show the numbers that I got running on my
 
 |Code|Requests|KO|Insertions|
 |----|--------|--|----------|
-|[Java docker-compose.yml](#java-docker---compose.yml)| 68647    | 63543  | 19931 |
-|[Java docker-compose-local.yml](#java-docker\--compose\--local.yml) | 93545    | 13015  | 26815 |
-|[Java docker-compose-native.yml](#java-docker\--compose\--native.yml) | 99665    | 20730  | 39260 |
+|[Java docker-compose.yml](#java-docker-compose.yml)| 68647    | 63543  | 19931 |
+|[Java docker-compose-local.yml](#java-docker-compose-local.yml) | 93545    | 13015  | 26815 |
+|[Java Native with GraalVM](#java-native-with-graalvm) | 99665    | 20730  | 39260 |
 |[Java outside docker](#java-outside-docker) | 114975   | 0      | 46569 |
 |[Rust](#rust)| 113360 | 4855 | 43278 |
 |[Rust before Akita changes](https://github.com/tivrfoa/rbrust/tree/original-version)      | 109916   | 7373   | 41512 |
@@ -105,7 +105,7 @@ The Java project has more than one docker-compose:
   - docker-compose.yml
   - docker-compose-local.yml
 
-## Using docker-compose.yml
+## Java docker-compose.yml
 
 ### Java Errors on startup
 
@@ -200,7 +200,7 @@ requests ...
 
 So it created, but failed to communicate it back to the client.
 
-## Using docker-compose-local
+## Java docker-compose-local.yml
 
 No errors on startup.
 
@@ -251,9 +251,9 @@ The error `no live upstreams while connecting to upstream` did not happen.
 26815
 ```
 
-# Java docker-compose-native.yml
+# Java Native with GraalVM
 
-Java Native with GraalVM
+docker-compose-native.yml
 
 ```
 ---- Requests ------------------------------------------------------------------
