@@ -67,15 +67,15 @@ On the remaining of the post I'll show the numbers that I got running on my
 
 |Code|Requests|KO|Insertions|
 |----|--------|--|----------|
-|[Java docker-compose.yml](#Java-docker-compose.yml)| 68647    | 63543  | 19931 |
-|[Java docker-compose-local.yml](#Java-docker-compose-local.yml) | 93545    | 13015  | 26815 |
-|[Java docker-compose-native.yml](#Java-docker-compose-native.yml) | 99665    | 20730  | 39260 |
-|[Java outside docker](#Java-outside-docker) | 114975   | 0      | 46569 |
-|[Rust](#Rust)| 113360 | 4855 | 43278 |
+|[Java docker-compose.yml](#java-docker-compose.yml)| 68647    | 63543  | 19931 |
+|[Java docker-compose-local.yml](#java-docker-compose-local.yml) | 93545    | 13015  | 26815 |
+|[Java docker-compose-native.yml](#java-docker-compose-native.yml) | 99665    | 20730  | 39260 |
+|[Java outside docker](#java-outside-docker) | 114975   | 0      | 46569 |
+|[Rust](#rust)| 113360 | 4855 | 43278 |
 |[Rust before Akita changes](https://github.com/tivrfoa/rbrust/tree/original-version)      | 109916   | 7373   | 41512 |
 |[Rust without duplicate format](https://github.com/tivrfoa/rbrust/tree/fix-duplicate-format-and-unnecessary-clone)  | 116811   | 0      | 46570 |
-|[Rust Axum Sqlx](#Rust-Axum-Sqlx) | 114823 | 169 | 46409 |
-|[Rust Axum Sqlx outside docker](#Rust-Axum-Sqlx-outside-docker)  | 114995 | 0 | 46578 |
+|[Rust Axum Sqlx](#rust-sxum-sqlx) | 114823 | 169 | 46409 |
+|[Rust Axum Sqlx outside docker](#rust-axum-sqlx-outside-docker)  | 114995 | 0 | 46578 |
 
 *ps: you should always confirm these results running on your machine. The numbers will be different, because of different hardwares, but the relative difference should be close ...
 And sadly, some results are not consistent between two runs, because there's a randomization in the stress test¹.*
@@ -461,8 +461,7 @@ The PostgreSQL database was still running as a container, though.
 
 # Rust Axum Sqlx
 
-Branch: playing-with-docker-resources<br>
-Commit: 640b69868862570407fb13c7e7c517f235d22b7c
+[https://github.com/tivrfoa/rinha-backend-2023-rust-axum-sqlx/commit/640b69868862570407fb13c7e7c517f235d22b7c](https://github.com/tivrfoa/rinha-backend-2023-rust-axum-sqlx/commit/640b69868862570407fb13c7e7c517f235d22b7c)
 
 ```
 ---- Requests ------------------------------------------------------------------
@@ -638,7 +637,7 @@ than that, you're delivering a worse user experience.
 ### App CPU and Memory
 
 Languages with a runtime require more cpu and memory. The runtime is another
-program that is competing for resources with you application. There's no free
+program that is competing for resources with your application. There's no free
 lunch.
 
 Why is this important?
@@ -676,6 +675,10 @@ And as the workhorse for this benchmark was actually PostgreSQL, if there's a
 language winner here, it is C! =D
 
 ![PostgreSQL](/assets/images/postgres-C.png)
+
+You can find some tests that I did here:
+[https://github.com/tivrfoa/rinha-backend-2023-rust-axum-sqlx/commits/playing-with-docker-resources](https://github.com/tivrfoa/rinha-backend-2023-rust-axum-sqlx/commits/playing-with-docker-resources) and here [https://github.com/tivrfoa/rinha-backend-2023-rust-axum-sqlx/commits/use-hashmap-gambiarra-xD](https://github.com/tivrfoa/rinha-backend-2023-rust-axum-sqlx/commits/use-hashmap-gambiarra-xD)
+
 
 # References
 
