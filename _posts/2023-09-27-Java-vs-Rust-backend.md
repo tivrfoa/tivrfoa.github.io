@@ -31,12 +31,15 @@ Java with Vertx:
 ![ThePrimeagen Licking Rust](/assets/images/ThePrimeagen-licking-rust.webp)
 
 <br>
-Because of the way this benchmark challenge works, there's no way to have more than 46576 valid insertions.
+Because of the way this benchmark challenge works, there's no way to have more than 47000¹ valid insertions.
 So there's a problem in his validation code.
 
 The Rust version also passed that limit, because it had a bug that it inserts ~500
 records before the stress test begins, and it was not deleting those records.
 
+¹ Actually, the limit when randomization is removed is 46576 insertions,
+but I still need to confirm how many is possible if randomized. But it seems
+it's no more than 47000.
 
 **TL;DR:**
 
