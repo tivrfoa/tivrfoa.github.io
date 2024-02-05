@@ -380,22 +380,14 @@ class ByteArrayToResultMap {
 
 ### Jan 3, 2024 - ebarlas - Changed JVM to GraalVM CE 21.0.1
 
-https://github.com/gunnarmorling/1brc/pull/45
-
-### Jan 4, 2024 - royvanrijn - Trying to fix the endian issue #68
-
-https://github.com/gunnarmorling/1brc/pull/68/files
-
-### Jan 4, 2024 - artsiomkorzun first submission
-
-https://github.com/gunnarmorling/1brc/pull/83
+[https://github.com/gunnarmorling/1brc/pull/45](https://github.com/gunnarmorling/1brc/pull/45)
 
 
 # Jan 3, 2024 - ddimtirov - use Epsilon GC, MemorySegment and Arena
 
 Nice example of how to replace `MappedByteBuffer` with `MemorySegment`:
 
-https://github.com/gunnarmorling/1brc/pull/32
+[https://github.com/gunnarmorling/1brc/pull/32](https://github.com/gunnarmorling/1brc/pull/32)
 
 >switched to the foreign memory access preview API for another 10% speedup
 
@@ -407,6 +399,15 @@ https://github.com/gunnarmorling/1brc/pull/32
  time java $JAVA_OPTS --class-path target/average-1.0.0-SNAPSHOT.jar dev.morling.onebrc.CalculateAverage_ddimtirov
 
 ```
+
+### Jan 4, 2024 - royvanrijn - Trying to fix the endian issue #68
+
+https://github.com/gunnarmorling/1brc/pull/68/files
+
+### Jan 4, 2024 - artsiomkorzun first submission
+
+https://github.com/gunnarmorling/1brc/pull/83
+
 
 ### Jan 5, 2024 - yemreinci - Calculate the hashcode while reading the data
 
@@ -530,7 +531,7 @@ native-image $NATIVE_IMAGE_OPTS -cp target/average-1.0.0-SNAPSHOT.jar -o image_c
 Interesting way to create a `HashMap`, using a static function
 instead of the constructor `HashMap(int initialCapacity)`
 
-https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashMap.html#newHashMap(int)
+[https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashMap.html#newHashMap(int)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashMap.html#newHashMap(int))
 
 ```java
 var res = HashMap.<String, Aggregator> newHashMap(processorCnt);
@@ -538,7 +539,7 @@ var res = HashMap.<String, Aggregator> newHashMap(processorCnt);
 
 API note in the JDK:
 
-https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/HashMap.java#L462
+[https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/HashMap.java#L462](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/HashMap.java#L462)
 
 ```java
     /**
@@ -559,12 +560,12 @@ https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util
 
 ### Jan 7, 2024 - royvanrijn - Adding Unsafe and merykitty's branchless parser - 00:06.159
 
-https://github.com/gunnarmorling/1brc/pull/194
+[https://github.com/gunnarmorling/1brc/pull/194](https://github.com/gunnarmorling/1brc/pull/194)
 
 
 ### Jan 7, 2024 - thomaswue - search and compare > 1 byte - 00:06.532
 
-https://github.com/gunnarmorling/1brc/pull/213
+[https://github.com/gunnarmorling/1brc/pull/213](https://github.com/gunnarmorling/1brc/pull/213)
 
 >This is some tuning over the initial submission now searching for the delimiter and comparing names more than 1 byte at a time. Should be ~30% faster than initial version.
 
@@ -658,22 +659,22 @@ ffb09bf4bf0b41835b3340415be4f3c34565c126
 
 Final version - 4.676
 
-https://github.com/plevart/1brc/blob/7777e9ee4e2302fdab3671d2aae401f05e0394d5/src/main/java/dev/morling/onebrc/CalculateAverage_plevart.java
+[https://github.com/plevart/1brc/blob/7777e9ee4e2302fdab3671d2aae401f05e0394d5/src/main/java/dev/morling/onebrc/CalculateAverage_plevart.java](https://github.com/plevart/1brc/blob/7777e9ee4e2302fdab3671d2aae401f05e0394d5/src/main/java/dev/morling/onebrc/CalculateAverage_plevart.java)
 
 ### Jan 31, 2024 - Shiplëv submission =D - No Unsafe! - 4.884
 
 Beautiful solution with great comments!!!
 
-https://github.com/shipilev/1brc/blob/c2bb7d2621a070c5e4f0c592aece0f55fa50bee7/src/main/java/dev/morling/onebrc/CalculateAverage_shipilev.java
+[https://github.com/shipilev/1brc/blob/c2bb7d2621a070c5e4f0c592aece0f55fa50bee7/src/main/java/dev/morling/onebrc/CalculateAverage_shipilev.java](https://github.com/shipilev/1brc/blob/c2bb7d2621a070c5e4f0c592aece0f55fa50bee7/src/main/java/dev/morling/onebrc/CalculateAverage_shipilev.java)
 
 
 ### Jan 31, 2024 - Serkan ÖZAL - Fastest Solution running on the JVM!!! - 21.0.1-open - 1.880
 
 Amazing code using the Vector API.
 
-https://github.com/gunnarmorling/1brc/pull/679
+[https://github.com/gunnarmorling/1brc/pull/679](https://github.com/gunnarmorling/1brc/pull/679)
 
-https://github.com/serkan-ozal/1brc/blob/c74cddbe8d6139af9833bb9c2546da44b8f7a065/src/main/java/dev/morling/onebrc/CalculateAverage_serkan_ozal.java
+[https://github.com/serkan-ozal/1brc/blob/c74cddbe8d6139af9833bb9c2546da44b8f7a065/src/main/java/dev/morling/onebrc/CalculateAverage_serkan_ozal.java](https://github.com/serkan-ozal/1brc/blob/c74cddbe8d6139af9833bb9c2546da44b8f7a065/src/main/java/dev/morling/onebrc/CalculateAverage_serkan_ozal.java)
 
 # First Use of Important Concepts
 
