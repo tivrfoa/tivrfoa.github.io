@@ -349,9 +349,9 @@ public class CalculateAverage_naive {
 
 ### Jan 3, 2024 11:35:51 - spullara - lazy String creation and better hash table (?) - 00:14.848
 
-https://github.com/spullara/1brc/blob/dd10a02e075fcdc11eb7ca9dbcb245ba9db739d2/src/main/java/dev/morling/onebrc/CalculateAverage_spullara.java
+[https://github.com/spullara/1brc/blob/dd10a02e075fcdc11eb7ca9dbcb245ba9db739d2/src/main/java/dev/morling/onebrc/CalculateAverage_spullara.java](https://github.com/spullara/1brc/blob/dd10a02e075fcdc11eb7ca9dbcb245ba9db739d2/src/main/java/dev/morling/onebrc/CalculateAverage_spullara.java)
 
-https://github.com/gunnarmorling/1brc/pull/21
+[https://github.com/gunnarmorling/1brc/pull/21](https://github.com/gunnarmorling/1brc/pull/21)
 
 It was not clear at first what made such big difference,
 because his solution:
@@ -437,9 +437,9 @@ while ((b = bb.get(currentPosition++)) != ';') {
 
 ### Jan 6, 2024 6:55 AM GMT-3 - thomaswue - Unsafe, GraalVM Native Image - 9.625
 
-https://github.com/gunnarmorling/1brc/pull/70
+[https://github.com/gunnarmorling/1brc/pull/70](https://github.com/gunnarmorling/1brc/pull/70)
 
-https://github.com/thomaswue/1brc/blob/c67abfcd469cbc00f89f5850cbf64a5407e21549/src/main/java/dev/morling/onebrc/CalculateAverage_thomaswue.java
+[https://github.com/thomaswue/1brc/blob/c67abfcd469cbc00f89f5850cbf64a5407e21549/src/main/java/dev/morling/onebrc/CalculateAverage_thomaswue.java](https://github.com/thomaswue/1brc/blob/c67abfcd469cbc00f89f5850cbf64a5407e21549/src/main/java/dev/morling/onebrc/CalculateAverage_thomaswue.java)
 
 >Update: Thanks to tuning from @mukel using sun.misc.Unsafe to directly access the mapped memory, it is now down to 1.28s (total CPU user time 32.2s) on my machine. Also, instead of PGO, this is now just using a single native image build run with tuning flags "-O3" and "-march=native".
 
@@ -471,9 +471,9 @@ native-image $NATIVE_IMAGE_OPTS -cp target/average-1.0.0-SNAPSHOT.jar -o image_c
 
 ### Jan 6, 2024 1:01 PM GMT-3 - merykitty - Vector API, magic branchless number parsing - 00:07.620
 
-https://github.com/gunnarmorling/1brc/pull/114
+[https://github.com/gunnarmorling/1brc/pull/114](https://github.com/gunnarmorling/1brc/pull/114)
 
-https://github.com/merykitty/1brc/blob/aa5f311ae156a04369dc854b4cc091a63370cee3/src/main/java/dev/morling/onebrc/CalculateAverage_merykitty.java
+[https://github.com/merykitty/1brc/blob/aa5f311ae156a04369dc854b4cc091a63370cee3/src/main/java/dev/morling/onebrc/CalculateAverage_merykitty.java](https://github.com/merykitty/1brc/blob/aa5f311ae156a04369dc854b4cc091a63370cee3/src/main/java/dev/morling/onebrc/CalculateAverage_merykitty.java)
 
 
 ```java
@@ -571,7 +571,7 @@ https://github.com/gunnarmorling/1brc/pull/213
 
 ### Jan 9, 2024 - mukel - Optimizing `findDelimiter`
 
-https://github.com/gunnarmorling/1brc/pull/263#discussion_r1446699670
+[https://github.com/gunnarmorling/1brc/pull/263#discussion_r1446699670](https://github.com/gunnarmorling/1brc/pull/263#discussion_r1446699670)
 
 ```java
 private static int findDelimiter(long word) {
@@ -597,7 +597,7 @@ merykitty.: 7.620 -> 4.496
 
 ### Jan 11, 2024 - mtopolnik - focus on 10k (what was really asked for!)
 
-https://github.com/gunnarmorling/1brc/pull/246
+[https://github.com/gunnarmorling/1brc/pull/246](https://github.com/gunnarmorling/1brc/pull/246)
 
 >My primary focus was performance on the "new" dataset with 10,000 keys and names in the full range of 1-100 bytes. I find that the timing on that dataset degrades to 10.1 seconds.
 >
@@ -605,15 +605,15 @@ https://github.com/gunnarmorling/1brc/pull/246
 
 ### Jan 14, 2024 - Cliff Click submission =D - 4.741
 
-https://github.com/cliffclick/1brc/blob/262270c12b904e110bc468e132e578a2e1842ac3/src/main/java/dev/morling/onebrc/CalculateAverage_cliffclick.java
+[https://github.com/cliffclick/1brc/blob/262270c12b904e110bc468e132e578a2e1842ac3/src/main/java/dev/morling/onebrc/CalculateAverage_cliffclick.java](https://github.com/cliffclick/1brc/blob/262270c12b904e110bc468e132e578a2e1842ac3/src/main/java/dev/morling/onebrc/CalculateAverage_cliffclick.java)
 
 Adding Unsafe:
 
-https://github.com/gunnarmorling/1brc/pull/185/commits/5f8fb7ce09d3f74ab5beb68522008ac2687e8c32
+[https://github.com/gunnarmorling/1brc/pull/185/commits/5f8fb7ce09d3f74ab5beb68522008ac2687e8c32](https://github.com/gunnarmorling/1brc/pull/185/commits/5f8fb7ce09d3f74ab5beb68522008ac2687e8c32)
 
 ### Jan 15, 2024 - jerrinot - Instruction-Level Parallelism (ILP) - 3.409
 
-https://github.com/gunnarmorling/1brc/pull/424
+[https://github.com/gunnarmorling/1brc/pull/424](https://github.com/gunnarmorling/1brc/pull/424)
 
 ```txt
 This initial submission is aiming to exploit instruction-level parallelism: Each thread pulls from multiple chunks in each iteration. This breaks nice sequential access, but a CPU gets independent streams so it can go bananas with out-of-order processing.
