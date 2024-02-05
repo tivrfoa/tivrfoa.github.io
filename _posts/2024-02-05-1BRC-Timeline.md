@@ -66,9 +66,9 @@ Map<String, Measurement> resultMap = Files.lines(Path.of(FILE)).parallel()
 
 ### Jan 2, 2024 10:04:29 - bjhara - Memory Mapped File - 00:38.510
 
-https://github.com/gunnarmorling/1brc/pull/10
+[https://github.com/gunnarmorling/1brc/pull/10](https://github.com/gunnarmorling/1brc/pull/10)
 
-https://github.com/bjhara/1brc/blob/a7edadedaef09702982bbd3618fcdcaf9bf66e12/src/main/java/dev/morling/onebrc/CalculateAverage_bjhara.java
+[https://github.com/bjhara/1brc/blob/a7edadedaef09702982bbd3618fcdcaf9bf66e12/src/main/java/dev/morling/onebrc/CalculateAverage_bjhara.java](https://github.com/bjhara/1brc/blob/a7edadedaef09702982bbd3618fcdcaf9bf66e12/src/main/java/dev/morling/onebrc/CalculateAverage_bjhara.java)
 
 Key idea:
   - Memory mapped file using `FileChannel` and `MappedByteBuffer`
@@ -826,15 +826,15 @@ Here are the important changes:
   - Unsafe;
   - ILP.
 
-That's it for the timeline. If I missed something, let me know here: TODO_twitter_post
+That's it for the timeline. If I missed something, let me know here: [https://twitter.com/tivrfoa/status/1754607677362106552](https://twitter.com/tivrfoa/status/1754607677362106552)
 
 In the next post I'll explore the performance impact of using `Unsafe`.
 
 # References
 
-https://github.com/gunnarmorling/1brc
+[https://github.com/gunnarmorling/1brc](https://github.com/gunnarmorling/1brc)
 
-https://en.wikipedia.org/wiki/SWAR
+[https://en.wikipedia.org/wiki/SWAR](https://en.wikipedia.org/wiki/SWAR)
 
 [Multiple byte processing with full-word instructions - 1975](https://dl.acm.org/doi/pdf/10.1145/360933.360994)
 
