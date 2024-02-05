@@ -54,17 +54,17 @@ Others might have arrived at the same/similar solution on their own.*
 
 # Timeline
 
-## Dec 28, 2023 07:44:58 - Project is created
+### Dec 28, 2023 07:44:58 - Project is created
 
-## Jan 1, 2024 11:38:16 - Baseline time: 04:13.449
+### Jan 1, 2024 11:38:16 - Baseline time: 04:13.449
 
-## Jan 1, 2024 14:33:40 - royvanrijn - Processing lines in parallel - 02:08.845
+### Jan 1, 2024 14:33:40 - royvanrijn - Processing lines in parallel - 02:08.845
 
 ```java
 Map<String, Measurement> resultMap = Files.lines(Path.of(FILE)).parallel()
 ```
 
-## Jan 2, 2024 10:04:29 - bjhara - Memory Mapped File - 00:38.510
+### Jan 2, 2024 10:04:29 - bjhara - Memory Mapped File - 00:38.510
 
 https://github.com/gunnarmorling/1brc/pull/10
 
@@ -113,7 +113,7 @@ Key idea:
     }
 ```
 
-## Jan 2, 2024 16:14:32 - padreati - Vector API - 00:50.547 
+### Jan 2, 2024 16:14:32 - padreati - Vector API - 00:50.547 
 
 Key ideas:
   - First use of the Vector API
@@ -137,7 +137,7 @@ import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
 ```
 
-## Jan 3, 2024 - royvanrijn - SWAR - 00:23.366
+### Jan 3, 2024 - royvanrijn - SWAR - 00:23.366
 
 Key ideas:
   - SIMD Within A Register (SWAR) for finding ';'.
@@ -172,7 +172,7 @@ https://github.com/gunnarmorling/1brc/blob/5570f1b60a557baf9ec6af412f8d5bd75fc44
  */
 ```
 
-### findNextSWAR
+#### findNextSWAR
 
 ```java
     /**
@@ -209,7 +209,7 @@ https://github.com/gunnarmorling/1brc/blob/5570f1b60a557baf9ec6af412f8d5bd75fc44
 
 Read more about this here: https://richardstartin.github.io/posts/finding-bytes
 
-### compilePattern
+#### compilePattern
 
 It replicates the byte value in a long.
 
@@ -231,7 +231,7 @@ jshell> Integer.toHexString((byte) ';')
 $5 ==> "3b"
 ```
 
-### branchlessParseInt
+#### branchlessParseInt
 
 ```java
     /**
@@ -278,7 +278,7 @@ franz1981 - get long idea
 >In this way the most of computation would like resolve in much less loop iterations too, similar to https://github.com/apache/activemq-artemis/blob/25fc0342275b29cd73123523a46e6e94582597cd/artemis-commons/src/main/java/org/apache/activemq/artemis/utils/ByteUtil.java#L299
 
 
-## Jan 3, 2024 - Interesting comment about ZGC by fisk:
+### Jan 3, 2024 - Interesting comment about ZGC by fisk:
 
 https://github.com/gunnarmorling/1brc/pull/15#issuecomment-1875495420
 
@@ -304,7 +304,7 @@ Here is my experimental Generational ZGC leyden branch: https://github.com/fisk/
 Takes about 1/3 of the time compared to normal ZGC on my machine.
 ```
 
-## Jan 3, 2024 11:35:51 - Nice 35 lines solution by Sam Pullara
+### Jan 3, 2024 11:35:51 - Nice 35 lines solution by Sam Pullara
 
 https://github.com/spullara/1brc/blob/dd10a02e075fcdc11eb7ca9dbcb245ba9db739d2/src/main/java/dev/morling/onebrc/CalculateAverage_naive.java
 
@@ -347,7 +347,7 @@ public class CalculateAverage_naive {
 }
 ```
 
-## Jan 3, 2024 11:35:51 - spullara - lazy String creation and better hash table (?) - 00:14.848
+### Jan 3, 2024 11:35:51 - spullara - lazy String creation and better hash table (?) - 00:14.848
 
 https://github.com/spullara/1brc/blob/dd10a02e075fcdc11eb7ca9dbcb245ba9db739d2/src/main/java/dev/morling/onebrc/CalculateAverage_spullara.java
 
@@ -378,15 +378,15 @@ class ByteArrayToResultMap {
 }
 ```
 
-## Jan 3, 2024 - ebarlas - Changed JVM to GraalVM CE 21.0.1
+### Jan 3, 2024 - ebarlas - Changed JVM to GraalVM CE 21.0.1
 
 https://github.com/gunnarmorling/1brc/pull/45
 
-## Jan 4, 2024 - royvanrijn - Trying to fix the endian issue #68
+### Jan 4, 2024 - royvanrijn - Trying to fix the endian issue #68
 
 https://github.com/gunnarmorling/1brc/pull/68/files
 
-## Jan 4, 2024 - artsiomkorzun first submission
+### Jan 4, 2024 - artsiomkorzun first submission
 
 https://github.com/gunnarmorling/1brc/pull/83
 
@@ -408,7 +408,7 @@ https://github.com/gunnarmorling/1brc/pull/32
 
 ```
 
-## Jan 5, 2024 - yemreinci - Calculate the hashcode while reading the data
+### Jan 5, 2024 - yemreinci - Calculate the hashcode while reading the data
 
 https://github.com/gunnarmorling/1brc/pull/86
 
@@ -426,7 +426,7 @@ while ((b = bb.get(currentPosition++)) != ';') {
 }
 ```
 
-## Jan 5, 2024 3:02 GMT-3 - artsiomkorzun - AtomicInteger, AtomicReference
+### Jan 5, 2024 3:02 GMT-3 - artsiomkorzun - AtomicInteger, AtomicReference
 
 ```java
         AtomicInteger counter = new AtomicInteger();
@@ -435,7 +435,7 @@ while ((b = bb.get(currentPosition++)) != ';') {
 ```
 
 
-## Jan 6, 2024 6:55 AM GMT-3 - thomaswue - Unsafe, GraalVM Native Image - 9.625
+### Jan 6, 2024 6:55 AM GMT-3 - thomaswue - Unsafe, GraalVM Native Image - 9.625
 
 https://github.com/gunnarmorling/1brc/pull/70
 
@@ -469,7 +469,7 @@ native-image $NATIVE_IMAGE_OPTS -cp target/average-1.0.0-SNAPSHOT.jar -o image_c
     }
 ```
 
-## Jan 6, 2024 1:01 PM GMT-3 - merykitty - Vector API, magic branchless number parsing - 00:07.620
+### Jan 6, 2024 1:01 PM GMT-3 - merykitty - Vector API, magic branchless number parsing - 00:07.620
 
 https://github.com/gunnarmorling/1brc/pull/114
 
@@ -557,19 +557,19 @@ https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util
     }
 ```
 
-## Jan 7, 2024 - royvanrijn - Adding Unsafe and merykitty's branchless parser - 00:06.159
+### Jan 7, 2024 - royvanrijn - Adding Unsafe and merykitty's branchless parser - 00:06.159
 
 https://github.com/gunnarmorling/1brc/pull/194
 
 
-## Jan 7, 2024 - thomaswue - search and compare > 1 byte - 00:06.532
+### Jan 7, 2024 - thomaswue - search and compare > 1 byte - 00:06.532
 
 https://github.com/gunnarmorling/1brc/pull/213
 
 >This is some tuning over the initial submission now searching for the delimiter and comparing names more than 1 byte at a time. Should be ~30% faster than initial version.
 
 
-## Jan 9, 2024 - mukel - Optimizing `findDelimiter`
+### Jan 9, 2024 - mukel - Optimizing `findDelimiter`
 
 https://github.com/gunnarmorling/1brc/pull/263#discussion_r1446699670
 
@@ -583,7 +583,7 @@ private static int findDelimiter(long word) {
 
 **TODO** Understand how this code works.
 
-## Jan 10, 2024 - Server change - Solutions got faster
+### Jan 10, 2024 - Server change - Solutions got faster
 
 Old server: dedicated virtual cloud environment (Hetzner CCX33)
 
@@ -595,7 +595,7 @@ thomaswue.: 6.532 -> 3.911
 merykitty.: 7.620 -> 4.496
 ```
 
-## Jan 11, 2024 - mtopolnik - focus on 10k (what was really asked for!)
+### Jan 11, 2024 - mtopolnik - focus on 10k (what was really asked for!)
 
 https://github.com/gunnarmorling/1brc/pull/246
 
@@ -603,7 +603,7 @@ https://github.com/gunnarmorling/1brc/pull/246
 >
 >You can generate the dataset with create_measurements3.sh, and I encourage contestants to try it out and use as the optimization target. It's unquestionably a kick to see oneself at the top of the leaderboard, but it's more fun (and useful!) to design a solution that works well beyond the 416 station names of max length 26 chars.
 
-## Jan 14, 2024 - Cliff Click submission =D - 4.741
+### Jan 14, 2024 - Cliff Click submission =D - 4.741
 
 https://github.com/cliffclick/1brc/blob/262270c12b904e110bc468e132e578a2e1842ac3/src/main/java/dev/morling/onebrc/CalculateAverage_cliffclick.java
 
@@ -611,7 +611,7 @@ Adding Unsafe:
 
 https://github.com/gunnarmorling/1brc/pull/185/commits/5f8fb7ce09d3f74ab5beb68522008ac2687e8c32
 
-## Jan 15, 2024 - jerrinot - Instruction-Level Parallelism (ILP) - 3.409
+### Jan 15, 2024 - jerrinot - Instruction-Level Parallelism (ILP) - 3.409
 
 https://github.com/gunnarmorling/1brc/pull/424
 
@@ -652,7 +652,7 @@ Credits:
             }
 ```
 
-## Jan 16, 2024 - plevart: Look Mom No Unsafe! - 5.336
+### Jan 16, 2024 - plevart: Look Mom No Unsafe! - 5.336
 
 ffb09bf4bf0b41835b3340415be4f3c34565c126
 
@@ -660,14 +660,14 @@ Final version - 4.676
 
 https://github.com/plevart/1brc/blob/7777e9ee4e2302fdab3671d2aae401f05e0394d5/src/main/java/dev/morling/onebrc/CalculateAverage_plevart.java
 
-## Jan 31, 2024 - Shiplëv submission =D - No Unsafe! - 4.884
+### Jan 31, 2024 - Shiplëv submission =D - No Unsafe! - 4.884
 
 Beautiful solution with great comments!!!
 
 https://github.com/shipilev/1brc/blob/c2bb7d2621a070c5e4f0c592aece0f55fa50bee7/src/main/java/dev/morling/onebrc/CalculateAverage_shipilev.java
 
 
-## Jan 31, 2024 - Serkan ÖZAL - Fastest Solution running on the JVM!!! - 21.0.1-open - 1.880
+### Jan 31, 2024 - Serkan ÖZAL - Fastest Solution running on the JVM!!! - 21.0.1-open - 1.880
 
 Amazing code using the Vector API.
 
@@ -678,7 +678,7 @@ https://github.com/serkan-ozal/1brc/blob/c74cddbe8d6139af9833bb9c2546da44b8f7a06
 # First Use of Important Concepts
 
 
-## MappedByteBuffer
+### MappedByteBuffer
 
 ```
 $ git log -S"MappedBy" --reverse
@@ -689,7 +689,7 @@ Date:   Tue Jan 2 14:04:29 2024 +0100
     Implementation using memory mapped file
 ```
 
-## Vector API
+### Vector API
 
 ```
 $ git log -S"jdk.incubator.vector" --reverse
@@ -700,7 +700,7 @@ Date:   Tue Jan 2 21:14:32 2024 +0200
      - implementation by padreati
 ```
 
-## AtomicReference
+### AtomicReference
 
 ```
 git log -S"AtomicReference" --reverse
@@ -765,7 +765,7 @@ HamoriZ answered Jun 12, 2015 at 12:30
 https://stackoverflow.com/a/30803137/339561
 
 
-## MemorySegment
+### MemorySegment
 
 ```
 $ git log -S"MemorySegm" --reverse
@@ -776,7 +776,7 @@ Date:   Thu Jan 4 04:22:39 2024 +0900
     ddimtirov - switched to the foreign memory access preview API for another 10% speedup
 ```
 
-## Epsilon GC
+### Epsilon GC
 
 ```
 $ git log -S"Epsilon" --reverse
@@ -785,7 +785,7 @@ Author: Dimitar Dimitrov
 Date:   Thu Jan 4 04:22:39 2024 +0900
 ```
 
-## Unsafe
+### Unsafe
 
 ```
 $ git log -S"Unsafe" --reverse
@@ -794,7 +794,7 @@ Author: Thomas Wuerthinger
 Date:   Sat Jan 6 10:55:07 2024 +0100
 ```
 
-## Instruction-Level Parallelism (ILP)
+### Instruction-Level Parallelism (ILP)
 
 *I didn't look at all other solutions, so if there was a previous one, let me know =)*
 
