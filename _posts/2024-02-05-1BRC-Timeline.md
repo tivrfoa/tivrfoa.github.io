@@ -22,9 +22,7 @@ Others might have arrived at the same/similar solution on their own.*
 | # | Result (m:s.ms) | Implementation     | JDK | Submitter     | Notes     |
 |---|-----------------|--------------------|-----|---------------|-----------|
 | 1.|        04:13.449| [CalculateAverage.java](https://github.com/gunnarmorling/onebrc/blob/main/src/main/java/dev/morling/onebrc/CalculateAverage.java) (baseline)| 21.0.1-open| Gunnar Morling|
-| 1.|        02:08.845| [CalculateAverage_royvanrijn.java](https://github.com/gunnarmorling/1brc/blob/main/src/main/java/dev/morling/onebrc/CalculateAverage_royvanrijn.java) (baseline)| 21.0.1-open| Roy van Rijn| Process lines in parallel
-| 1.|        02:08.845| [CalculateAverage_royvanrijn.java](https://github.com/gunnarmorling/1brc/blob/main/src/main/java/dev/morling/onebrc/CalculateAverage_royvanrijn.java)| 21.0.1-open| Roy van Rijn|
-| 1.|        02:08.845| [CalculateAverage_itaske.java](https://github.com/gunnarmorling/1brc/blob/main/src/main/java/dev/morling/onebrc/CalculateAverage_itaske.java)| 21.0.1-open| [itaske](https://github.com/itaske)|
+| 1.|        02:08.845| [CalculateAverage_royvanrijn.java](https://github.com/gunnarmorling/1brc/blob/main/src/main/java/dev/morling/onebrc/CalculateAverage_royvanrijn.java)| 21.0.1-open| Roy van Rijn| Process lines in parallel
 | 1.|        02:08.315| [CalculateAverage_itaske.java](https://github.com/gunnarmorling/1brc/blob/main/src/main/java/dev/morling/onebrc/CalculateAverage_itaske.java)| 21.0.1-open| [itaske](https://github.com/itaske)|
 | 1.|        00:38.510| [CalculateAverage_bjhara.java](https://github.com/gunnarmorling/1brc/blob/main/src/main/java/dev/morling/onebrc/CalculateAverage_bjhara.java)| 21.0.1-open| [Hampus Ram](https://github.com/bjhara)|Memory mapped file using `FileChannel` and `MappedByteBuffer`
 | 1.|        00:23.366| [link](https://github.com/gunnarmorling/1brc/pull/5/)| 21.0.1-open| [Roy van Rijn](https://github.com/royvanrijn)|SWAR
