@@ -143,9 +143,9 @@ Key ideas:
   - Use `int` instead of `double`
   - Branchless parse `int`
 
-https://github.com/gunnarmorling/1brc/pull/5
+[https://github.com/gunnarmorling/1brc/pull/5](https://github.com/gunnarmorling/1brc/pull/5)
 
-https://github.com/gunnarmorling/1brc/blob/5570f1b60a557baf9ec6af412f8d5bd75fc44891/src/main/java/dev/morling/onebrc/CalculateAverage_royvanrijn.java
+[https://github.com/gunnarmorling/1brc/blob/5570f1b60a557baf9ec6af412f8d5bd75fc44891/src/main/java/dev/morling/onebrc/CalculateAverage_royvanrijn.java](https://github.com/gunnarmorling/1brc/blob/5570f1b60a557baf9ec6af412f8d5bd75fc44891/src/main/java/dev/morling/onebrc/CalculateAverage_royvanrijn.java)
 
 ```java
 /**
@@ -205,7 +205,7 @@ https://github.com/gunnarmorling/1brc/blob/5570f1b60a557baf9ec6af412f8d5bd75fc44
     }
 ```
 
-Read more about this here: https://richardstartin.github.io/posts/finding-bytes
+Read more about this here: [https://richardstartin.github.io/posts/finding-bytes](https://richardstartin.github.io/posts/finding-bytes)
 
 #### compilePattern
 
@@ -267,20 +267,20 @@ franz1981 comment on ByteBuffer and big-endian
 >It would be better to store in a static final, the native byte order and based on it, correctly reverse the bytes yourself (look at what I have done in the Netty code).
 >Conversely you can always assume little endian, setting the mapped byte buffer order, and leave M1 to have the performance hit
 
-https://github.com/gunnarmorling/1brc/pull/5#discussion_r1440157267
+[https://github.com/gunnarmorling/1brc/pull/5#discussion_r1440157267](https://github.com/gunnarmorling/1brc/pull/5#discussion_r1440157267)
 
 
 franz1981 - get long idea
 
 >Hash code here has a data dependency: you either manually unroll this or just relax the hash code by using a var handle and use getLong amortizing the data dependency in batches, handing only the last 7 (or less) bytes separately, using the array.
->In this way the most of computation would like resolve in much less loop iterations too, similar to https://github.com/apache/activemq-artemis/blob/25fc0342275b29cd73123523a46e6e94582597cd/artemis-commons/src/main/java/org/apache/activemq/artemis/utils/ByteUtil.java#L299
+>In this way the most of computation would like resolve in much less loop iterations too, similar to [https://github.com/apache/activemq-artemis/blob/25fc0342275b29cd73123523a46e6e94582597cd/artemis-commons/src/main/java/org/apache/activemq/artemis/utils/ByteUtil.java#L299](https://github.com/apache/activemq-artemis/blob/25fc0342275b29cd73123523a46e6e94582597cd/artemis-commons/src/main/java/org/apache/activemq/artemis/utils/ByteUtil.java#L299)
 
 
 ### Jan 3, 2024 - Interesting comment about ZGC by fisk:
 
-https://github.com/gunnarmorling/1brc/pull/15#issuecomment-1875495420
+[https://github.com/gunnarmorling/1brc/pull/15#issuecomment-1875495420](https://github.com/gunnarmorling/1brc/pull/15#issuecomment-1875495420)
 
-https://github.com/fisk/jdk/commit/8ce820de84b7031ced52fb63d190d9c8546f6730
+[https://github.com/fisk/jdk/commit/8ce820de84b7031ced52fb63d190d9c8546f6730](https://github.com/fisk/jdk/commit/8ce820de84b7031ced52fb63d190d9c8546f6730)
 
 ```txt
 @lobaorn do you really think you can nerd snipe me like that with benchmarking games?
@@ -304,7 +304,7 @@ Takes about 1/3 of the time compared to normal ZGC on my machine.
 
 ### Jan 3, 2024 11:35:51 - Nice 35 lines solution by Sam Pullara
 
-https://github.com/spullara/1brc/blob/dd10a02e075fcdc11eb7ca9dbcb245ba9db739d2/src/main/java/dev/morling/onebrc/CalculateAverage_naive.java
+[https://github.com/spullara/1brc/blob/dd10a02e075fcdc11eb7ca9dbcb245ba9db739d2/src/main/java/dev/morling/onebrc/CalculateAverage_naive.java](https://github.com/spullara/1brc/blob/dd10a02e075fcdc11eb7ca9dbcb245ba9db739d2/src/main/java/dev/morling/onebrc/CalculateAverage_naive.java)
 
 ```java
 package dev.morling.onebrc;
