@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Function Diagram with Arrows</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+    }
+
+    .rectangle {
+      position: absolute;
+      padding: 10px;
+      background-color: #fff;
+      border: 2px solid #007bff;
+      border-radius: 5px;
+      cursor: move;
+      user-select: none;
+      z-index: 1;
+    }
+
+    #controls {
+      margin-bottom: 10px;
+    }
+
+    svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    line {
+        cursor: pointer;
+        pointer-events: all; /* Ensure the line is interactive */
+    }
+  </style>
+</head>
+<body>
+    <div id="controls">
+        <input id="functionInput" type="text" placeholder="Enter function name" />
+        <button id="addFunction">Add</button>
+        <button id="saveDiagram">Save Diagram</button>
+        <select id="loadDiagram">
+            <option value="">Load Diagram</option>
+        </select>
+    </div>
+
+  <div id="container">
+    <svg id="relationships"></svg>
+  </div>
+
+  <script>
+    const container = document.getElementById('container');
+    const addFunctionButton = document.getElementById('addFunction');
+    const functionInput = document.getElementById('functionInput');
+    const svg = document.getElementById('relationships');
+
+    let rectangles = [];
+    let isDragging = false;
+    let draggedElement = null;
+    let offsetX, offsetY;
+    let relationships = [];
+
+    // Add a rectangle to the container
+    function addRectangle(name) {
+      const rectangle = document.createElement('div');
+      rectangle.className = 'rectangle';
+      rectangle.textContent = name;
+      rectangle.style.left = `${Math.random() * (container.offsetWidth - 100)}px`;
+      rectangle.style.top = `${Math.random() * (container.offsetHeight - 50)}px`;
+
+      // Handle drag
+      rectangle.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        draggedElement = rectangle;
+        offsetX = e.offsetX;
+        offsetY = e.offsetY;
+      });
+
+      rectangles.push(rectangle);
+      container.appendChild(rectangle);
+    }
+
+    // Handle mousemove for dragging
+    container.addEventListener('mousemove', (e) => {
+      if (isDragging && draggedElement) {
+        draggedElement.style.left = `${e.clientX - offsetX}px`;
+        draggedElement.style.top = `${e.clientY - offsetY}px`;
+        updateArrows();
+      }
+    });
+
+    // Stop dragging on mouseup
+    container.addEventListener('mouseup', () => {
+      isDragging = false;
+      draggedElement = null;
+    });
+
+    // Add a function on button click or Enter key
+    function addFunction() {
+      const name = functionInput.value.trim();
+      if (name) {
+        addRectangle(name);
+        functionInput.value = '';
+      }
+    }
+
+    addFunctionButton.addEventListener('click', addFunction);
+    functionInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        addFunction();
+      }
+    });
+
+    // Add relationships by clicking two rectangles in sequence
+    let selectedRectangle = null;
+    container.addEventListener('click', (e) => {
+      if (e.target.classList.contains('rectangle')) {
+        if (!selectedRectangle) {
+          selectedRectangle = e.target;
+          e.target.style.borderColor = 'red';
+        } else {
+          if (selectedRectangle !== e.target) {
+            addRelationship(selectedRectangle, e.target);
+          }
+          selectedRectangle.style.borderColor = '#007bff';
+          selectedRectangle = null;
+        }
+      }
+    });
+
+    // Add a relationship (arrow)
+    function addRelationship(rect1, rect2) {
+        const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        arrow.setAttribute('stroke', '#007bff');
+        arrow.setAttribute('stroke-width', '2');
+        arrow.setAttribute('marker-end', 'url(#arrowhead)');
+        arrow.style.pointerEvents = 'all'; // Enable interactivity on the line
+
+        // Add click event to delete the arrow
+        arrow.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent container clicks
+            const confirmDelete = confirm('Do you want to delete this arrow?');
+            if (confirmDelete) {
+                svg.removeChild(arrow); // Remove arrow from DOM
+                relationships = relationships.filter((rel) => rel.arrow !== arrow); // Remove from relationships array
+            }
+        });
+
+        svg.appendChild(arrow);
+        relationships.push({ arrow, rect1, rect2 });
+        updateArrow(arrow, rect1, rect2);
+    }
+
+    // Update all arrows
+    function updateArrows() {
+      relationships.forEach(({ arrow, rect1, rect2 }) => {
+        updateArrow(arrow, rect1, rect2);
+      });
+    }
+
+    // Update arrow position
+	function updateArrow(arrow, rect1, rect2) {
+	    // Get the bounding rectangles relative to the container
+	    const containerRect = container.getBoundingClientRect();
+	    const rect1Rect = rect1.getBoundingClientRect();
+	    const rect2Rect = rect2.getBoundingClientRect();
+
+	    // Calculate the centers relative to the container
+	    const x1 = rect1Rect.left + rect1Rect.width / 2 - containerRect.left;
+	    const y1 = rect1Rect.top + rect1Rect.height / 2 - containerRect.top;
+	    const x2 = rect2Rect.left + rect2Rect.width / 2 - containerRect.left;
+	    const y2 = rect2Rect.top + rect2Rect.height / 2 - containerRect.top;
+
+	    const dx = x2 - x1;
+	    const dy = y2 - y1;
+	    const distance = Math.sqrt(dx ** 2 + dy ** 2);
+
+	    // Calculate offsets to move arrowhead to the rectangle border
+	    const offset1 = {
+		x: (rect1Rect.width / 2) * (dx / distance),
+		y: (rect1Rect.height / 2) * (dy / distance),
+	    };
+	    const offset2 = {
+		x: -(rect2Rect.width / 2) * (dx / distance),
+		y: -(rect2Rect.height / 2) * (dy / distance),
+	    };
+
+	    // Set the positions of the arrow
+	    arrow.setAttribute('x1', x1 + offset1.x);
+	    arrow.setAttribute('y1', y1 + offset1.y);
+	    arrow.setAttribute('x2', x2 + offset2.x);
+	    arrow.setAttribute('y2', y2 + offset2.y);
+	}
+
+    // Add SVG marker for arrowhead
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    svg.appendChild(defs);
+
+    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+    marker.setAttribute('id', 'arrowhead');
+    marker.setAttribute('markerWidth', '10');
+    marker.setAttribute('markerHeight', '7');
+    marker.setAttribute('refX', '10');
+    marker.setAttribute('refY', '3.5');
+    marker.setAttribute('orient', 'auto');
+    defs.appendChild(marker);
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', 'M0,0 L10,3.5 L0,7 Z');
+    path.setAttribute('fill', '#007bff');
+    marker.appendChild(path);
+
+
+    const saveButton = document.getElementById('saveDiagram');
+    const loadDropdown = document.getElementById('loadDiagram');
+
+    // Save the current diagram to localStorage
+    function saveDiagram() {
+        const diagramName = prompt('Enter a name for this diagram:');
+        if (!diagramName) return alert('Diagram name is required!');
+
+        const diagramData = {
+            rectangles: rectangles.map((rect) => ({
+                name: rect.textContent,
+                left: parseFloat(rect.style.left),
+                top: parseFloat(rect.style.top),
+            })),
+            relationships: relationships.map(({ rect1, rect2 }) => ({
+                rect1: rect1.textContent,
+                rect2: rect2.textContent,
+            })),
+        };
+
+        const savedDiagrams = JSON.parse(localStorage.getItem('diagrams') || '{}');
+        savedDiagrams[diagramName] = diagramData;
+        localStorage.setItem('diagrams', JSON.stringify(savedDiagrams));
+
+        alert('Diagram saved successfully!');
+        updateLoadDropdown();
+    }
+
+    // Load a selected diagram from localStorage
+    function loadDiagram(name) {
+        const savedDiagrams = JSON.parse(localStorage.getItem('diagrams') || '{}');
+        const diagramData = savedDiagrams[name];
+        if (!diagramData) return alert('Diagram not found!');
+
+        // Clear the current diagram
+        rectangles.forEach((rect) => container.removeChild(rect));
+        rectangles = [];
+        relationships.forEach(({ arrow }) => svg.removeChild(arrow));
+        relationships = [];
+
+        // Load rectangles
+        diagramData.rectangles.forEach(({ name, left, top }) => {
+            const rect = document.createElement('div');
+            rect.className = 'rectangle';
+            rect.textContent = name;
+            rect.style.left = `${left}px`;
+            rect.style.top = `${top}px`;
+
+            rect.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                draggedElement = rect;
+                offsetX = e.offsetX;
+                offsetY = e.offsetY;
+            });
+
+            rectangles.push(rect);
+            container.appendChild(rect);
+        });
+
+        // Load relationships
+        diagramData.relationships.forEach(({ rect1, rect2 }) => {
+            const r1 = rectangles.find((r) => r.textContent === rect1);
+            const r2 = rectangles.find((r) => r.textContent === rect2);
+            if (r1 && r2) {
+                addRelationship(r1, r2);
+            }
+        });
+
+        // alert(`Diagram "${name}" loaded successfully!`);
+    }
+
+    // Update the load dropdown with saved diagrams
+    function updateLoadDropdown() {
+        const savedDiagrams = JSON.parse(localStorage.getItem('diagrams') || '{}');
+        loadDropdown.innerHTML = '<option value="">Load Diagram</option>';
+        Object.keys(savedDiagrams).forEach((name) => {
+            const option = document.createElement('option');
+            option.value = name;
+            option.textContent = name;
+            loadDropdown.appendChild(option);
+        });
+    }
+
+    // Event listeners
+    saveButton.addEventListener('click', saveDiagram);
+    loadDropdown.addEventListener('change', (e) => {
+        const selectedDiagram = e.target.value;
+        if (selectedDiagram) {
+            loadDiagram(selectedDiagram);
+            e.target.value = ''; // Reset dropdown
+        }
+    });
+
+    // Initialize the dropdown on page load
+    updateLoadDropdown();
+
+  </script>
+</body>
+</html>
+
