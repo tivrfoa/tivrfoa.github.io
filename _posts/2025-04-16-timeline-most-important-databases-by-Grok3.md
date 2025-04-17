@@ -93,6 +93,8 @@ categories: database sql
     <footer>
         <p>Created by Grok 3</p>
     </footer>
+</body>
+</html>
 
 ## Prompting ChatGPT: most revolutionary databases
 
