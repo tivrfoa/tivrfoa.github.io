@@ -179,3 +179,12 @@ Great question—and yes, **plenty of revolutionary ideas and systems emerged po
 ---
 
 These post-2012 innovations are all about **scale, flexibility, and developer experience**. The field didn’t slow down—it just shifted from foundational theory to engineering reality at web scale.
+
+---
+
+[2024 StackOverflow Survey - Most Popular Databases](https://survey.stackoverflow.co/2024/technology#most-popular-technologies-database)
+
+>PostgreSQL debuted in the developer survey in 2018 when 33% of developers reported using it, compared with the most popular option that year: MySQL, in use by 59% of developers. Six years later, PostgreSQL is used by 49% of developers and is the most popular database for the second year in a row.
+
+[![2024 StackOverflow Survey - Most Popular Databases](/assets/images/2024-stackoverflow-survey-popular-databases.png)]
+(https://survey.stackoverflow.co/2024/technology#most-popular-technologies-database)
