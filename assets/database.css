@@ -1,0 +1,128 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* Header */
+header {
+    background-color: #003366;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2em;
+}
+
+/* Timeline */
+.timeline {
+    position: relative;
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background-color: #007BFF;
+    transform: translateX(-50%);
+}
+
+.event {
+    position: relative;
+    width: 45%;
+    margin-bottom: 40px;
+}
+
+.event.left {
+    left: 0;
+}
+
+.event.right {
+    left: 55%;
+}
+
+.event .content {
+    background-color: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    word-wrap: break-word; /* Ensure long words break to fit */
+}
+
+.event .content h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #007BFF;
+}
+
+.event .content p {
+    font-size: 1em;
+    line-height: 1.5;
+}
+
+.event::before {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #007BFF;
+    border-radius: 50%;
+    top: 20px;
+}
+
+.event.left::before {
+    right: -25px;
+}
+
+.event.right::before {
+    left: -25px;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #f5f5f5;
+    font-size: 0.9em;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .timeline::before {
+        left: 20px; /* Move timeline bar to the left */
+        transform: none;
+    }
+
+    .event {
+        width: calc(100% - 60px); /* Adjust width to fit screen */
+        left: 40px; /* Position all events to the right of the bar */
+        margin-bottom: 20px;
+    }
+
+    .event.left, .event.right {
+        left: 40px; /* Ensure all events stack on the right */
+    }
+
+    .event::before {
+        left: -20px; /* Position the dot on the timeline bar */
+    }
+
+    header h1 {
+        font-size: 1.5em; /* Smaller header on mobile */
+    }
+}
