@@ -5,7 +5,6 @@ date:   2025-04-16 08:10:00 -0300
 categories: database sql
 ---
 
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -15,9 +14,6 @@ categories: database sql
     <link rel="stylesheet" href="/assets/database.css">
 </head>
 <body>
-    <header>
-        <h1>History of Databases and SQL</h1>
-    </header>
     <main>
         <section class="timeline">
             <div class="event left">
