@@ -11,16 +11,12 @@ body {
     color: #333;
 }
 
-/* Header */
-header {
+/* Post Header */
+.post-header {
     background-color: #003366;
     color: white;
     padding: 20px;
     text-align: center;
-}
-
-header h1 {
-    font-size: 2em;
 }
 
 /* Timeline */
