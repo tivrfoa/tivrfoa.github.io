@@ -93,5 +93,35 @@ categories: database sql
     <footer>
         <p>Created by Grok 3</p>
     </footer>
-</body>
-</html>
+
+## Prompting ChatGPT: most revolutionary databases
+
+Here’s a concise, chronological overview of some of the most revolutionary database systems and models, showing how each shifted the paradigm of data management:
+
+**The Navigational Era (1960s)**  
+- **Integrated Data Store (IDS)** – 1961: Charles Bachman’s IDS is generally considered the first “proper” database management system, introducing the idea of a navigational interface for data retrieval. citeturn2news14  
+- **IBM Information Management System (IMS)** – 1967: Built for NASA’s Apollo program, IMS was the first widely used hierarchical database, proving the value of structured, computer‑based data storage. citeturn2news14  
+
+**The Relational Era (1970s–1980s)**  
+- **Relational Model** – 1970: E.F. Codd’s seminal paper “A Relational Model of Data for Large Shared Data Banks” laid the mathematical foundation for organizing data into tables and set-based querying. citeturn1view0  
+- **IBM System R** – 1974: The first implementation of Codd’s model, introducing SQL and demonstrating that relational systems could be practical. citeturn2news14  
+- **INGRES** – 1974: Developed at UC Berkeley, INGRES used the QUEL query language and influenced many later systems (including PostgreSQL). citeturn2news14  
+- **Oracle v2** – 1979: The first commercial relational DBMS, Oracle Version 2 brought SQL to the market and kick‑started the RDBMS industry. citeturn2search0  
+
+**The Object‑Relational & Open‑Source Era (1986–present)**  
+- **PostgreSQL (Postgres)** – 1986: Evolved from INGRES, Postgres introduced true extensibility and object‑relational features (user‑defined types, functions, rules), blending the power of relational models with object concepts. citeturn4search0  
+
+**The Document & Key‑Value Era (1989–1990s)**  
+- **Lotus Notes** – 1989: One of the first document‑centric, application‑building platforms, Lotus Notes treated data as self‑contained documents and foreshadowed NoSQL approaches. citeturn2news14  
+- **Berkeley DB** – 1991: An embeddable key‑value store for local applications, Berkeley DB showed how lightweight, non‑relational storage could power everything from desktop apps to servers. citeturn2news14  
+
+**The Web‑Scale NoSQL Era (2005–2010s)**  
+- **Apache CouchDB** – 2005: A JSON/HTTP‑based document store that emphasized ease of use, master‑master replication, and eventual consistency for web‑scale apps. citeturn7search1turn7search0  
+- **Google Bigtable** – 2006: A sparse, distributed, persistent multidimensional sorted map (column‑family store) built to power Google Search and many other services at massive scale. citeturn2news14  
+- **Amazon Dynamo** – 2007: A highly available, partition‑tolerant key‑value store underpinning Amazon’s e‑commerce platform, pioneering eventual‑consistency techniques. citeturn2news14  
+- **MongoDB** – 2009: Popularized JSON‑style documents with dynamic schemas and rich secondary indexes, enabling rapid development of modern, schema‑flexible applications. citeturn3search0  
+
+**The Distributed SQL Era (2012–present)**  
+- **Google Spanner** – 2012: The first system to offer globally‑distributed, synchronously‑replicated ACID transactions across datacenters, using a novel TrueTime API for external consistency. citeturn5search0  
+
+Each of these systems not only introduced new data models or architectures but also reshaped expectations around scalability, consistency, and ease of development—setting the stage for the next wave of innovation in data management.
