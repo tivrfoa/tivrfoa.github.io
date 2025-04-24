@@ -216,7 +216,6 @@ table th {
     margin-left: 30pt;
     padding-top: 0pt;
     padding-bottom: 0pt;
-    line-height: 1.0;
     padding-left: 0pt;
     text-align: left
 }
@@ -238,7 +237,6 @@ table th {
 .c16 {
     padding-top: 24pt;
     padding-bottom: 0pt;
-    line-height: 1.149999976158142;
     text-align: left
 }
 
@@ -252,7 +250,6 @@ table th {
 .c22 {
     padding-top: 0pt;
     padding-bottom: 12.8pt;
-    line-height: 1.149999976158142;
     text-align: left
 }
 
@@ -265,14 +262,12 @@ table th {
 .c26 {
     padding-top: 0pt;
     padding-bottom: 12pt;
-    line-height: 1.149999976158142;
     text-align: left
 }
 
 .c15 {
     padding-top: 0pt;
     padding-bottom: 12.8pt;
-    line-height: 1.0;
     text-align: left
 }
 
@@ -345,7 +340,6 @@ table th {
     font-size: 36pt;
     padding-bottom: 6pt;
     font-family: "Arial";
-    line-height: 1.0;
     page-break-after: avoid;
     text-align: left
 }
@@ -356,7 +350,6 @@ table th {
     font-size: 24pt;
     padding-bottom: 4pt;
     font-family: "Georgia";
-    line-height: 1.0;
     page-break-after: avoid;
     font-style: italic;
     text-align: left
@@ -381,7 +374,6 @@ h1 {
     font-size: 24pt;
     padding-bottom: 12pt;
     font-family: "Arial";
-    line-height: 1.0;
     text-align: left
 }
 
@@ -392,7 +384,6 @@ h2 {
     font-size: 18pt;
     padding-bottom: 11.2pt;
     font-family: "Arial";
-    line-height: 1.0;
     text-align: left
 }
 
@@ -403,7 +394,6 @@ h3 {
     font-size: 14pt;
     padding-bottom: 12pt;
     font-family: "Arial";
-    line-height: 1.0;
     text-align: left
 }
 
@@ -414,7 +404,6 @@ h4 {
     font-size: 12pt;
     padding-bottom: 12.8pt;
     font-family: "Arial";
-    line-height: 1.0;
     text-align: left
 }
 
@@ -425,7 +414,6 @@ h5 {
     font-size: 9pt;
     padding-bottom: 12.8pt;
     font-family: "Arial";
-    line-height: 1.0;
     text-align: left
 }
 
@@ -436,7 +424,6 @@ h6 {
     font-size: 8pt;
     padding-bottom: 18pt;
     font-family: "Arial";
-    line-height: 1.0;
     text-align: left
 }
 </style>
