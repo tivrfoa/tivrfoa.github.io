@@ -225,7 +225,6 @@ table th {
     color: #000000;
     text-decoration: none;
     vertical-align: baseline;
-    font-size: 11pt;
     font-style: normal
 }
 
@@ -280,7 +279,6 @@ table th {
 .c0 {
     padding-top: 0pt;
     padding-bottom: 0pt;
-    line-height: 1.149999976158142;
     text-align: left
 }
 
@@ -373,7 +371,6 @@ li {
 p {
     margin: 0;
     color: #000000;
-    font-size: 11pt;
     font-family: "Arial"
 }
 
