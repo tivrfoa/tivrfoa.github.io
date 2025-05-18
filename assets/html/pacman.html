@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pacman Game</title>
+    <style>
+        body {
+            background-color: #000; /* Set entire background to black */
+            margin: 0;
+            padding: 0;
+        }
+        #container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        #score, #lives {
+            color: white;
+            font-size: 20px;
+            margin: 10px;
+            text-align: center;
+        }
+        .restart {
+            color: blue;
+            font-size: 30px;
+            margin: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <div style="text-align: center; color: red">
+        <input id="mazeWidth" value="20" size="2"> x
+        <input id="mazeHeight" value="10" size="2">
+    </div>
+    <div id="score">Score: 0</div>
+    <div id="lives">Lives: 3</div>
+    <div style="text-align: center;">
+        <input class="restart" type="button" onclick="start()" value="Restart">
+    </div>
+    <script src="../js/pacman.js"></script>
+</body>
+</html>
