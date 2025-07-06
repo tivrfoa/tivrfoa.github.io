@@ -31,8 +31,6 @@ Here is a Go program that starts several concurrent "goroutines." Each goroutine
 
 [Go Playground](https://go.dev/play/p/uoJtnduVo1V)
 
-<details><summary>Go Program with a Race Condition</summary>
-
 ```go
 package main
 
@@ -84,7 +82,6 @@ func main() {
 	fmt.Printf("Actual final counter:   %d\n", counter)
 }
 ```
-</details>
 
 When you run the Go program, the output will show an "Actual final counter" that is less than the expected 10,000. This is because multiple goroutines read the same value of counter before any of them can write their incremented value back, causing some increments to be lost. This is a classic race condition.
 
@@ -95,8 +92,6 @@ Now, let's try to write the same logic in Rust. A naive, direct translation of t
 The compiler forces you to be explicit about shared ownership (Arc) and mutual exclusion (Mutex). This makes the code slightly more verbose but guarantees at compile time that a race condition of this nature is impossible.
 
 [Rust playground](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&gist=ff466fac48c7303121d9db387398fc8b)
-
-<details><summary>Rust program with Guaranteed Memory Safety</summary>
 
 ```rs
 use std::sync::{Arc, Mutex};
@@ -159,9 +154,6 @@ fn main() {
     println!("Actual final counter:   {}", *counter.lock().unwrap());
 }
 ```
-
-</details>
-
 
 I've just provided the two code examples.
 
