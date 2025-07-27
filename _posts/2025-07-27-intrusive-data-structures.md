@@ -408,7 +408,231 @@ int main() {
 
 ## Rust
 
-TODO
+```rs
+#![allow(unused_variables)] // Allow unused variables for demonstration purposes
+#![allow(dead_code)] // Allow dead code for demonstration purposes
+
+use std::{mem, ptr}; // Import mem for offset_of, ptr for raw pointer operations
+
+// Helper to get the containing struct from the IntrusiveNode.
+// This is the Rust equivalent of the C `container_of` macro.
+// It relies on `offset_of!` from `core::mem`.
+// IMPORTANT: This macro MUST be defined BEFORE any code that uses it.
+macro_rules! container_of {
+    ($ptr:expr, $Type:ty, $member:ident) => {{
+        // Ensure the pointer is mutable. `*mut u8` is the generic byte pointer.
+        let member_ptr = $ptr as *mut u8;
+        // Calculate the offset of the member within the struct.
+        // This requires the actual type name ($Type) and member name ($member).
+        let offset = mem::offset_of!($Type, $member);
+        // Subtract the offset from the member's address to get the struct's base address.
+        (member_ptr.sub(offset)) as *mut $Type
+    }};
+}
+
+// Define a generic intrusive node structure.
+// Any structure that wants to be part of an intrusive list will embed this.
+// #[repr(C)] ensures C-compatible memory layout.
+#[repr(C)]
+pub struct IntrusiveNode {
+    pub next: *mut IntrusiveNode, // Raw pointer to the next node
+}
+
+impl IntrusiveNode {
+    // A constructor for a new (unlinked) node.
+    pub const fn new() -> Self {
+        IntrusiveNode {
+            next: ptr::null_mut(), // Initialize next as a null pointer
+        }
+    }
+}
+
+// The IntrusiveLinkedList now just holds a raw pointer to the head.
+pub struct IntrusiveLinkedList {
+    head: *mut IntrusiveNode, // Raw pointer to the head of the intrusive nodes
+}
+
+impl IntrusiveLinkedList {
+    pub fn new() -> Self {
+        IntrusiveLinkedList {
+            head: ptr::null_mut(),
+        }
+    }
+
+    // Function to insert a node at the end of the intrusive list.
+    // 'node_to_insert' is a raw pointer to the embedded IntrusiveNode.
+    // This function is `unsafe` because it deals with raw pointers and
+    // doesn't guarantee memory safety on its own.
+    pub unsafe fn intrusive_insert_end(&mut self, node_to_insert: *mut IntrusiveNode) {
+        // Ensure the new node points to NULL initially
+        unsafe {
+            (*node_to_insert).next = ptr::null_mut();
+        }
+
+        if self.head.is_null() {
+            self.head = node_to_insert;
+            return;
+        }
+
+        let mut temp = self.head;
+        unsafe {
+            while !(*temp).next.is_null() {
+                temp = (*temp).next;
+            }
+            (*temp).next = node_to_insert;
+        }
+    }
+
+    // Function to print the intrusive list.
+    // Requires a print function that can cast the IntrusiveNode* back to the original struct.
+    pub unsafe fn print_intrusive_list(&self, print_func: unsafe fn(*mut IntrusiveNode)) {
+        let mut temp = self.head;
+        while !temp.is_null() {
+            unsafe {
+                print_func(temp);
+            }
+            print!(", ");
+            unsafe {
+                temp = (*temp).next;
+            }
+        }
+        println!();
+    }
+
+    // This function will iterate through the list and free the containing structures.
+    // This is the user's responsibility in an intrusive list.
+    // This is highly unsafe and requires knowledge of the actual type.
+    pub unsafe fn free_list_person(&mut self) {
+        println!("free_list_person");
+        // let mut current = self.head;
+        // while !current.is_null() {
+        //     let next_node = (*current).next; // Save the next pointer before freeing current
+        //
+        //     // Cast the IntrusiveNode back to the containing Person struct using the macro
+        //     println!("casting");
+        //     let p_ptr = container_of!(current, Person, node);
+        //
+        //     // Reconstruct Box from raw pointer and let it drop, which frees 'name' and 'Person'
+        //     println!("reconstructing box");
+        //     let _ = Box::from_raw(p_ptr);
+
+        //     current = next_node;
+        // }
+        println!("clearing list");
+        self.head = ptr::null_mut(); // Clear the list head after freeing all elements
+    }
+}
+
+// Example data structure: Person, now containing the intrusive node.
+// #[repr(C)] is essential for predictable memory layout.
+#[repr(C)]
+pub struct Person {
+    pub node: IntrusiveNode, // Embedded intrusive node
+    pub name: String,
+    pub age: i32,
+}
+
+impl Drop for Person {
+    fn drop(&mut self) {
+        // `String` handles its own memory, so no explicit free for `name` here.
+        // This `Drop` impl will be called when a `Person` value goes out of scope
+        // or is explicitly dropped (e.g., via `Box::from_raw`).
+        println!("Dropping Person: {}", self.name); // For debugging drops
+    }
+}
+
+// Print function for Person. Takes a raw pointer to IntrusiveNode.
+unsafe fn print_person(node_ptr: *mut IntrusiveNode) {
+    unsafe {
+        let person_ptr = container_of!(node_ptr, Person, node);
+        let person_ref = &*person_ptr; // Dereference the raw pointer to get a reference
+        print!("{} is {} years old", person_ref.name, person_ref.age);
+    }
+}
+
+// Example data structure: IntegerWrapper, for demonstrating integers
+#[repr(C)]
+pub struct IntegerWrapper {
+    pub node: IntrusiveNode,
+    pub value: i32,
+}
+
+// Print function for IntegerWrapper. Takes a raw pointer to IntrusiveNode.
+unsafe fn print_int(node_ptr: *mut IntrusiveNode) {
+    unsafe {
+        let int_wrapper_ptr = container_of!(node_ptr, IntegerWrapper, node);
+        let int_wrapper_ref = &*int_wrapper_ptr;
+        print!("{}", int_wrapper_ref.value);
+    }
+}
+
+fn test_int_list() {
+    let mut list = IntrusiveLinkedList::new();
+
+    let mut val1 = IntegerWrapper {
+        node: IntrusiveNode::new(),
+        value: 10,
+    };
+    let mut val2 = IntegerWrapper {
+        node: IntrusiveNode::new(),
+        value: 20,
+    };
+    let mut val3 = IntegerWrapper {
+        node: IntrusiveNode::new(),
+        value: 30,
+    };
+    let mut val4 = IntegerWrapper {
+        node: IntrusiveNode::new(),
+        value: 40,
+    };
+
+    unsafe {
+        list.intrusive_insert_end(&mut val1.node);
+        list.intrusive_insert_end(&mut val2.node);
+        list.intrusive_insert_end(&mut val3.node);
+        list.intrusive_insert_end(&mut val4.node);
+
+        list.print_intrusive_list(print_int);
+    }
+
+    list.head = ptr::null_mut();
+}
+
+fn test_person_list() {
+    let mut list = IntrusiveLinkedList::new();
+
+    let mut p1 = Box::new(Person {
+        node: IntrusiveNode::new(),
+        name: String::from("Marco"),
+        age: 22,
+    });
+    let mut p2 = Box::new(Person {
+        node: IntrusiveNode::new(),
+        name: String::from("Mary"),
+        age: 20,
+    });
+
+    unsafe {
+        let p1_node_ptr = &mut p1.node as *mut IntrusiveNode;
+        let p2_node_ptr = &mut p2.node as *mut IntrusiveNode;
+
+        list.intrusive_insert_end(p1_node_ptr);
+        list.intrusive_insert_end(p2_node_ptr);
+
+        list.print_intrusive_list(print_person);
+
+        list.free_list_person();
+        println!("bye usnafe");
+    }
+    println!("bye test_person_list");
+}
+
+fn main() {
+    test_int_list();
+    println!();
+    test_person_list();
+}
+```
 
 ## Zig
 
