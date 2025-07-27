@@ -21,6 +21,7 @@ Let's learn about it.
 
 - [What is an Intrusive Data Structure?](#why-use-intrusive-data-structure)
 - [Why use them?](#why-use-them)
+- [Who is responsible for freeing the object?](#who-is-responsible-for-freeing-the-object)
 - [Examples](#examples)
   - [C](#c)
   - [C Generic List](#c-generic-list)
@@ -321,6 +322,23 @@ int main() {
 ```
 
 ## C Generic List
+
+It shows how different structures can use the same intrusive link definition.
+
+Here we have `Person` and `IntegerWrapper`:
+
+```c
+typedef struct Person {
+    IntrusiveNode node;
+    char *name;
+    int age;
+} Person;
+
+typedef struct IntegerWrapper {
+    IntrusiveNode node;
+    int value;
+} IntegerWrapper;
+```
 
 By Gemini:
 
@@ -704,6 +722,236 @@ int main() {
 }
 ```
 
+## C Task Scheduler
+
+**Prompt**: Create a C code example for the task scheduler use case:
+
+State Management (e.g., Task Schedulers): An object might represent a task. It could live in a main tree of all known tasks. When a task is ready to run, it's added to an intrusive run_queue list. When it's waiting for I/O, it's moved to a wait_queue list. The object itself is never created or destroyed; it's just linked into different lists that represent its current state. This is a core pattern in OS kernel development. 
+
+**Gemini**:
+
+Here is a C code example that implements a simple task scheduler using intrusive data structures.
+
+A single `Task` object can exist in the main `all_tasks_tree` for its entire lifetime while being moved between the `run_queue` and `wait_queue` lists without any additional memory allocations. The lists and the tree simply manage pointers embedded within the `Task` object itself.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
+#include <string.h>
+
+// Macro to get the containing structure from a pointer to its member
+#define container_of(ptr, type, member) \
+    ((type *)((char *)(ptr) - offsetof(type, member)))
+
+//====================================================================
+// Intrusive Data Structure "Hooks"
+//====================================================================
+
+// A link for a doubly-linked list, useful for efficient queue removal
+typedef struct IntrusiveLink {
+    struct IntrusiveLink *next;
+    struct IntrusiveLink *prev;
+} IntrusiveLink;
+
+// A node for a binary search tree
+typedef struct IntrusiveTreeNode {
+    struct IntrusiveTreeNode *left;
+    struct IntrusiveTreeNode *right;
+} IntrusiveTreeNode;
+
+//====================================================================
+// The Task Object
+//====================================================================
+
+typedef enum {
+    TASK_STATE_NEW,
+    TASK_STATE_READY,
+    TASK_STATE_WAITING,
+    TASK_STATE_DONE
+} TaskState;
+
+// The core object containing data and intrusive hooks
+typedef struct Task {
+    int task_id;
+    const char* name;
+    TaskState state;
+
+    IntrusiveLink queue_link;     // Hook for run/wait queues
+    IntrusiveTreeNode tree_node;  // Hook for the master task tree
+} Task;
+
+//====================================================================
+// "Scheduler" Global State
+//====================================================================
+
+// Master tree of all tasks that have ever been created, indexed by ID
+IntrusiveTreeNode* all_tasks_tree = NULL;
+
+// Queues representing the current state of tasks
+IntrusiveLink run_queue  = { &run_queue, &run_queue }; // Sentinels for an empty list
+IntrusiveLink wait_queue = { &wait_queue, &wait_queue };
+
+//====================================================================
+// Intrusive Queue (List) Management
+//====================================================================
+
+// Removes a link from whichever queue it is currently in
+void queue_unlink(IntrusiveLink* link) {
+    link->prev->next = link->next;
+    link->next->prev = link->prev;
+    link->next = link->prev = NULL; // Isolate the link
+}
+
+// Adds a link to the back of a queue
+void queue_push_back(IntrusiveLink* head, IntrusiveLink* new_link) {
+    new_link->prev = head->prev;
+    new_link->next = head;
+    head->prev->next = new_link;
+    head->prev = new_link;
+}
+
+// Removes and returns the link at the front of a queue
+IntrusiveLink* queue_pop_front(IntrusiveLink* head) {
+    if (head->next == head) return NULL; // Queue is empty
+    IntrusiveLink* link = head->next;
+    queue_unlink(link);
+    return link;
+}
+
+//====================================================================
+// Core Task Management & Scheduler Logic
+//====================================================================
+
+// Factory to create a new task
+Task* create_task(int id, const char* name) {
+    Task* task = (Task*)malloc(sizeof(Task));
+    task->task_id = id;
+    task->name = name;
+    task->state = TASK_STATE_NEW;
+    task->queue_link.next = task->queue_link.prev = NULL;
+    task->tree_node.left = task->tree_node.right = NULL;
+
+    // Add to the master tree (simple BST insertion)
+    IntrusiveTreeNode** current = &all_tasks_tree;
+    while (*current) {
+        Task* existing_task = container_of(*current, Task, tree_node);
+        if (task->task_id < existing_task->task_id) {
+            current = &(*current)->left;
+        } else {
+            current = &(*current)->right;
+        }
+    }
+    *current = &task->tree_node;
+    printf("CREATED:  Task %d ('%s')\n", id, name);
+    return task;
+}
+
+// Moves a task to the ready queue to be run
+void schedule_task(Task* task) {
+    if (task->queue_link.next) queue_unlink(&task->queue_link); // Unlink from old queue if any
+    task->state = TASK_STATE_READY;
+    queue_push_back(&run_queue, &task->queue_link);
+    printf("SCHEDULED: Task %d ('%s') moved to RUN queue.\n", task->task_id, task->name);
+}
+
+// Simulates running a task. Returns 1 if task is done, 0 otherwise.
+int execute_task(Task* task) {
+    printf("EXECUTING: Task %d ('%s')...\n", task->task_id, task->name);
+    
+    // Simple logic: tasks with ID > 100 need I/O, others finish
+    if (task->task_id > 100) {
+        task->state = TASK_STATE_WAITING;
+        queue_push_back(&wait_queue, &task->queue_link);
+        printf("WAITING:  Task %d ('%s') moved to WAIT queue for I/O.\n", task->task_id, task->name);
+        return 0;
+    } else {
+        task->state = TASK_STATE_DONE;
+        printf("DONE:     Task %d ('%s') has finished.\n", task->task_id, task->name);
+        return 1;
+    }
+}
+
+// Prints the current state of the scheduler queues
+void print_scheduler_state() {
+    printf("\n--- Scheduler State ---\n");
+    printf("Run Queue:  ");
+    for (IntrusiveLink* l = run_queue.next; l != &run_queue; l = l->next) {
+        printf("%d -> ", container_of(l, Task, queue_link)->task_id);
+    }
+    printf("END\nWait Queue: ");
+    for (IntrusiveLink* l = wait_queue.next; l != &wait_queue; l = l->next) {
+        printf("%d -> ", container_of(l, Task, queue_link)->task_id);
+    }
+    printf("END\n-----------------------\n\n");
+}
+
+// Free all tasks using a post-order traversal of the master tree
+void free_all_tasks(IntrusiveTreeNode* node) {
+    if (!node) return;
+    free_all_tasks(node->left);
+    free_all_tasks(node->right);
+    free(container_of(node, Task, tree_node));
+}
+
+//====================================================================
+// Main Demo
+//====================================================================
+
+int main() {
+    // 1. Create all tasks. They start in the NEW state.
+    Task* task1 = create_task(10, "Calculate report");
+    Task* task2 = create_task(205, "Fetch network data");
+    Task* task3 = create_task(30, "Update UI");
+    Task* task4 = create_task(155, "Write to disk");
+
+    // 2. Schedule initial tasks. They move to the READY state and enter the run queue.
+    schedule_task(task1);
+    schedule_task(task2);
+    schedule_task(task3);
+    
+    print_scheduler_state();
+
+    // 3. Run a scheduler cycle: execute one task from the run queue.
+    IntrusiveLink* link = queue_pop_front(&run_queue);
+    execute_task(container_of(link, Task, queue_link)); // Task 10 will finish.
+
+    print_scheduler_state();
+
+    // 4. Run another cycle. This task will need I/O and move to the wait queue.
+    link = queue_pop_front(&run_queue);
+    execute_task(container_of(link, Task, queue_link)); // Task 205 will wait.
+    
+    print_scheduler_state();
+
+    // 5. Schedule the last task.
+    schedule_task(task4);
+
+    print_scheduler_state();
+
+    // 6. Simulate I/O completion for task 205. It's found in the wait queue
+    //    and moved back to the run queue.
+    printf("...I/O for task 205 has completed...\n");
+    schedule_task(task2); // Re-scheduling moves it from wait_queue to run_queue.
+    
+    print_scheduler_state();
+    
+    // 7. Run all remaining tasks until the run queue is empty.
+    printf("...Running all remaining tasks...\n");
+    while ((link = queue_pop_front(&run_queue))) {
+        execute_task(container_of(link, Task, queue_link));
+    }
+
+    print_scheduler_state();
+
+    // 8. Clean up all memory by freeing the master tree.
+    printf("All tasks processed. Freeing memory.\n");
+    free_all_tasks(all_tasks_tree);
+
+    return 0;
+}
+```
+
 ## Rust
 
 ```rs
@@ -948,6 +1196,13 @@ pub const SinglyLinkedList = struct {
 };
 ```
 
+https://github.com/mitchellh/libxev/blob/main/src/ThreadPool.zig#L377
+
+```zig
+const task: *Task = @fieldParentPtr("node", result.node);
+(task.callback)(task);
+```
+
 # Comparing `container_of` implementations
 
 **Prompt**: What is the difference between these two macros?
@@ -1068,11 +1323,15 @@ impl_list_item!
 
 [Gemini: Intrusive Data Structures Analysis](https://g.co/gemini/share/2ed8ecea357e)
 
-[Zig's @fieldParentPtr for dumbos like me](https://www.ryanliptak.com/blog/zig-fieldparentptr-for-dumbos/)
-
 [Adopt intrusive data structures for better performance](https://github.com/doitsujin/dxvk/issues/3796)
 
+## Zig
+
+[Zig's @fieldParentPtr for dumbos like me](https://www.ryanliptak.com/blog/zig-fieldparentptr-for-dumbos/)
+
 [Hacker News - Zig's new LinkedList API (it's time to learn fieldParentPtr)](https://news.ycombinator.com/item?id=43679707)
+
+[Resource efficient Thread Pools with Zig](https://zig.news/kprotty/resource-efficient-thread-pools-with-zig-3291)
 
 ## Rust
 
