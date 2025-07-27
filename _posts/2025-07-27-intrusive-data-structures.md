@@ -1236,7 +1236,7 @@ int main() {
 
 ## C Multi-threaded Producer-Consumer Queue
 
-**Prompt**:
+**Prompt**: Create an example in C of a good use case for intrusive data structures where it involves two threads. Should we worry about thread safety? 
 
 **Gemini**:
 
