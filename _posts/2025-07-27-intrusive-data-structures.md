@@ -13,11 +13,18 @@ h2 {
 }
 </style>
 
+I didn't know about *intrusive data structures*, then I saw it mentioned in this X thread:
+
+[CedarDB on why they picked C++ over Rust](https://x.com/iavins/status/1946598328533430702)
+
+Let's learn about it.
+
 - [What is an Intrusive Data Structure?](#why-use-intrusive-data-structure)
 - [Why use them?](#why-use-them)
 - [Examples](#examples)
   - [C](#c)
   - [C Generic List](#c-generic-list)
+  - [C Intrusive List and Tree](#c-intrusive-list-and-tree)
   - [Rust](#rust)
   - [Zig](#zig)
 - [Comparing `container_of` implementations](#comparing-container_of-implementations)
@@ -103,6 +110,78 @@ A fundamental characteristic of this approach is that intrusive containers do no
 
 More here:
 [https://g.co/gemini/share/2ed8ecea357e](https://g.co/gemini/share/2ed8ecea357e)
+
+## Protty @kingprotty Jul 21, 2025
+
+>intrusive-collection requires the nodes to outlive the linked-list (static hierarchical lifetimes) or use box/arena (heap allocation).
+>
+>By intrusive, I mean not assuming where memory must live
+>
+>[https://x.com/kingprotty/status/1947288844094603443](https://x.com/kingprotty/status/1947288844094603443)
+
+>[https://github.com/mitchellh/libxev/blob/main/src/ThreadPool.zig](https://github.com/mitchellh/libxev/blob/main/src/ThreadPool.zig)
+>Pool.schedule() takes Task ptr that can live anywhere until its callback is invoked. Store it on stack for fork/join structured concurrency pattern. Store in heap & free itself in callback for spawn(detached)/join pattern. Store in array for pool pattern.
+>
+>[https://x.com/kingprotty/status/1947363773217419707](https://x.com/kingprotty/status/1947363773217419707)
+
+## Who is responsible for freeing the object?
+
+**Prompt**: In an intrusive data structure, who should be responsible for freeing the actual object?
+
+what if I just want to free the list, but still want to use the tree? Are there use cases for that?
+
+**Gemini**:
+
+Excellent questions. They get to the very heart of why and how intrusive data structures are used.
+
+### Who is Responsible for Freeing the Object?
+
+The short answer is: **the code that allocated the object is responsible for freeing it.**
+
+Intrusive containers (like the list or tree) **do not own** the objects they contain. They are simply mechanisms for organizing pointers that live *inside* the objects. Think of the containers as different "views" or "indexes" into a set of data that you manage separately.
+
+This is a fundamental shift from non-intrusive (e.g., `std::list` in C++) or standard library containers, where the container allocates its own nodes and is therefore responsible for freeing them.
+
+Here are the common ownership patterns:
+
+1.  **A "Master" Container:** One of your intrusive structures is designated as the "owner." In the example code, we decided the linked list was the master. We used the list to iterate through and `free` every single object. This is a simple and common approach when the objects' lifetime is tied to one primary organization.
+2.  **External Logic:** The application's main logic owns the objects, perhaps in a simple array or by some other means. The intrusive list and tree are just secondary ways to access them. When the application decides an object is no longer needed, it's responsible for removing it from all intrusive containers it's a part of and *then* freeing it.
+3.  **Reference Counting:** For maximum flexibility, you could add a reference count to `MyIntData`. When you add an object to a container, you increment the count. When you remove it, you decrement the count. The object is only freed when its count reaches zero. This is the most robust method but adds complexity.
+
+-----
+
+### Can You Free the List but Keep the Tree?
+
+**Yes, absolutely.** This is one of the most powerful use cases for intrusive data structures.
+
+However, you need to be precise about what "free the list" means. It does **not** mean iterating through the list and calling `free()` on each object, because that would deallocate the objects that the tree also points to, leaving you with a tree full of dangling pointers.
+
+Instead, "freeing the list" means **dismantling the list structure**, leaving the objects intact. You would simply traverse the list and reset the `next` pointers, then set the list's `head` pointer to `NULL`. The `MyIntData` objects themselves would remain allocated and valid, and the tree structure would be completely unaffected.
+
+A function to do this would look like this:
+
+```c
+// Dismantles the list structure WITHOUT freeing the underlying objects.
+void intrusive_dismantle_list(IntrusiveLink** headRef) {
+    IntrusiveLink* current_link = *headRef;
+    while (current_link != NULL) {
+        IntrusiveLink* next_link = current_link->next;
+        current_link->next = NULL; // Unlink the node
+        current_link = next_link;
+    }
+    *headRef = NULL; // The list is now empty
+}
+```
+
+#### Use Cases for This Behavior
+
+This decoupling of the container's lifetime from the data's lifetime is extremely useful.
+
+  * **Temporary Re-ordering:** Imagine your tree is the primary, canonical storage for your objects, sorted by value. For a specific task, you need to process these objects in the reverse order of their creation. You can temporarily build an intrusive list for this task, process it, and then simply **dismantle the list** when you're done, leaving your tree untouched.
+
+  * **Filtering and Subsets:** You have thousands of objects in your tree. You want to run an operation on a small subset that meets a certain criterion (e.g., `value > 100`). You can iterate through your tree and add only the matching objects to a temporary intrusive list. You then operate on that much smaller list, which is very efficient. Once finished, you dismantle the list.
+
+  * **State Management (e.g., Task Schedulers):** An object might represent a task. It could live in a main tree of all known tasks. When a task is ready to run, it's added to an intrusive `run_queue` list. When it's waiting for I/O, it's moved to a `wait_queue` list. The object itself is never created or destroyed; it's just linked into different lists that represent its current state. This is a core pattern in OS kernel development.
 
 # Why use them?
 
@@ -406,6 +485,225 @@ int main() {
 }
 ```
 
+## C Intrusive List and Tree
+
+```c
+#include <stdio.h>
+#include <stdlib.h> // For malloc, free
+#include <stddef.h> // For offsetof
+
+// A macro to get the containing structure from a pointer to its member
+// This is crucial for intrusive data structures.
+// ptr: pointer to the member (e.g., &myIntDataInstance->node)
+// type: the type of the containing struct (e.g., MyIntData)
+// member: the name of the member (e.g., node)
+#define container_of(ptr, type, member) ({ \
+    const typeof( ((type *)0)->member ) *__mptr = (ptr); \
+    (type *)( (char *)__mptr - offsetof(type,member) );})
+
+//====================================================================
+// Intrusive Linked List Structures and Functions
+//====================================================================
+
+// Define the "list hook" that will be embedded in our data structures
+typedef struct IntrusiveLink {
+    struct IntrusiveLink *next;
+} IntrusiveLink;
+
+
+//====================================================================
+// Intrusive Binary Tree Structures and Functions
+//====================================================================
+
+// Define the "tree hook" for an intrusive binary tree
+typedef struct IntrusiveTreeNode {
+    struct IntrusiveTreeNode *left;
+    struct IntrusiveTreeNode *right;
+} IntrusiveTreeNode;
+
+
+//====================================================================
+// Our Main Data Structure with Multiple Intrusive Hooks
+//====================================================================
+
+// Our data structure now contains hooks for both a list and a tree.
+typedef struct MyIntData {
+    int value;
+    IntrusiveLink node;          // The embedded list hook
+    IntrusiveTreeNode tree_node; // The embedded binary tree hook
+} MyIntData;
+
+// Factory function to create and initialize a new data object
+MyIntData* newIntData(int value) {
+    MyIntData* data = (MyIntData*)malloc(sizeof(MyIntData));
+    if (!data) {
+        perror("Failed to allocate memory for MyIntData");
+        exit(EXIT_FAILURE);
+    }
+    data->value = value;
+    // Initialize both intrusive hooks
+    data->node.next = NULL;
+    data->tree_node.left = NULL;
+    data->tree_node.right = NULL;
+    return data;
+}
+
+//====================================================================
+// Functions for Managing the Intrusive List
+//====================================================================
+
+// Function to insert a new data structure at the beginning of the intrusive list
+void intrusive_insert_at_beginning(IntrusiveLink** headRef, MyIntData* new_data_ptr) {
+    new_data_ptr->node.next = *headRef;
+    *headRef = &(new_data_ptr->node);
+}
+
+// Function to print the intrusive linked list
+void intrusive_print_list(IntrusiveLink* head) {
+    IntrusiveLink* current_link = head;
+    printf("Intrusive Linked List (insertion order): ");
+    while (current_link != NULL) {
+        MyIntData* data_item = container_of(current_link, MyIntData, node);
+        printf("%d -> ", data_item->value);
+        current_link = current_link->next;
+    }
+    printf("NULL\n");
+}
+
+// Function to free the memory allocated for the intrusive linked list
+void intrusive_free_list(IntrusiveLink** headRef) {
+    IntrusiveLink* current_link = *headRef;
+    IntrusiveLink* next_link;
+    while (current_link != NULL) {
+        next_link = current_link->next;
+        MyIntData* data_item = container_of(current_link, MyIntData, node);
+        free(data_item); // Free the entire MyIntData object
+        current_link = next_link;
+    }
+    *headRef = NULL;
+    printf("Intrusive List freed. All underlying MyIntData objects have been deallocated.\n");
+}
+
+// Dismantles the list structure WITHOUT freeing the underlying objects.
+void intrusive_dismantle_list(IntrusiveLink** headRef) {
+    IntrusiveLink* current_link = *headRef;
+    while (current_link != NULL) {
+        IntrusiveLink* next_link = current_link->next;
+        current_link->next = NULL; // Unlink the node
+        current_link = next_link;
+    }
+    *headRef = NULL;
+}
+
+
+//====================================================================
+// Functions for Managing the Intrusive Binary Tree
+//====================================================================
+
+// Function to insert a new data structure into the intrusive binary search tree
+void intrusive_tree_insert(IntrusiveTreeNode** rootRef, MyIntData* new_data_ptr) {
+    if (*rootRef == NULL) {
+        *rootRef = &(new_data_ptr->tree_node);
+        return;
+    }
+    
+    IntrusiveTreeNode* current = *rootRef;
+    while (1) {
+        MyIntData* current_data = container_of(current, MyIntData, tree_node);
+        if (new_data_ptr->value < current_data->value) {
+            if (current->left == NULL) {
+                current->left = &(new_data_ptr->tree_node);
+                break;
+            }
+            current = current->left;
+        } else {
+            if (current->right == NULL) {
+                current->right = &(new_data_ptr->tree_node);
+                break;
+            }
+            current = current->right;
+        }
+    }
+}
+
+// Recursive function to print the tree using in-order traversal
+void intrusive_print_tree_in_order_recursive(IntrusiveTreeNode* root) {
+    if (root == NULL) {
+        return;
+    }
+    intrusive_print_tree_in_order_recursive(root->left);
+    MyIntData* data_item = container_of(root, MyIntData, tree_node);
+    printf("%d ", data_item->value);
+    intrusive_print_tree_in_order_recursive(root->right);
+}
+
+// Wrapper function to print the entire tree
+void intrusive_print_tree(IntrusiveTreeNode* root) {
+    printf("Intrusive Binary Tree (sorted order):  ");
+    intrusive_print_tree_in_order_recursive(root);
+    printf("\n");
+}
+
+
+//====================================================================
+// Main Demo
+//====================================================================
+
+int main() {
+    // Heads for our two intrusive data structures
+    IntrusiveLink* list_head = NULL;
+    IntrusiveTreeNode* tree_root = NULL;
+
+    printf("Creating and inserting data into both list and tree...\n");
+
+    // Create several data objects
+    MyIntData* data1 = newIntData(30);
+    MyIntData* data2 = newIntData(10);
+    MyIntData* data3 = newIntData(40);
+    MyIntData* data4 = newIntData(20);
+    MyIntData* data5 = newIntData(50);
+
+    // Insert each object into BOTH data structures
+    intrusive_insert_at_beginning(&list_head, data1);
+    intrusive_tree_insert(&tree_root, data1);
+
+    intrusive_insert_at_beginning(&list_head, data2);
+    intrusive_tree_insert(&tree_root, data2);
+
+    intrusive_insert_at_beginning(&list_head, data3);
+    intrusive_tree_insert(&tree_root, data3);
+
+    intrusive_insert_at_beginning(&list_head, data4);
+    intrusive_tree_insert(&tree_root, data4);
+
+    intrusive_insert_at_beginning(&list_head, data5);
+    intrusive_tree_insert(&tree_root, data5);
+
+    printf("\n--- Data Structures Populated ---\n");
+    // Print both structures to show the same data is organized differently
+    intrusive_print_list(list_head);
+    intrusive_print_tree(tree_root);
+    printf("----------------------------------\n\n");
+
+    // Free the memory. We only need to do this once.
+    // We iterate through the list to free each MyIntData object.
+    // After this, the pointers in the tree (tree_root) are dangling.
+    intrusive_free_list(&list_head);
+
+    // The tree's pointers are now invalid. We must set its root to NULL
+    // to avoid using dangling pointers.
+    tree_root = NULL;
+    printf("Tree root set to NULL as its memory has been freed via the list.\n\n");
+    
+    printf("--- Data Structures After Freeing ---\n");
+    intrusive_print_list(list_head);
+    intrusive_print_tree(tree_root);
+    printf("-----------------------------------\n");
+
+    return 0;
+}
+```
+
 ## Rust
 
 ```rs
@@ -663,7 +961,7 @@ const typeof( ((type *)0)->member ) *__mptr = (ptr); \
 (type *)( (char *)__mptr - offsetof(type,member) );}) 
 ```
 
-Gemini:
+**Gemini**:
 
 You've identified two common forms of the `container_of` macro, and the second one is the more robust and widely used version, especially in the Linux kernel. Let's break down the differences:
 
