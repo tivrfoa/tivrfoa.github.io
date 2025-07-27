@@ -57,9 +57,12 @@ typedef struct MyIntData {
 
 How it works?
 
-But the real *magic* is in this macro:
+The real *magic* is in this macro:
 
 ```c
+// ptr: pointer to the member (e.g., &myIntDataInstance->node)
+// type: the type of the containing struct (e.g., MyIntData)
+// member: the name of the member (e.g., node)
 #define container_of(ptr, type, member) ({ \
     const typeof( ((type *)0)->member ) *__mptr = (ptr); \
     (type *)( (char *)__mptr - offsetof(type,member) );})
@@ -422,6 +425,17 @@ pub const SinglyLinkedList = struct {
 ```
 
 # Comparing `container_of` implementations
+
+**Prompt**: What is the difference between these two macros?
+
+```c
+#define container_of(ptr, type, member) \
+((type *)((char *)(ptr) - offsetof(type, member)))
+
+#define container_of(ptr, type, member) ({ \
+const typeof( ((type *)0)->member ) *__mptr = (ptr); \
+(type *)( (char *)__mptr - offsetof(type,member) );}) 
+```
 
 Gemini:
 
