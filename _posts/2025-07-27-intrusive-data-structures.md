@@ -4,6 +4,14 @@ title:  "Intrusive Data Structures"
 date:   2025-07-27 08:10:00 -0300
 categories: rust data-structure
 ---
+<style>
+h1 {
+  font-size: 2.5em;
+}
+h2 {
+  font-size: 2em;
+}
+</style>
 
 - [What is an Intrusive Data Structure?](#why-use-intrusive-data-structure)
 - [Why use them?](#why-use-them)
@@ -189,7 +197,7 @@ void intrusive_free_list(IntrusiveLink** headRef) {
         free(data_item); // Free the entire MyIntData object
         current_link = next_link;
     }
-    *headRef = NULL; // Set head to NULL after freeing all nodes
+    *headRef = NULL;
     printf("Intrusive List freed.\n");
 }
 
@@ -388,7 +396,7 @@ void testPersonList() {
 
 int main() {
     testIntList();
-    printf("\n"); // Add a newline for better output separation
+    printf("\n");
     testPersonList();
 
     return 0;
