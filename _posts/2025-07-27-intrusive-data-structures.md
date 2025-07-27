@@ -112,19 +112,6 @@ A fundamental characteristic of this approach is that intrusive containers do no
 More here:
 [https://g.co/gemini/share/2ed8ecea357e](https://g.co/gemini/share/2ed8ecea357e)
 
-## Protty @kingprotty Jul 21, 2025
-
->intrusive-collection requires the nodes to outlive the linked-list (static hierarchical lifetimes) or use box/arena (heap allocation).
->
->By intrusive, I mean not assuming where memory must live
->
->[https://x.com/kingprotty/status/1947288844094603443](https://x.com/kingprotty/status/1947288844094603443)
-
->[https://github.com/mitchellh/libxev/blob/main/src/ThreadPool.zig](https://github.com/mitchellh/libxev/blob/main/src/ThreadPool.zig)
->Pool.schedule() takes Task ptr that can live anywhere until its callback is invoked. Store it on stack for fork/join structured concurrency pattern. Store in heap & free itself in callback for spawn(detached)/join pattern. Store in array for pool pattern.
->
->[https://x.com/kingprotty/status/1947363773217419707](https://x.com/kingprotty/status/1947363773217419707)
-
 ## Who is responsible for freeing the object?
 
 **Prompt**: In an intrusive data structure, who should be responsible for freeing the actual object?
@@ -1196,7 +1183,22 @@ pub const SinglyLinkedList = struct {
 };
 ```
 
-https://github.com/mitchellh/libxev/blob/main/src/ThreadPool.zig#L377
+---
+
+### Protty @kingprotty Jul 21, 2025
+
+>intrusive-collection requires the nodes to outlive the linked-list (static hierarchical lifetimes) or use box/arena (heap allocation).
+>
+>By intrusive, I mean not assuming where memory must live
+>
+>[https://x.com/kingprotty/status/1947288844094603443](https://x.com/kingprotty/status/1947288844094603443)
+
+>[https://github.com/mitchellh/libxev/blob/main/src/ThreadPool.zig](https://github.com/mitchellh/libxev/blob/main/src/ThreadPool.zig)
+>Pool.schedule() takes Task ptr that can live anywhere until its callback is invoked. Store it on stack for fork/join structured concurrency pattern. Store in heap & free itself in callback for spawn(detached)/join pattern. Store in array for pool pattern.
+>
+>[https://x.com/kingprotty/status/1947363773217419707](https://x.com/kingprotty/status/1947363773217419707)
+
+[https://github.com/mitchellh/libxev/blob/main/src/ThreadPool.zig#L377](https://github.com/mitchellh/libxev/blob/main/src/ThreadPool.zig#L377)
 
 ```zig
 const task: *Task = @fieldParentPtr("node", result.node);
@@ -1316,6 +1318,8 @@ impl_list_item!
 
 
 # References
+
+[In-Depth: Intrusive Lists](https://www.gamedeveloper.com/programming/in-depth-intrusive-lists)
 
 [https://github.com/0xAX/linux-insides/blob/master/DataStructures/linux-datastructures-1.md](https://github.com/0xAX/linux-insides/blob/master/DataStructures/linux-datastructures-1.md)
 
