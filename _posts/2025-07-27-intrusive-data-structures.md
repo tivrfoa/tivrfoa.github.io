@@ -28,6 +28,7 @@ Let's learn about it.
   - [C Intrusive List and Tree](#c-intrusive-list-and-tree)
   - [C Task Scheduler](#c-task-scheduler)
   - [C LRU Cache](#c-lru-cache)
+  - [C Multi-threaded Producer-Consumer Queue](#c-multi-threaded-producer-consumer-queue)
   - [Rust](#rust)
   - [Zig](#zig)
 - [Comparing `container_of` implementations](#comparing-container_of-implementations)
@@ -1228,6 +1229,219 @@ int main() {
 
     lru_destroy(cache);
     printf("Cache destroyed.\n");
+
+    return 0;
+}
+```
+
+## C Multi-threaded Producer-Consumer Queue
+
+**Prompt**:
+
+**Gemini**:
+
+This is an excellent question because multi-threaded producer-consumer scenarios are one of the best use cases for intrusive data structures.
+
+#### Should we worry about thread safety?
+
+**Yes, absolutely and unequivocally.**
+
+Any time you have data that can be accessed and modified by more than one thread, you **must** use synchronization mechanisms to protect it. In our case, the shared data is the queue itself—specifically, the pointers (`next`, `prev`) that form the linked list.
+
+Without protection, you could face race conditions like:
+
+- **A "lost update"**: The producer adds an item at the exact same time the consumer removes one. The pointer manipulations could interfere, corrupting the list and either losing an item or causing a crash.
+- **Double free or memory leak**: The list gets corrupted in such a way that an item is either processed twice (leading to a double free) or is unlinked incorrectly and never processed at all (a memory leak).
+- **Inconsistent state**: A thread reads the list while it's in a partially updated, invalid state.
+
+To solve this, we will use:
+
+1. **A Mutex (pthread_mutex_t)**: To ensure that only one thread can be modifying the queue's pointers at any given time (mutual exclusion).
+2. **A Condition Variable (pthread_cond_t)**: To allow the consumer thread to sleep efficiently when the queue is empty, and for the producer to wake it up when a new item is available. This avoids wasteful "busy-waiting".
+
+#### Use Case: Multi-threaded Producer-Consumer Queue
+
+Here is a classic example. We'll have:
+
+- A Producer Thread: Creates "work items" and adds them to a shared queue.
+- A Consumer Thread: Takes items from the queue and "processes" them.
+
+The key benefit of using an intrusive list here is performance. The producer mallocs the WorkItem once. The queue itself performs zero allocations. It just shuffles pointers. This is much faster and creates less memory fragmentation than a non-intrusive queue that would need to allocate its own internal nodes for every item.
+
+Here is the complete C code example:
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stddef.h>
+#include <pthread.h>
+#include <unistd.h> // for sleep()
+
+// A macro to get the containing structure from a pointer to its member.
+#define container_of(ptr, type, member) \
+    ((type *)((char *)(ptr) - offsetof(type, member)))
+
+//====================================================================
+// Intrusive Data Structure Hook
+//====================================================================
+
+// Hook for a doubly-linked list.
+typedef struct IntrusiveLink {
+    struct IntrusiveLink *next;
+    struct IntrusiveLink *prev;
+} IntrusiveLink;
+
+//====================================================================
+// The Work Item Object
+//====================================================================
+
+// This is the object that is passed between threads.
+typedef struct WorkItem {
+    int id;
+    char message[128];
+    IntrusiveLink link; // The hook for the shared queue.
+} WorkItem;
+
+//====================================================================
+// The Thread-Safe Shared Queue
+//====================================================================
+
+typedef struct SharedQueue {
+    IntrusiveLink head;         // Sentinel node for the queue.
+    pthread_mutex_t mutex;      // Protects access to the queue.
+    pthread_cond_t cond;        // For signaling between threads.
+    int is_done;                // Flag to signal shutdown.
+} SharedQueue;
+
+// Initialize the shared queue.
+void queue_init(SharedQueue* queue) {
+    queue->head.next = &queue->head;
+    queue->head.prev = &queue->head;
+    pthread_mutex_init(&queue->mutex, NULL);
+    pthread_cond_init(&queue->cond, NULL);
+    queue->is_done = 0;
+}
+
+// Add a work item to the back of the queue.
+void queue_push(SharedQueue* queue, WorkItem* item) {
+    pthread_mutex_lock(&queue->mutex);
+
+    // Link the new item at the back of the list (before the head).
+    IntrusiveLink* new_link = &item->link;
+    IntrusiveLink* head = &queue->head;
+    new_link->prev = head->prev;
+    new_link->next = head;
+    head->prev->next = new_link;
+    head->prev = new_link;
+
+    // Signal the consumer that a new item is available.
+    pthread_cond_signal(&queue->cond);
+    pthread_mutex_unlock(&queue->mutex);
+}
+
+// Remove and return a work item from the front of the queue.
+// Blocks until an item is available.
+WorkItem* queue_pop(SharedQueue* queue) {
+    pthread_mutex_lock(&queue->mutex);
+
+    // Wait until the queue is not empty or shutdown is signaled.
+    while (queue->head.next == &queue->head && !queue->is_done) {
+        pthread_cond_wait(&queue->cond, &queue->mutex);
+    }
+
+    if (queue->head.next != &queue->head) {
+        // Unlink the item from the front of the list.
+        IntrusiveLink* link_to_pop = queue->head.next;
+        link_to_pop->prev->next = link_to_pop->next;
+        link_to_pop->next->prev = link_to_pop->prev;
+        
+        pthread_mutex_unlock(&queue->mutex);
+        return container_of(link_to_pop, WorkItem, link);
+    }
+
+    // Queue is empty and shutdown was signaled.
+    pthread_mutex_unlock(&queue->mutex);
+    return NULL;
+}
+
+// Signal threads to shut down and destroy queue resources.
+void queue_destroy(SharedQueue* queue) {
+    pthread_mutex_lock(&queue->mutex);
+    queue->is_done = 1;
+    // Broadcast to wake up all waiting threads.
+    pthread_cond_broadcast(&queue->cond);
+    pthread_mutex_unlock(&queue->mutex);
+
+    pthread_mutex_destroy(&queue->mutex);
+    pthread_cond_destroy(&queue->cond);
+}
+
+
+//====================================================================
+// Thread Functions
+//====================================================================
+
+void* producer_thread(void* arg) {
+    SharedQueue* queue = (SharedQueue*)arg;
+    for (int i = 0; i < 10; ++i) {
+        // Create a new work item. This is the only allocation.
+        WorkItem* item = (WorkItem*)malloc(sizeof(WorkItem));
+        item->id = i;
+        snprintf(item->message, sizeof(item->message), "Message #%d", i);
+        
+        printf("PRODUCER: Creating item %d\n", i);
+        queue_push(queue, item);
+        
+        // Simulate work
+        usleep((rand() % 250) * 1000);
+    }
+    printf("PRODUCER: Finished.\n");
+    return NULL;
+}
+
+void* consumer_thread(void* arg) {
+    SharedQueue* queue = (SharedQueue*)arg;
+    while (1) {
+        WorkItem* item = queue_pop(queue);
+        if (item == NULL) {
+            // This means the queue is empty and we're shutting down.
+            break;
+        }
+        
+        printf("CONSUMER: Processing item %d ('%s')\n", item->id, item->message);
+        // The consumer is responsible for freeing the object.
+        free(item);
+    }
+    printf("CONSUMER: Shutting down.\n");
+    return NULL;
+}
+
+//====================================================================
+// Main Demo
+//====================================================================
+
+int main() {
+    pthread_t producer, consumer;
+    SharedQueue queue;
+
+    queue_init(&queue);
+
+    printf("Starting producer and consumer threads...\n");
+    pthread_create(&producer, NULL, producer_thread, &queue);
+    pthread_create(&consumer, NULL, consumer_thread, &queue);
+
+    // Wait for the producer to finish its work.
+    pthread_join(producer, NULL);
+    
+    printf("Producer finished, signaling consumer to shut down...\n");
+    // Signal shutdown and clean up.
+    queue_destroy(&queue);
+
+    // Wait for the consumer to finish processing remaining items and exit.
+    pthread_join(consumer, NULL);
+
+    printf("All threads finished.\n");
 
     return 0;
 }
