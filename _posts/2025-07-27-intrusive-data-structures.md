@@ -419,15 +419,17 @@ use std::{mem, ptr}; // Import mem for offset_of, ptr for raw pointer operations
 // It relies on `offset_of!` from `core::mem`.
 // IMPORTANT: This macro MUST be defined BEFORE any code that uses it.
 macro_rules! container_of {
-    ($ptr:expr, $Type:ty, $member:ident) => {{
-        // Ensure the pointer is mutable. `*mut u8` is the generic byte pointer.
-        let member_ptr = $ptr as *mut u8;
-        // Calculate the offset of the member within the struct.
-        // This requires the actual type name ($Type) and member name ($member).
-        let offset = mem::offset_of!($Type, $member);
-        // Subtract the offset from the member's address to get the struct's base address.
-        (member_ptr.sub(offset)) as *mut $Type
-    }};
+    ($ptr:expr, $Type:ty, $member:ident) => {
+        {
+            // Ensure the pointer is mutable. `*mut u8` is the generic byte pointer.
+            let member_ptr = $ptr as *mut u8;
+            // Calculate the offset of the member within the struct.
+            // This requires the actual type name ($Type) and member name ($member).
+            let offset = mem::offset_of!($Type, $member);
+            // Subtract the offset from the member's address to get the struct's base address.
+            (member_ptr.sub(offset)) as *mut $Type
+        }
+    };
 }
 
 // Define a generic intrusive node structure.
