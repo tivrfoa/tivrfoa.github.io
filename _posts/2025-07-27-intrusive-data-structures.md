@@ -114,39 +114,6 @@ Performance comparison between Intrusive and Non-intrusive containers:
 
 The core motivations for their use are multifaceted and directly tied to performance optimization. They aim to avoid costly pointer indirections, which can incur run-time costs on every data read. Furthermore, they minimize dynamic memory allocations, which can be computationally expensive and unpredictable. A significant advantage is their ability to facilitate the inclusion of a single data object in multiple distinct data structures simultaneously. For example, an element might be part of several search trees and a priority queue, allowing efficient retrieval in different orders.
 
-
-## [https://users.rust-lang.org/t/what-are-intrusive-linked-lists-and-does-rust-really-struggle-with-them/117943/24](https://users.rust-lang.org/t/what-are-intrusive-linked-lists-and-does-rust-really-struggle-with-them/117943/24)
-
-Reply from tornewuff:
-
->>akrauze:
->>
->>Still, how does this differ from something like this?
->>
->>```rs
->>    struct DoubleNode<T> {
->>        first_next: *mut DoubleNode,
->>        first_priv: *mut DoubleNode,
->>        second_next: *mut DoubleNode,
->>        second_priv: *mut DoubleNode,
->>        data: T,
->>    }
->>```
-
-Yes, your structure definition here (which includes the data by value, not a pointer) gives you the ability to put an object on more than one linked list at once without needing to be intrusive. That's not the only benefit of intrusive linked lists, though.
-
-Intrusive linked lists are typically used in cases where the number and kinds of lists that a particular data type is going to be part of is tightly tied to the definition of the data type. When that's the case, there are some advantages to having the pointers be part of the data type itself, instead of a wrapper:
-
-- One of the benefits of doubly-linked lists is that there are a number of ways to manipulate the list using just a reference to a particular member of the list, without needing a reference to the head of the list (e.g. removing the object, or inserting another object immediately before/after the current one). With a non-intrusive list, only functions that are given a reference to the actual list node can do these things, but with intrusive pointers any methods you define on the data type itself can do these kinds of list manipulations since the list pointers are just like any other member.
-  - This is probably less likely to come up in most Rust code, though, because this is effectively a really tricky kind of shared mutability that isn't going to be easy to provide a safe API for, even for the case of things only being on a single list.
-- With a wrapper you would need to copy/move the T into the wrapper (or construct it in-place) before you can actually make it part of a list. With intrusive pointers, any instance of the type can always be added to a list without paying any copy/move costs and without its address changing. This is particularly important if there are also other pointers to the object that aren't related to the lists: for example, a process object might be on one or more doubly-linked lists for various reasons, but each thread might also have a regular pointer to the process that owns it.
-  - This is also probably less likely to come up in most Rust code, though, because Rust requires everything to be movable under most circumstances and also guarantees that moves are just a memcpy at worst.
-- You can name the pointers something use-case-specific, instead of "first" and "second". Having the definition of T contain foo: DoubleLinkPtrs and bar: DoubleLinkPtrs members makes it clear that it's supposed to be on one "foo" list and one "bar" list.
-
-Another difference that doesn't apply to Rust is that in a language without generics, you can generally only store the data by-value by writing one wrapper for each type of data to be stored - at which point there isn't much benefit to having it be a separate wrapper instead of just part of the data type.
-
-So, yeah - typically you're going to see intrusive lists in cases where there are specific benefits to having the data type and the list(s) it is a part of be tied tightly together. Most of the time, these don't really apply, and it's going to be simpler and cleaner for data to not be aware of its container.
-
 # Examples
 
 ## C
