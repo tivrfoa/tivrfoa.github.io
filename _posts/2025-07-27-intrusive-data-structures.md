@@ -26,6 +26,7 @@ Let's learn about it.
   - [C](#c)
   - [C Generic List](#c-generic-list)
   - [C Intrusive List and Tree](#c-intrusive-list-and-tree)
+  - [C Task Scheduler](#c-task-scheduler)
   - [Rust](#rust)
   - [Zig](#zig)
 - [Comparing `container_of` implementations](#comparing-container_of-implementations)
@@ -939,6 +940,287 @@ int main() {
 }
 ```
 
+## C LRU Cache
+
+**Gemini**:
+
+Here is a complete C implementation of an LRU (Least Recently Used) cache using intrusive data structures.
+
+This example demonstrates a key strength of this pattern: a single allocated object (`CacheEntry`) is simultaneously part of two different data structures:
+
+1. A **Hash Table** (implemented as an array of singly-linked lists) for O(1) average time complexity lookups.
+2. A **Doubly-Linked List** to maintain the usage order (from most- to least-recently-used), allowing for O(1) updates and evictions.
+
+The CacheEntry object itself contains the "hooks" (hash_link and lru_link) that allow it to be managed by these external structures without any additional memory allocations per operation.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stddef.h>
+
+// A macro to get the containing structure from a pointer to its member.
+#define container_of(ptr, type, member) \
+    ((type *)((char *)(ptr) - offsetof(type, member)))
+
+//====================================================================
+// Intrusive Data Structure "Hooks"
+//====================================================================
+
+// Hook for a singly-linked list (for hash table collision chains).
+typedef struct HashLink {
+    struct HashLink *next;
+} HashLink;
+
+// Hook for a doubly-linked list (for LRU ordering).
+typedef struct LruLink {
+    struct LruLink *next;
+    struct LruLink *prev;
+} LruLink;
+
+//====================================================================
+// The Cache Entry Object
+//====================================================================
+
+// This is the core object we store. It contains the actual data
+// and the hooks for both the hash table and the LRU list.
+typedef struct CacheEntry {
+    int key;
+    char value[256];
+
+    HashLink hash_link; // Hook for hash collision chaining.
+    LruLink lru_link;   // Hook for LRU ordering.
+} CacheEntry;
+
+//====================================================================
+// The LRU Cache Structure
+//====================================================================
+
+typedef struct LRUCache {
+    size_t capacity;
+    size_t size;
+    HashLink **hash_table; // Array of pointers to collision chains.
+    size_t hash_table_size;
+    LruLink lru_list_head; // Sentinel node for the LRU list.
+} LRUCache;
+
+//====================================================================
+// Doubly-Linked List (LRU) Management
+//====================================================================
+
+// Initializes a sentinel node for a doubly-linked list.
+static void lru_list_init(LruLink *head) {
+    head->next = head;
+    head->prev = head;
+}
+
+// Removes a link from its current position in the list.
+static void lru_list_unlink(LruLink *link) {
+    link->prev->next = link->next;
+    link->next->prev = link->prev;
+}
+
+// Adds a link to the front of the list (most recently used).
+static void lru_list_push_front(LruLink *head, LruLink *new_link) {
+    new_link->next = head->next;
+    new_link->prev = head;
+    head->next->prev = new_link;
+    head->next = new_link;
+}
+
+//====================================================================
+// Cache Internals
+//====================================================================
+
+// A simple hash function for integer keys.
+static size_t hash_key(int key, size_t table_size) {
+    return (size_t)key % table_size;
+}
+
+// Finds a cache entry by key. Does NOT change LRU order.
+static CacheEntry* find_entry(LRUCache* cache, int key) {
+    size_t index = hash_key(key, cache->hash_table_size);
+    HashLink* current = cache->hash_table[index];
+
+    while (current) {
+        CacheEntry* entry = container_of(current, CacheEntry, hash_link);
+        if (entry->key == key) {
+            return entry;
+        }
+        current = current->next;
+    }
+    return NULL;
+}
+
+// Removes an entry from the hash table.
+static void remove_from_hash_table(LRUCache* cache, CacheEntry* entry) {
+    size_t index = hash_key(entry->key, cache->hash_table_size);
+    HashLink** indirect = &cache->hash_table[index];
+
+    while (*indirect && *indirect != &entry->hash_link) {
+        indirect = &(*indirect)->next;
+    }
+
+    if (*indirect) {
+        *indirect = entry->hash_link.next;
+    }
+}
+
+// Evicts the least recently used item from the cache.
+static void evict_one(LRUCache* cache) {
+    // The LRU item is at the back of the list (before the sentinel).
+    LruLink* lru_link_to_evict = cache->lru_list_head.prev;
+    if (lru_link_to_evict == &cache->lru_list_head) {
+        // Should not happen if size > 0, but good practice.
+        return;
+    }
+
+    CacheEntry* entry_to_evict = container_of(lru_link_to_evict, CacheEntry, lru_link);
+    printf("EVICTING: Key %d ('%s')\n", entry_to_evict->key, entry_to_evict->value);
+
+    // Unlink from both data structures.
+    lru_list_unlink(&entry_to_evict->lru_link);
+    remove_from_hash_table(cache, entry_to_evict);
+
+    // Free the actual object and decrement cache size.
+    free(entry_to_evict);
+    cache->size--;
+}
+
+
+//====================================================================
+// Public LRU Cache API
+//====================================================================
+
+// Creates and initializes an LRU cache.
+LRUCache* lru_create(size_t capacity) {
+    LRUCache* cache = (LRUCache*)malloc(sizeof(LRUCache));
+    if (!cache) return NULL;
+
+    cache->capacity = capacity;
+    cache->size = 0;
+    // For simplicity, hash table size is twice the capacity.
+    cache->hash_table_size = capacity * 2; 
+    cache->hash_table = (HashLink**)calloc(cache->hash_table_size, sizeof(HashLink*));
+    if (!cache->hash_table) {
+        free(cache);
+        return NULL;
+    }
+    
+    lru_list_init(&cache->lru_list_head);
+    return cache;
+}
+
+// Puts a key-value pair into the cache.
+void lru_put(LRUCache* cache, int key, const char* value) {
+    printf("PUT:      Key %d, Value '%s'\n", key, value);
+
+    CacheEntry* entry = find_entry(cache, key);
+
+    if (entry) {
+        // --- Key exists: Update value and move to front ---
+        strncpy(entry->value, value, sizeof(entry->value) - 1);
+        // Unlink from current position and move to front of LRU list.
+        lru_list_unlink(&entry->lru_link);
+        lru_list_push_front(&cache->lru_list_head, &entry->lru_link);
+    } else {
+        // --- Key does not exist: Create new entry ---
+        if (cache->size >= cache->capacity) {
+            evict_one(cache);
+        }
+
+        // Create the new entry.
+        entry = (CacheEntry*)malloc(sizeof(CacheEntry));
+        entry->key = key;
+        strncpy(entry->value, value, sizeof(entry->value) - 1);
+
+        // Add to hash table.
+        size_t index = hash_key(key, cache->hash_table_size);
+        entry->hash_link.next = cache->hash_table[index];
+        cache->hash_table[index] = &entry->hash_link;
+
+        // Add to front of LRU list.
+        lru_list_push_front(&cache->lru_list_head, &entry->lru_link);
+        cache->size++;
+    }
+}
+
+// Gets a value by key from the cache.
+const char* lru_get(LRUCache* cache, int key) {
+    CacheEntry* entry = find_entry(cache, key);
+
+    if (entry) {
+        printf("GET:      Key %d -> Found '%s'. Moving to front.\n", key, entry->value);
+        // Move to front of LRU list to mark as recently used.
+        lru_list_unlink(&entry->lru_link);
+        lru_list_push_front(&cache->lru_list_head, &entry->lru_link);
+        return entry->value;
+    }
+
+    printf("GET:      Key %d -> Not found.\n", key);
+    return NULL;
+}
+
+// Frees all resources used by the cache.
+void lru_destroy(LRUCache* cache) {
+    LruLink* current = cache->lru_list_head.next;
+    while (current != &cache->lru_list_head) {
+        LruLink* next = current->next;
+        CacheEntry* entry = container_of(current, CacheEntry, lru_link);
+        free(entry);
+        current = next;
+    }
+    free(cache->hash_table);
+    free(cache);
+}
+
+// Utility to print the cache contents in LRU order.
+void lru_print(LRUCache* cache) {
+    printf("\n--- Cache State (MRU to LRU) ---\n");
+    printf("Size: %zu, Capacity: %zu\n", cache->size, cache->capacity);
+    printf("Order: ");
+    LruLink* current = cache->lru_list_head.next;
+    while (current != &cache->lru_list_head) {
+        CacheEntry* entry = container_of(current, CacheEntry, lru_link);
+        printf("%d -> ", entry->key);
+        current = current->next;
+    }
+    printf("END\n--------------------------------\n\n");
+}
+
+//====================================================================
+// Main Demo
+//====================================================================
+
+int main() {
+    LRUCache* cache = lru_create(3);
+
+    lru_put(cache, 10, "apple");
+    lru_put(cache, 20, "banana");
+    lru_put(cache, 30, "cherry");
+    lru_print(cache); // Order: 30 -> 20 -> 10
+
+    lru_get(cache, 10); // Access 10, making it the most recent.
+    lru_print(cache); // Order: 10 -> 30 -> 20
+
+    // This next put will cause an eviction. '20' is the LRU item.
+    lru_put(cache, 40, "date");
+    lru_print(cache); // Order: 40 -> 10 -> 30
+
+    lru_get(cache, 20); // '20' was evicted, so this is a miss.
+    lru_print(cache);
+
+    lru_put(cache, 30, "cantaloupe"); // Update existing key '30'.
+    lru_print(cache); // Order: 30 -> 40 -> 10
+    lru_get(cache, 30);
+
+    lru_destroy(cache);
+    printf("Cache destroyed.\n");
+
+    return 0;
+}
+```
+
 ## Rust
 
 ```rs
@@ -1319,13 +1601,13 @@ impl_list_item!
 
 # References
 
-[In-Depth: Intrusive Lists](https://www.gamedeveloper.com/programming/in-depth-intrusive-lists)
-
 [https://github.com/0xAX/linux-insides/blob/master/DataStructures/linux-datastructures-1.md](https://github.com/0xAX/linux-insides/blob/master/DataStructures/linux-datastructures-1.md)
 
 [Pacific++ 2017: Matt Bentley "Can we make a faster linked list?"](https://www.youtube.com/watch?v=SPXNy0-dUbw)
 
 [Gemini: Intrusive Data Structures Analysis](https://g.co/gemini/share/2ed8ecea357e)
+
+[https://www.gamedeveloper.com/programming/in-depth-intrusive-lists](https://www.gamedeveloper.com/programming/in-depth-intrusive-lists)
 
 [Adopt intrusive data structures for better performance](https://github.com/doitsujin/dxvk/issues/3796)
 
