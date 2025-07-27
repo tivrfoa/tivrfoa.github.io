@@ -27,6 +27,7 @@ Let's learn about it.
   - [C Generic List](#c-generic-list)
   - [C Intrusive List and Tree](#c-intrusive-list-and-tree)
   - [C Task Scheduler](#c-task-scheduler)
+  - [C LRU Cache](#c-lru-cache)
   - [Rust](#rust)
   - [Zig](#zig)
 - [Comparing `container_of` implementations](#comparing-container_of-implementations)
@@ -188,6 +189,17 @@ Intrusive containers have some important advantages:
 
 Performance comparison between Intrusive and Non-intrusive containers:
 [https://www.boost.org/doc/libs/1_60_0/doc/html/intrusive/performance.html](https://www.boost.org/doc/libs/1_60_0/doc/html/intrusive/performance.html)
+
+## From mgaunard
+
+[https://news.ycombinator.com/item?id=43680655](https://news.ycombinator.com/item?id=43680655)
+
+There are several advantages to intrusive node-based data structures...:
+
+- the same object can move between containers with no allocation and no need for a dedicated complex API
+- the same object can be part of multiple containers at once; particularly useful for intrusive binary trees, for indexing data with different criteria.
+- the container can be fully polymorphic, no need for all elements to be the same dynamic type.
+- no need for complex allocators, you can just store the objects as you see fit.
 
 ## Gemini:
 
