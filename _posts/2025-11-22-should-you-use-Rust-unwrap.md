@@ -423,9 +423,6 @@ fn fetch_features(..., features: &mut Features)
 }
 ```
 
-Let's not focus on the bad function name (*it's mutating inside, but should
-just return the features ... =)*).
-
 Possible cases:
 1. `append_with_names` really can't fail: then it should not return an
 Option/Result. Callers should not have to *think* about it. If there is a bug,
