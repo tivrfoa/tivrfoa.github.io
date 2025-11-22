@@ -4,19 +4,11 @@ title:  "Should you use Rust unwrap?"
 date:   2025-11-22 08:10:00 -0300
 categories: rust unwrap errorHandling
 ---
-<style>
-h1 {
-  font-size: 2.5em;
-}
-h2 {
-  font-size: 2em;
-}
-</style>
 
->@alexeiboukirev8357
->Rust is a gift to the developers.  Gifts are meant to be unwrapped.
->
->https://www.youtube.com/watch?v=sJBaMJfxzYk&lc=UgyD5HQg3Ee3GvMOgZ54AaABAg
+@alexeiboukirev8357
+**Rust is a gift to the developers. Gifts are meant to be unwrapped.**
+
+[https://www.youtube.com/watch?v=sJBaMJfxzYk&lc=UgyD5HQg3Ee3GvMOgZ54AaABAg](https://www.youtube.com/watch?v=sJBaMJfxzYk&lc=UgyD5HQg3Ee3GvMOgZ54AaABAg)
 
 In interesting discussion started on X, after Richard Feldman said:<br>
 [The Cloudflare outage was caused by an unwrap()](https://x.com/rtfeldman/status/1990998613514752383)
@@ -28,9 +20,9 @@ the person that pulled the trigger.
 
 We can't blame a tool that is well documented, because someone misuse it.
 
-From: https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap
+From: [https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap](https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap)
 
----
+```md
 Returns the contained [`Some`] value, consuming the `self` value.
 
 Because this function may panic, its use is generally discouraged.
@@ -45,7 +37,7 @@ case explicitly, or call [`unwrap_or`], [`unwrap_or_else`], or
 # Panics
 
 Panics if the self value equals [`None`].
----
+```
 
 The argument that languages and stardard libraries should avoid having
 constructs that enable bad patterns is really valid, though.
