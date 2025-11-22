@@ -19,7 +19,12 @@ people linking Rust to it, eg:<br>
 This is like saying that a gun killed someone… It wasn’t the gun;
 it was the person who pulled the trigger.
 
-We can’t blame a tool that is well-documented just because someone misused it.
+The Cloudflare developers certainly know about the risks of `unwrap`. The bug
+was probably caused by a failed assumption: the config file will fit in
+memory.
+
+And even if the developer didn't know that `unwrap` can panic:<br>
+**We can’t blame a tool that is well-documented just because someone misused it.**
 
 From: [https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap](https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap)
 
@@ -44,9 +49,9 @@ The argument that languages and standard libraries should avoid having
 constructs that enable bad patterns is actually valid, though.
 
 So lets investigate:
-- Use cases for unwrap
-- Use of unwrap in important Rust crates
-- Would it be better if Rust didn't have unwrap?
+- [Use cases for unwrap](#use-cases-for-unwrap)
+- [Use of unwrap in important Rust crates](#use-of-unwrap-in-important-rust-crates)
+- [Would it be better if Rust didn't have unwrap?](#would-it-be-better-if-rust-didnt-have-unwrap)
 - How does Roc lang handle it?
 - How could the Cloudflare bug have been avoided?
 
@@ -92,7 +97,7 @@ The use cases for `unwrap` would be:
 2. documentation
 3. runtime invariants
 
-The `runtime invariant` is what can cause more contreversy.<br>
+The `runtime invariant` is what can cause more controversy.<br>
 One could ask: if it is guaranteed to have a value/return ok, why is it an
 Option or Result?
 
