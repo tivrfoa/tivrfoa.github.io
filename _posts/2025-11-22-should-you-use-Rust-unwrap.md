@@ -10,15 +10,16 @@ categories: rust unwrap errorHandling
 
 [https://www.youtube.com/watch?v=sJBaMJfxzYk&lc=UgyD5HQg3Ee3GvMOgZ54AaABAg](https://www.youtube.com/watch?v=sJBaMJfxzYk&lc=UgyD5HQg3Ee3GvMOgZ54AaABAg)
 
-In interesting discussion started on X, after Richard Feldman said:<br>
+An interesting discussion started on X about the [Cloudflare outage](https://blog.cloudflare.com/18-november-2025-outage/), with some
+people linking Rust to it, eg:<br>
 [The Cloudflare outage was caused by an unwrap()](https://x.com/rtfeldman/status/1990998613514752383)
 
 [![Richard Feldman unwrap](/assets/images/rust-unwrap/richard-feldman-caused-by-unwrap.png)](/assets/images/rust-unwrap/richard-feldman-caused-by-unwrap.png)
 
-This is like saying that a gun killed someone ... It was not the gun, it was
-the person that pulled the trigger.
+This is like saying that a gun killed someone… It wasn’t the gun;
+it was the person who pulled the trigger.
 
-We can't blame a tool that is well documented, because someone misuse it.
+We can’t blame a tool that is well-documented just because someone misused it.
 
 From: [https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap](https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap)
 
@@ -39,15 +40,15 @@ case explicitly, or call [`unwrap_or`], [`unwrap_or_else`], or
 Panics if the self value equals [`None`].
 ```
 
-The argument that languages and stardard libraries should avoid having
-constructs that enable bad patterns is really valid, though.
+The argument that languages and standard libraries should avoid having
+constructs that enable bad patterns is actually valid, though.
 
 So lets investigate:
 - Use cases for unwrap
 - Use of unwrap in important Rust crates
-- Would be better if Rust didn't have unwrap?
-- How does Roc lang handles it?
-- How the Cloudflare bug could be avoided?
+- Would it be better if Rust didn't have unwrap?
+- How does Roc lang handle it?
+- How could the Cloudflare bug have been avoided?
 
 # Use cases for unwrap
 
@@ -406,7 +407,7 @@ let port = std::env::var("PORT").unwrap_or("8080".to_string());
 
 It wouldn't be better if Rust didn't have `unwrap`, because **panicking is sometimes the correct response**. However, it *is* better if you use a linter (like Clippy) to forbid `unwrap` in your production codebase, forcing you to use `expect` or proper error propagation.
 
-# How the Cloudflare bug could be avoided?
+# How could the Cloudflare bug have been avoided?
 
 [![Cloudflare Rust unwrap](/assets/images/rust-unwrap/cloudflare-unwrap-bug.png)](/assets/images/rust-unwrap/cloudflare-unwrap-bug.png)
 
@@ -431,19 +432,20 @@ Option/Result. Callers should not have to *think* about it. If there is a bug,
 then it should panic inside `append_with_names`.
 2. `append_with_names` can fail: callers should not use `unwrap`, and the
 *bad* case should be handled properly.
+3. `append_with_names` can fail, but not at that point: then the assumption
+failed.
 
 The bug happenned because a bad configuration file was sent to this code.
 
-I guess everyone agrees that the real bug was creating and allowing this bad
-configuration file to spread.
+The root cause was creating and allowing this bad configuration file to spread.
 
-Now the question is, should the Rust code handle that?
+Now the question is: should the Rust code handle that?
 
 Maybe, that's up to Cloudflare to decide.<br>
-As it's part of a critical system that affects the network of many other
-companies, it should probably be handled.<br>
-One option, maybe, would be to accept only the features that fits in the
-pre-allocated memory, and log an error/send an alarm if the threshold is hit.
+As it's part of a critical system that affects many other companies, it
+probably should be handled.<br>
+One option might be to accept only the features that fit in the
+pre-allocated memory, and log an error or send an alarm if the threshold is hit.
 
 # References
 
