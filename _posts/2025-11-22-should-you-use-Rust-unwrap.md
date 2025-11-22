@@ -5,10 +5,8 @@ date:   2025-11-22 08:10:00 -0300
 categories: rust unwrap errorHandling
 ---
 
-@alexeiboukirev8357
+[@alexeiboukirev8357](https://www.youtube.com/watch?v=sJBaMJfxzYk&lc=UgyD5HQg3Ee3GvMOgZ54AaABAg)
 **Rust is a gift to the developers. Gifts are meant to be unwrapped.**
-
-[https://www.youtube.com/watch?v=sJBaMJfxzYk&lc=UgyD5HQg3Ee3GvMOgZ54AaABAg](https://www.youtube.com/watch?v=sJBaMJfxzYk&lc=UgyD5HQg3Ee3GvMOgZ54AaABAg)
 
 An interesting discussion started on X about the [Cloudflare outage](https://blog.cloudflare.com/18-november-2025-outage/), with some
 people linking Rust to it, eg:<br>
@@ -59,7 +57,7 @@ So lets investigate:
 It is better to read this post by Andrew Gallant (ripgrep author) first:
 [Using unwrap() in Rust is Okay](https://burntsushi.net/unwrap/)
 
-It's a great and very comprehensive post.
+It's a great and comprehensive post.
 
 *note: read everything. Initially it seems that he only use `unwrap` for
 tests and documentation, but that is not the case.*
@@ -99,8 +97,7 @@ One could ask: if it is guaranteed to have a value/return ok, why is it an
 Option or Result?
 
 It's a great question and it is well explained in
-*So why not make all invariants compile-time invariants?*
-[Using unwrap() in Rust is Okay](https://burntsushi.net/unwrap/)
+[*So why not make all invariants compile-time invariants?*](https://burntsushi.net/unwrap/)
 
 In essense, in many cases that will lead to much more complex code and lots of
 duplication.
@@ -138,8 +135,6 @@ impl Haystack {
     }
 ```
 
-Valid use case. It wouldn't enter `if` otherwise.
-
 crates/core/main.rs
 
 ```rust
@@ -150,8 +145,6 @@ crates/core/main.rs
             break;
         }
 ```
-
-Valid use case. `search_result` is guaranteed to have stats at this point.
 
 ## [tokio](https://github.com/tokio-rs/tokio)
 
@@ -198,115 +191,53 @@ serde_derive/src/internals/ctxt.rs
     }
 ```
 
-## Prompting Gemini 3: Show me some valid uses of unwrap in important Rust crates
+## clap
 
-It is validating to see that even the "gods" of the Rust ecosystem use `unwrap()`. However, they use it very differently than a beginner does.
-
-In high-quality crates, `unwrap()` is rarely used to say "I hope this works." It is used to say **"It is logically impossible for this to fail, and if it does, the world is broken."**
-
-Here are four specific, valid patterns found in major crates.
-
------
-
-### 1\. The "Poisoned" Mutex (Standard Library)
-
-This is arguably the most common `unwrap` in production Rust code.
-
-**The Pattern:** Locking a Mutex.
-**Where you see it:** Almost every multi-threaded crate (`std`, `tokio`, `actix`).
+https://github.com/clap-rs/clap/blob/8d87e70789ed7832aa93473779d248090712d66b/clap_builder/src/util/flat_map.rs#L172
 
 ```rust
-use std::sync::{Arc, Mutex};
-
-let data = Arc::new(Mutex::new(0));
-// 👇 This is considered idiomatic, valid Rust.
-let mut lock = data.lock().unwrap(); 
+    pub(crate) fn or_insert_with<F: FnOnce() -> V>(self, default: F) -> &'a mut V {
+        match self {
+            Entry::Occupied(entry) => &mut entry.v.values[entry.index],
+            Entry::Vacant(entry) => {
+                entry.v.keys.push(entry.key);
+                entry.v.values.push(default());
+                entry.v.values.last_mut().unwrap()
+            }
+        }
+    }
 ```
 
-**Why it's valid:**
-`Mutex::lock` only returns an `Err` if the *previous* thread holding the lock panicked (this is called "poisoning"). If a thread crashed while modifying the data, the data is likely corrupted.
-
-  * **The logic:** "If the data is corrupt, I cannot safely continue. Crash this thread too so we don't spread the corruption."
-
-### 2\. Static Initialization (Regex / Lazy Static)
-
-**The Pattern:** compiling a hardcoded string into a complex object during startup.
-**Where you see it:** `regex`, `once_cell`, `lazy_static`.
+https://github.com/clap-rs/clap/blob/8d87e70789ed7832aa93473779d248090712d66b/clap_builder/src/util/color.rs#L83
 
 ```rust
-use regex::Regex;
+impl std::str::FromStr for ColorChoice {
+    type Err = String;
 
-// We are hardcoding the pattern. We aren't accepting user input here.
-let re = Regex::new(r"^\d{4}-\d{2}-\d{2}$").unwrap();
-```
-
-**Why it's valid:**
-The input string is a string literal written by the programmer. It will not change at runtime.
-
-  * **The logic:** "If I made a typo in this regex, the program is fundamentally broken. I want to know immediately (crash on startup) rather than handle a `RegexError` that can never happen once the code is correct."
-
-### 3\. Writing to Memory Buffers (Serde / fmt)
-
-**The Pattern:** Using the `std::fmt::Write` trait on a `String`.
-**Where you see it:** `serde_json`, `log`, and formatters.
-
-The `Write` trait is designed for I/O (files, network), so it returns a `Result` because disks can be full or networks can disconnect. However, you can also implement `Write` for a standard `String` (RAM).
-
-```rust
-use std::fmt::Write;
-
-let mut buffer = String::new();
-// We are writing to RAM, not a disk.
-// The only way this fails is OOM (Out of Memory), which aborts anyway.
-write!(&mut buffer, "Hello {}", "World").unwrap();
-```
-
-**Why it's valid:**
-Writing to a `String` in memory does not produce I/O errors. The Result is a formality of the Trait signature.
-
-  * **The logic:** "I am writing to a variable in RAM. There is no disk to fail. Handling this error is dead code."
-
-### 4\. Proven Invariants (Internal Logic)
-
-**The Pattern:** You have checked a condition explicitly, so the subsequent operation is guaranteed.
-**Where you see it:** `crossbeam`, `rand`, `Vec` implementations.
-
-Imagine you have a logic flow where you check a queue size.
-
-```rust
-// Simplified logic often found in channel implementations
-if let Some(item) = queue.pop() {
-    // We just proved 'item' exists.
-    process(item);
-} else {
-    // ...
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        for variant in Self::value_variants() {
+            if variant.to_possible_value().unwrap().matches(s, false) {
+                return Ok(*variant);
+            }
+        }
+        Err(format!("invalid variant: {s}"))
+    }
 }
-
-// But sometimes, the check is separated:
-if queue.is_empty() {
-    return;
-}
-// We checked is_empty() above.
-// We know pop() returns Some().
-let item = queue.pop().unwrap(); 
 ```
 
-**Why it's valid:**
-The compiler's borrow checker is smart, but it isn't omniscient. Sometimes you (the human) know the state of the system better than the compiler.
+## reqwest
 
-  * **The logic:** "I have structurally guaranteed this value exists. The `None` case is unreachable code."
+https://github.com/seanmonstar/reqwest/blob/a2aa5a34e48724be0c1089b0f5afe49b82ece30e/src/async_impl/h3_client/pool.rs#L63
 
------
+```rust
+    /// Forget the lock and return corresponding Key
+    fn forget(mut self) -> Key {
+        // Unwrap is safe because the Option can be None only after dropping the
+        // lock
+        self.0.take().unwrap().key
+    }
+```
 
-### Summary: The Difference is Intent
-
-When a beginner uses `unwrap`:
-
-> "I'm too lazy to handle the error right now."
-
-When a library author uses `unwrap`:
-
-> "I have proven that this error is impossible, or if it happens, the program is in a fatal state."
 
 # Would it be better if Rust didn't have unwrap?
 
@@ -455,3 +386,119 @@ pre-allocated memory, and log an error or send an alarm if the threshold is hit.
 [Using unwrap() in Rust is Okay](https://burntsushi.net/unwrap/)
 
 [ThePrimeTime - Another Internet outage???](https://www.youtube.com/watch?v=sJBaMJfxzYk)
+
+[Most popular Rust libraries](https://lib.rs/std)
+
+[Blessed.rs An unofficial guide to the Rust ecosystem](https://blessed.rs/crates)
+
+# Appendix A
+
+**Prompting Gemini 3: Show me some valid uses of unwrap in important Rust crates**
+
+It is validating to see that even the "gods" of the Rust ecosystem use `unwrap()`. However, they use it very differently than a beginner does.
+
+In high-quality crates, `unwrap()` is rarely used to say "I hope this works." It is used to say **"It is logically impossible for this to fail, and if it does, the world is broken."**
+
+Here are four specific, valid patterns found in major crates.
+
+-----
+
+### 1\. The "Poisoned" Mutex (Standard Library)
+
+This is arguably the most common `unwrap` in production Rust code.
+
+**The Pattern:** Locking a Mutex.
+**Where you see it:** Almost every multi-threaded crate (`std`, `tokio`, `actix`).
+
+```rust
+use std::sync::{Arc, Mutex};
+
+let data = Arc::new(Mutex::new(0));
+// 👇 This is considered idiomatic, valid Rust.
+let mut lock = data.lock().unwrap(); 
+```
+
+**Why it's valid:**
+`Mutex::lock` only returns an `Err` if the *previous* thread holding the lock panicked (this is called "poisoning"). If a thread crashed while modifying the data, the data is likely corrupted.
+
+  * **The logic:** "If the data is corrupt, I cannot safely continue. Crash this thread too so we don't spread the corruption."
+
+### 2\. Static Initialization (Regex / Lazy Static)
+
+**The Pattern:** compiling a hardcoded string into a complex object during startup.
+**Where you see it:** `regex`, `once_cell`, `lazy_static`.
+
+```rust
+use regex::Regex;
+
+// We are hardcoding the pattern. We aren't accepting user input here.
+let re = Regex::new(r"^\d{4}-\d{2}-\d{2}$").unwrap();
+```
+
+**Why it's valid:**
+The input string is a string literal written by the programmer. It will not change at runtime.
+
+  * **The logic:** "If I made a typo in this regex, the program is fundamentally broken. I want to know immediately (crash on startup) rather than handle a `RegexError` that can never happen once the code is correct."
+
+### 3\. Writing to Memory Buffers (Serde / fmt)
+
+**The Pattern:** Using the `std::fmt::Write` trait on a `String`.
+**Where you see it:** `serde_json`, `log`, and formatters.
+
+The `Write` trait is designed for I/O (files, network), so it returns a `Result` because disks can be full or networks can disconnect. However, you can also implement `Write` for a standard `String` (RAM).
+
+```rust
+use std::fmt::Write;
+
+let mut buffer = String::new();
+// We are writing to RAM, not a disk.
+// The only way this fails is OOM (Out of Memory), which aborts anyway.
+write!(&mut buffer, "Hello {}", "World").unwrap();
+```
+
+**Why it's valid:**
+Writing to a `String` in memory does not produce I/O errors. The Result is a formality of the Trait signature.
+
+  * **The logic:** "I am writing to a variable in RAM. There is no disk to fail. Handling this error is dead code."
+
+### 4\. Proven Invariants (Internal Logic)
+
+**The Pattern:** You have checked a condition explicitly, so the subsequent operation is guaranteed.
+**Where you see it:** `crossbeam`, `rand`, `Vec` implementations.
+
+Imagine you have a logic flow where you check a queue size.
+
+```rust
+// Simplified logic often found in channel implementations
+if let Some(item) = queue.pop() {
+    // We just proved 'item' exists.
+    process(item);
+} else {
+    // ...
+}
+
+// But sometimes, the check is separated:
+if queue.is_empty() {
+    return;
+}
+// We checked is_empty() above.
+// We know pop() returns Some().
+let item = queue.pop().unwrap(); 
+```
+
+**Why it's valid:**
+The compiler's borrow checker is smart, but it isn't omniscient. Sometimes you (the human) know the state of the system better than the compiler.
+
+  * **The logic:** "I have structurally guaranteed this value exists. The `None` case is unreachable code."
+
+-----
+
+### Summary: The Difference is Intent
+
+When a beginner uses `unwrap`:
+
+> "I'm too lazy to handle the error right now."
+
+When a library author uses `unwrap`:
+
+> "I have proven that this error is impossible, or if it happens, the program is in a fatal state."
