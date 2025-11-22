@@ -21,6 +21,8 @@ h2 {
 In interesting discussion started on X, after Richard Feldman said:<br>
 [The Cloudflare outage was caused by an unwrap()](https://x.com/rtfeldman/status/1990998613514752383)
 
+[![Richard Feldman unwrap](/assets/images/rust-unwrap/richard-feldman-caused-by-unwrap.png)](/assets/images/rust-unwrap/richard-feldman-caused-by-unwrap.png)
+
 This is like saying that a gun killed someone ... It was not the gun, it was
 the person that pulled the trigger.
 
