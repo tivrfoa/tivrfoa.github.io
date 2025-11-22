@@ -52,8 +52,7 @@ So lets investigate:
 - [Use cases for unwrap](#use-cases-for-unwrap)
 - [Use of unwrap in important Rust crates](#use-of-unwrap-in-important-rust-crates)
 - [Would it be better if Rust didn't have unwrap?](#would-it-be-better-if-rust-didnt-have-unwrap)
-- How does Roc lang handle it?
-- How could the Cloudflare bug have been avoided?
+- [How could the Cloudflare bug have been avoided?](#how-could-the-cloudflare-bug-have-been-avoided)
 
 # Use cases for unwrap
 
@@ -77,7 +76,6 @@ Some important points:<br>
 >but we never expect a bug to occur. And when a bug does occur, we seek to
 >remove the bug (or declare it as a problem that won’t be fixed).
 
----
 
 >Of the different ways to handle errors in Rust, this one is regarded as best
 >practice:
@@ -90,7 +88,6 @@ Some important points:<br>
 >additional context to error values as they are returned to the caller.
 >The anyhow crate makes this effortless.
 
----
 
 The use cases for `unwrap` would be:
 1. tests
@@ -311,7 +308,7 @@ When a library author uses `unwrap`:
 
 > "I have proven that this error is impossible, or if it happens, the program is in a fatal state."
 
-# Would be better if Rust didn't have unwrap?
+# Would it be better if Rust didn't have unwrap?
 
 From the valid use cases above, I think `unwrap` has its place.
 
