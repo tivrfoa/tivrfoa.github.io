@@ -393,6 +393,18 @@ pre-allocated memory, and log an error or send an alarm if the threshold is hit.
 
 # Appendix A
 
+## [Miguel Ojeda](https://github.com/rust-lang/project-error-handling/issues/50#issuecomment-1092070132)
+
+Two points, if I may:
+
+- Whether a program is correct or not all depends on the requirements. For instance, a program like fn main() { panic!(); } may be correct if the requirement is that it always panics. For instance, for testing a testing framework.
+- Even if "normal" programs are expected to "not panic", panics can still happen in fully correct programs. For instance, a hardware error that makes an assert fail, even if triggering that assert is impossible given Rust semantics.
+
+In short: if a programmer uses a panic, that just means the program does not have a way to handle the error. Whether that is the right choice, and whether that is an actual bug or not if it happens, and whether abort or unwind should be used, etc., it all depends on the requirements.
+```
+
+# Appendix B
+
 **Prompting Gemini 3: Show me some valid uses of unwrap in important Rust crates**
 
 It is validating to see that even the "gods" of the Rust ecosystem use `unwrap()`. However, they use it very differently than a beginner does.
