@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equação de Equivalência • Tesouro vs Caixinha</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                packages: { '[+]': ['ams'] }
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            },
+            startup: {
+                ready: () => {
+                    MathJax.startup.defaultReady();
+                    // Optional: make formulas slightly larger
+                    document.documentElement.style.setProperty('--math-scale', '1.08');
+                }
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        :root {
+            --math-scale: 1.08;
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .title-font {
+            font-family: 'Space Grotesk', 'Inter', system_ui, sans-serif;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+
+        .formula-container {
+            background-color: #18181b;
+            border: 1px solid #3f3f46;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .formula-container:hover {
+            border-color: #52525b;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        .math-display {
+            font-size: 1.15rem;
+            line-height: 1.6;
+        }
+
+        mjx-container[display="true"] {
+            margin: 0.75rem 0 !important;
+            padding: 0.5rem 0;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        .formula-text {
+            color: #e4e4e7;
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen">
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <!-- Header -->
+        <div class="flex flex-col items-center text-center mb-14">
+            <div class="inline-flex items-center gap-x-3 mb-4">
+                <div class="w-9 h-9 bg-white rounded-2xl flex items-center justify-center">
+                    <span class="text-zinc-950 text-3xl font-bold tracking-tighter">₿</span>
+                </div>
+                <h1 class="title-font text-5xl font-semibold tracking-tighter">Equivalência</h1>
+            </div>
+            <p class="text-zinc-400 text-lg max-w-md">
+                Tesouro Selic × Caixinha Nubank<br>
+                <span class="text-emerald-400 font-medium">Fórmulas de montante e taxa equivalente</span>
+            </p>
+        </div>
+
+        <!-- TESOURO -->
+        <div class="mb-10">
+            <div class="flex items-center justify-center gap-x-2 mb-3">
+                <div class="section-label px-4 py-1.5 bg-zinc-900 text-emerald-400 rounded-3xl border border-zinc-800">TESOURO SELIC</div>
+            </div>
+            <div class="formula-container rounded-3xl p-8 md:p-10 shadow-xl">
+                <div class="text-center mb-2">
+                    <span class="text-emerald-400 text-sm font-semibold tracking-widest">MONTANTE FINAL (10 anos)</span>
+                </div>
+                <div class="math-display text-center">
+                    $$M_{\mathrm{Tesouro}} = P \cdot \left[1 + 0{,}85 \cdot \left( (1 + \mathrm{CDI})^{10} - 1 \right)\right]$$
+                </div>
+                <div class="text-center mt-4 text-xs text-zinc-500">
+                    IR de 15% retido na fonte • Sem reaplicação intermediária
+                </div>
+            </div>
+        </div>
+
+        <!-- CAIXINHA NUBANK -->
+        <div class="mb-10">
+            <div class="flex items-center justify-center gap-x-2 mb-3">
+                <div class="section-label px-4 py-1.5 bg-zinc-900 text-violet-400 rounded-3xl border border-zinc-800">CAIXINHA NUBANK</div>
+            </div>
+            
+            <div class="text-center mb-4">
+                <p class="text-zinc-300 text-[15px] font-medium">
+                    Montante da Caixinha (IR cobrado e reaplicado 5 vezes em 10 anos)
+                </p>
+            </div>
+            
+            <div class="formula-container rounded-3xl p-8 md:p-10 shadow-xl">
+                <div class="text-center mb-2">
+                    <span class="text-violet-400 text-sm font-semibold tracking-widest">MONTANTE FINAL (10 anos)</span>
+                </div>
+                <div class="math-display text-center">
+                    $$M_{\mathrm{Nubank}} = P \cdot \left[1 + 0{,}85 \cdot \left( (1 + x \cdot \mathrm{CDI})^{2} - 1 \right)\right]^{5}$$
+                </div>
+                <div class="text-center mt-4 text-xs text-zinc-500">
+                    IR de 15% a cada 2 anos • Reaplicação do montante líquido
+                </div>
+            </div>
+        </div>
+
+        <!-- EQUAÇÃO DE EQUIVALÊNCIA -->
+        <div>
+            <div class="flex items-center justify-center gap-x-2 mb-3">
+                <div class="section-label px-4 py-1.5 bg-zinc-900 text-amber-400 rounded-3xl border border-zinc-800">EQUIVALÊNCIA</div>
+            </div>
+            
+            <div class="text-center mb-5">
+                <p class="text-zinc-300 text-[15px] font-medium max-w-lg mx-auto">
+                    Igualando os dois montantes e isolando <span class="font-mono text-amber-400">x</span>, temos a equação de equivalência:
+                </p>
+            </div>
+            
+            <div class="formula-container rounded-3xl p-8 md:p-10 shadow-xl border-amber-900/30">
+                <div class="text-center mb-3">
+                    <span class="text-amber-400 text-sm font-semibold tracking-widest">TAXA EQUIVALENTE (x)</span>
+                </div>
+                <div class="math-display text-center px-4">
+                    $$x = \frac{\sqrt[5]{\dfrac{1 + 0{,}85 \cdot \left( (1 + \mathrm{CDI})^{10} - 1 \right)}{0{,}85} + 1 - 1}}{\mathrm{CDI}}$$
+                </div>
+                <div class="mt-6 text-center">
+                    <div class="inline-flex items-center gap-x-2 text-xs bg-zinc-900 border border-zinc-800 rounded-2xl px-4 py-2 text-zinc-400">
+                        <span>Onde</span> 
+                        <span class="font-mono text-amber-400">x</span> 
+                        <span>é o fator multiplicador da taxa CDI</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer note -->
+        <div class="mt-14 text-center">
+            <div class="text-[10px] text-zinc-600 tracking-wider">
+                REPRODUÇÃO EXATA DAS FÓRMULAS • FORMATAÇÃO COM MATHJAX + TAILWIND
+            </div>
+            <div class="mt-1 text-[10px] text-zinc-700">
+                Use este arquivo localmente ou hospede em qualquer servidor estático
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tailwind script
+        function initializeTailwind() {
+            document.documentElement.style.setProperty('--accent', '#22c55e');
+        }
+        
+        // Keyboard shortcut hint (optional)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '/' && document.activeElement.tagName === 'BODY') {
+                e.preventDefault();
+                const formulas = document.querySelectorAll('.formula-container');
+                formulas.forEach(el => el.style.borderColor = '#eab308');
+                setTimeout(() => {
+                    formulas.forEach(el => el.style.borderColor = '#3f3f46');
+                }, 1200);
+            }
+        });
+        
+        // Boot
+        window.onload = function() {
+            initializeTailwind();
+            // MathJax will auto-render on load
+            console.log('%c[Equivalência] HTML com fórmulas matemáticas carregado com sucesso.', 'color:#3f3f46');
+        };
+    </script>
+</body>
+</html>
