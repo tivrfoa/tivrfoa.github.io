@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PARATY • Three.js</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&amp;family=Playfair+Display:wght@700&amp;display=swap');
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-weight: 700;
+        }
+
+        #three-canvas {
+            display: block;
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(20px);
+        }
+
+        .paraty-gold {
+            color: #d4af77;
+        }
+    </style>
+</head>
+<body class="bg-[#0a0f1a] text-white overflow-hidden">
+    <!-- Top Navigation -->
+    <div class="fixed top-0 left-0 right-0 z-50 px-8 py-6 flex items-center justify-between">
+        <div class="flex items-center gap-x-4">
+            <div class="flex items-center gap-x-3">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-600 via-yellow-700 to-orange-800 flex items-center justify-center shadow-inner">
+                    <span class="text-white text-3xl font-bold tracking-tighter">P</span>
+                </div>
+                <div>
+                    <h1 class="font-display text-4xl tracking-tight">PARATY</h1>
+                    <p class="text-xs text-amber-400/80 -mt-1 tracking-[3px]">RIO DE JANEIRO • BRAZIL</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-x-2 text-sm">
+            <div class="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 flex items-center gap-x-2 text-xs">
+                <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                <span>UNESCO World Heritage</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Canvas -->
+    <canvas id="three-canvas" class="fixed inset-0 z-0"></canvas>
+
+    <!-- Info Panel -->
+    <div class="fixed top-24 left-8 z-40 max-w-xs">
+        <div class="glass border border-white/10 rounded-3xl p-6">
+            <div class="flex items-center gap-x-3 mb-4">
+                <div class="text-amber-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314-11.314z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="font-semibold">Historic Center</div>
+                    <div class="text-xs text-white/60">Founded 1660</div>
+                </div>
+            </div>
+            
+            <div class="text-sm text-white/80 space-y-1">
+                <div>• Colonial Portuguese architecture</div>
+                <div>• Cobblestone streets &amp; colorful houses</div>
+                <div>• Bay of Paraty &amp; Atlantic Forest</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Controls -->
+    <div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+        <div class="glass border border-white/10 rounded-3xl px-6 py-4 flex items-center gap-x-4 shadow-2xl">
+            
+            <!-- Camera Presets -->
+            <div class="flex gap-x-2">
+                <button onclick="setCameraView(0)" 
+                        class="px-4 py-2 text-xs rounded-2xl bg-white/10 hover:bg-white/20 transition-colors border border-white/10">
+                    Overview
+                </button>
+                <button onclick="setCameraView(1)" 
+                        class="px-4 py-2 text-xs rounded-2xl bg-white/10 hover:bg-white/20 transition-colors border border-white/10">
+                    Waterfront
+                </button>
+                <button onclick="setCameraView(2)" 
+                        class="px-4 py-2 text-xs rounded-2xl bg-white/10 hover:bg-white/20 transition-colors border border-white/10">
+                    Streets
+                </button>
+            </div>
+
+            <div class="h-6 w-px bg-white/20"></div>
+
+            <!-- Toggles -->
+            <div class="flex items-center gap-x-3">
+                <button onclick="toggleDayNight()" 
+                        id="daynight-btn"
+                        class="px-4 py-2 text-xs rounded-2xl bg-white/10 hover:bg-white/20 transition-colors border border-white/10 flex items-center gap-x-2">
+                    <span id="daynight-text">☀️ Day</span>
+                </button>
+                
+                <button onclick="addBoat()" 
+                        class="px-4 py-2 text-xs rounded-2xl bg-white/10 hover:bg-white/20 transition-colors border border-white/10 flex items-center gap-x-2">
+                    <span>⛵ Add Boat</span>
+                </button>
+            </div>
+
+            <div class="h-6 w-px bg-white/20"></div>
+
+            <!-- Animation Speed -->
+            <div class="flex items-center gap-x-3 w-44">
+                <span class="text-xs text-white/60">Waves</span>
+                <input type="range" id="wave-speed" 
+                       class="accent-amber-500 w-full" 
+                       min="0.2" max="3" step="0.1" value="1">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let scene, camera, renderer;
+        let water, buildings = [], palmTrees = [], boats = [];
+        let isDay = true;
+        let waveSpeed = 1.0;
+        let time = 0;
+
+        // Camera control variables
+        let cameraAngle = 0;
+        let cameraHeight = 28;
+        let cameraDistance = 65;
+        let targetCameraAngle = 0;
+        let targetCameraHeight = 28;
+        let targetCameraDistance = 65;
+        let isDragging = false;
+        let previousMouseX = 0;
+        let previousMouseY = 0;
+
+        function initThree() {
+            const canvas = document.getElementById('three-canvas');
+            
+            renderer = new THREE.WebGLRenderer({ 
+                canvas: canvas, 
+                antialias: true,
+                alpha: false
+            });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0x0a0f1a, 80, 220);
+
+            camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.5, 500);
+
+            // Lights
+            setupLights();
+
+            // Create the scene
+            createGround();
+            createWater();
+            createBuildings();
+            createChurch();
+            createPalmTrees();
+            createBackgroundMountains();
+
+            // Initial camera position
+            updateCamera();
+
+            // Event listeners
+            setupControls(canvas);
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            // Wave speed slider
+            document.getElementById('wave-speed').addEventListener('input', (e) => {
+                waveSpeed = parseFloat(e.target.value);
+            });
+
+            animate();
+        }
+
+        function setupLights() {
+            // Hemisphere light (sky + ground)
+            const hemiLight = new THREE.HemisphereLight(0x87ceeb, 0x3a5f3a, 0.6);
+            scene.add(hemiLight);
+
+            // Directional sun light
+            const sunLight = new THREE.DirectionalLight(0xfff4d9, 1.2);
+            sunLight.position.set(50, 80, 30);
+            sunLight.castShadow = true;
+            sunLight.shadow.mapSize.width = 2048;
+            sunLight.shadow.mapSize.height = 2048;
+            sunLight.shadow.camera.near = 10;
+            sunLight.shadow.camera.far = 300;
+            sunLight.shadow.camera.left = -80;
+            sunLight.shadow.camera.right = 80;
+            sunLight.shadow.camera.top = 80;
+            sunLight.shadow.camera.bottom = -80;
+            scene.add(sunLight);
+
+            // Soft fill light
+            const fillLight = new THREE.DirectionalLight(0xaaccff, 0.3);
+            fillLight.position.set(-40, 30, -50);
+            scene.add(fillLight);
+        }
+
+        function createGround() {
+            // Main ground (cobblestone style)
+            const groundGeo = new THREE.PlaneGeometry(120, 120);
+            const groundMat = new THREE.MeshLambertMaterial({ 
+                color: 0x4a3f2e,
+                flatShading: true 
+            });
+            const ground = new THREE.Mesh(groundGeo, groundMat);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+
+            // Cobblestone lines
+            for (let i = -5; i <= 5; i++) {
+                const lineGeo = new THREE.PlaneGeometry(1.2, 110);
+                const lineMat = new THREE.MeshLambertMaterial({ color: 0x3a2f22 });
+                const line = new THREE.Mesh(lineGeo, lineMat);
+                line.rotation.x = -Math.PI / 2;
+                line.position.set(i * 8, 0.05, 0);
+                scene.add(line);
+            }
+        }
+
+        function createWater() {
+            const waterGeo = new THREE.PlaneGeometry(140, 80, 60, 40);
+            const waterMat = new THREE.MeshPhongMaterial({
+                color: 0x1e4d6b,
+                shininess: 80,
+                specular: 0x112233,
+                flatShading: false
+            });
+            
+            water = new THREE.Mesh(waterGeo, waterMat);
+            water.rotation.x = -Math.PI / 2;
+            water.position.set(0, 0.3, -45);
+            water.receiveShadow = true;
+            scene.add(water);
+
+            // Store original positions for animation
+            water.userData.originalPositions = water.geometry.attributes.position.array.slice();
+        }
+
+        function createBuilding(x, z, width, depth, height, color, hasBalcony = false) {
+            const group = new THREE.Group();
+
+            // Main body
+            const bodyGeo = new THREE.BoxGeometry(width, height, depth);
+            const bodyMat = new THREE.MeshLambertMaterial({ color: color });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            body.position.y = height / 2;
+            body.castShadow = true;
+            body.receiveShadow = true;
+            group.add(body);
+
+            // Roof
+            const roofGeo = new THREE.BoxGeometry(width + 0.8, 1.8, depth + 0.8);
+            const roofMat = new THREE.MeshLambertMaterial({ color: 0x3f2a1f });
+            const roof = new THREE.Mesh(roofGeo, roofMat);
+            roof.position.y = height + 0.9;
+            roof.castShadow = true;
+            group.add(roof);
+
+            // Windows
+            const windowMat = new THREE.MeshLambertMaterial({ color: 0x222222 });
+            const windowSize = 0.9;
+            const rows = Math.floor(height / 3.5);
+            
+            for (let r = 0; r < rows; r++) {
+                for (let w = -1; w <= 1; w++) {
+                    if (Math.random() > 0.3) {
+                        const win = new THREE.Mesh(
+                            new THREE.BoxGeometry(windowSize, windowSize, 0.1),
+                            windowMat
+                        );
+                        win.position.set(
+                            w * (width / 3), 
+                            2 + r * 3.2, 
+                            depth / 2 + 0.05
+                        );
+                        group.add(win);
+                    }
+                }
+            }
+
+            // Door
+            const door = new THREE.Mesh(
+                new THREE.BoxGeometry(1.8, 3.2, 0.2),
+                new THREE.MeshLambertMaterial({ color: 0x8B4513 })
+            );
+            door.position.set(0, 1.6, depth / 2 + 0.1);
+            group.add(door);
+
+            group.position.set(x, 0, z);
+            scene.add(group);
+            buildings.push(group);
+        }
+
+        function createBuildings() {
+            // Historic center - grid of colorful houses
+            const colors = [0xF5E8C7, 0xE8B86D, 0xA67C52, 0xC17F59, 0x8B6F47, 0xD4A017, 0xB87333];
+            
+            // Row 1 (front)
+            for (let i = -4; i <= 4; i++) {
+                if (i === 0) continue; // leave space for church
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                createBuilding(i * 9, 12, 7.5, 8, 6 + Math.random() * 3, color);
+            }
+
+            // Row 2
+            for (let i = -3; i <= 3; i++) {
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                createBuilding(i * 9.5, 28, 7, 7.5, 5.5 + Math.random() * 2.5, color);
+            }
+
+            // Side streets
+            for (let i = -2; i <= 2; i++) {
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                createBuilding(-38, i * 11 + 18, 6.5, 7, 5 + Math.random() * 2, color);
+                createBuilding(38, i * 11 + 18, 6.5, 7, 5 + Math.random() * 2, color);
+            }
+        }
+
+        function createChurch() {
+            const group = new THREE.Group();
+
+            // Main body
+            const body = new THREE.Mesh(
+                new THREE.BoxGeometry(18, 14, 12),
+                new THREE.MeshLambertMaterial({ color: 0xF5F0E6 })
+            );
+            body.position.y = 7;
+            body.castShadow = true;
+            group.add(body);
+
+            // Roof
+            const roof = new THREE.Mesh(
+                new THREE.BoxGeometry(19, 3, 13),
+                new THREE.MeshLambertMaterial({ color: 0x3a2f22 })
+            );
+            roof.position.y = 15.5;
+            group.add(roof);
+
+            // Tower
+            const tower = new THREE.Mesh(
+                new THREE.BoxGeometry(5, 22, 5),
+                new THREE.MeshLambertMaterial({ color: 0xF5F0E6 })
+            );
+            tower.position.set(-6, 11, 0);
+            group.add(tower);
+
+            // Tower roof
+            const towerRoof = new THREE.Mesh(
+                new THREE.ConeGeometry(4, 6, 4),
+                new THREE.MeshLambertMaterial({ color: 0x3a2f22 })
+            );
+            towerRoof.position.set(-6, 25, 0);
+            group.add(towerRoof);
+
+            group.position.set(0, 0, 8);
+            scene.add(group);
+            buildings.push(group);
+        }
+
+        function createPalmTree(x, z) {
+            const group = new THREE.Group();
+
+            // Trunk
+            const trunk = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.6, 0.9, 12, 6),
+                new THREE.MeshLambertMaterial({ color: 0x3a2f1f })
+            );
+            trunk.position.y = 6;
+            group.add(trunk);
+
+            // Palm fronds
+            const frondMat = new THREE.MeshLambertMaterial({ color: 0x2e5c2e, flatShading: true });
+            
+            for (let i = 0; i < 7; i++) {
+                const angle = (i / 7) * Math.PI * 2;
+                const frond = new THREE.Mesh(
+                    new THREE.ConeGeometry(4.5, 1.2, 4),
+                    frondMat
+                );
+                frond.rotation.x = 1.3;
+                frond.rotation.y = angle;
+                frond.position.y = 11.5;
+                group.add(frond);
+            }
+
+            group.position.set(x, 0, z);
+            scene.add(group);
+            palmTrees.push(group);
+        }
+
+        function createPalmTrees() {
+            // Scattered palm trees
+            createPalmTree(-45, -25);
+            createPalmTree(42, -28);
+            createPalmTree(-52, 5);
+            createPalmTree(48, 22);
+            createPalmTree(-38, -42);
+            createPalmTree(55, -15);
+        }
+
+        function createBackgroundMountains() {
+            // Simple low-poly mountains
+            const mountainMat = new THREE.MeshLambertMaterial({ color: 0x2d3a2d, flatShading: true });
+
+            // Left mountain
+            const m1 = new THREE.Mesh(new THREE.ConeGeometry(45, 55, 5), mountainMat);
+            m1.position.set(-70, 20, -90);
+            m1.rotation.y = 0.6;
+            scene.add(m1);
+
+            // Right mountain
+            const m2 = new THREE.Mesh(new THREE.ConeGeometry(38, 48, 5), mountainMat);
+            m2.position.set(65, 18, -85);
+            m2.rotation.y = -0.8;
+            scene.add(m2);
+
+            // Center background hill
+            const m3 = new THREE.Mesh(new THREE.ConeGeometry(55, 35, 6), mountainMat);
+            m3.position.set(0, 12, -95);
+            scene.add(m3);
+        }
+
+        function createBoat(x, z, scale = 1) {
+            const group = new THREE.Group();
+
+            // Hull
+            const hull = new THREE.Mesh(
+                new THREE.BoxGeometry(6 * scale, 1.5 * scale, 2.5 * scale),
+                new THREE.MeshLambertMaterial({ color: 0x8B4513 })
+            );
+            hull.position.y = 0.8 * scale;
+            group.add(hull);
+
+            // Cabin
+            const cabin = new THREE.Mesh(
+                new THREE.BoxGeometry(3 * scale, 2 * scale, 2 * scale),
+                new THREE.MeshLambertMaterial({ color: 0xF5E8C7 })
+            );
+            cabin.position.set(0, 2.3 * scale, 0);
+            group.add(cabin);
+
+            // Sail
+            const sail = new THREE.Mesh(
+                new THREE.ConeGeometry(1.5 * scale, 5 * scale, 3),
+                new THREE.MeshLambertMaterial({ color: 0xF5F5DC })
+            );
+            sail.position.set(0, 5.5 * scale, 0);
+            sail.rotation.x = Math.PI;
+            group.add(sail);
+
+            group.position.set(x, 0.5, z);
+            scene.add(group);
+            boats.push(group);
+        }
+
+        function addBoat() {
+            const x = (Math.random() - 0.5) * 50;
+            const z = -35 - Math.random() * 25;
+            createBoat(x, z, 0.8 + Math.random() * 0.6);
+        }
+
+        function updateCamera() {
+            const targetX = Math.sin(cameraAngle) * cameraDistance;
+            const targetZ = Math.cos(cameraAngle) * cameraDistance - 15;
+
+            camera.position.x = targetX;
+            camera.position.z = targetZ;
+            camera.position.y = cameraHeight;
+
+            // Look at center of town
+            camera.lookAt(0, 8, 5);
+        }
+
+        function setupControls(canvas) {
+            canvas.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                previousMouseX = e.clientX;
+                previousMouseY = e.clientY;
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+
+                const deltaX = e.clientX - previousMouseX;
+                const deltaY = e.clientY - previousMouseY;
+
+                targetCameraAngle -= deltaX * 0.004;
+                targetCameraHeight += deltaY * 0.08;
+                targetCameraHeight = Math.max(8, Math.min(55, targetCameraHeight));
+
+                previousMouseX = e.clientX;
+                previousMouseY = e.clientY;
+            });
+
+            // Zoom
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                targetCameraDistance += e.deltaY * 0.12;
+                targetCameraDistance = Math.max(25, Math.min(120, targetCameraDistance));
+            });
+
+            // Double click to reset
+            canvas.addEventListener('dblclick', () => {
+                targetCameraAngle = 0.6;
+                targetCameraHeight = 28;
+                targetCameraDistance = 65;
+            });
+        }
+
+        function setCameraView(view) {
+            if (view === 0) { // Overview
+                targetCameraAngle = 0.6;
+                targetCameraHeight = 32;
+                targetCameraDistance = 70;
+            } else if (view === 1) { // Waterfront
+                targetCameraAngle = 3.8;
+                targetCameraHeight = 18;
+                targetCameraDistance = 55;
+            } else if (view === 2) { // Streets
+                targetCameraAngle = 1.2;
+                targetCameraHeight = 15;
+                targetCameraDistance = 38;
+            }
+        }
+
+        function toggleDayNight() {
+            isDay = !isDay;
+            const btn = document.getElementById('daynight-btn');
+            const text = document.getElementById('daynight-text');
+
+            if (isDay) {
+                scene.fog.color.setHex(0x0a0f1a);
+                text.innerHTML = '☀️ Day';
+                btn.style.background = 'rgba(255,255,255,0.1)';
+            } else {
+                scene.fog.color.setHex(0x05080f);
+                text.innerHTML = '🌙 Night';
+                btn.style.background = 'rgba(30, 41, 59, 0.6)';
+            }
+        }
+
+        function animateWater() {
+            if (!water) return;
+
+            const positions = water.geometry.attributes.position;
+            const original = water.userData.originalPositions;
+
+            for (let i = 0; i < positions.count; i++) {
+                const x = original[i * 3];
+                const y = original[i * 3 + 1];
+                const z = original[i * 3 + 2];
+
+                const wave = Math.sin((x + time * 1.5) * 0.6) * 0.8 * waveSpeed +
+                             Math.sin((z + time * 1.2) * 0.45) * 0.6 * waveSpeed;
+
+                positions.array[i * 3 + 1] = y + wave;
+            }
+
+            positions.needsUpdate = true;
+            water.geometry.computeVertexNormals();
+        }
+
+        function animatePalmTrees() {
+            palmTrees.forEach((tree, index) => {
+                const sway = Math.sin(time * 1.2 + index) * 0.04;
+                tree.rotation.y = sway;
+            });
+        }
+
+        function animateBoats() {
+            boats.forEach((boat, index) => {
+                boat.position.y = 0.5 + Math.sin(time * 1.5 + index) * 0.25;
+                boat.rotation.y = Math.sin(time * 0.6 + index * 1.5) * 0.03;
+            });
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.016 * waveSpeed;
+
+            // Smooth camera movement
+            cameraAngle += (targetCameraAngle - cameraAngle) * 0.04;
+            cameraHeight += (targetCameraHeight - cameraHeight) * 0.04;
+            cameraDistance += (targetCameraDistance - cameraDistance) * 0.04;
+
+            updateCamera();
+
+            // Animations
+            animateWater();
+            animatePalmTrees();
+            animateBoats();
+
+            // Gentle auto orbit when not dragging
+            if (!isDragging) {
+                targetCameraAngle += 0.0008;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function startVisualization() {
+            initThree();
+
+            // Add a few initial boats
+            setTimeout(() => {
+                createBoat(-18, -48, 1);
+                createBoat(22, -52, 0.9);
+                createBoat(-5, -38, 1.1);
+            }, 600);
+
+            // Start with nice camera angle
+            targetCameraAngle = 0.6;
+            targetCameraHeight = 28;
+            targetCameraDistance = 65;
+
+            // Easter egg: press "b" to add more boats
+            window.addEventListener('keydown', (e) => {
+                if (e.key.toLowerCase() === 'b') {
+                    addBoat();
+                }
+            });
+        }
+
+        window.onload = startVisualization;
+    </script>
+</body>
+</html>
