@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEBULA • Three.js Galaxy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        :root {
+            --accent: #6366f1;
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Space Grotesk', 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        #three-canvas {
+            display: block;
+            outline: none;
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+        }
+
+        .neon-text {
+            text-shadow: 0 0 10px rgb(99 102 241 / 0.5);
+        }
+
+        .particle-glow {
+            filter: drop-shadow(0 0 8px rgb(99 102 241 / 0.6));
+        }
+
+        .control-slider {
+            accent-color: #6366f1;
+        }
+
+        .three-container {
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+        }
+    </style>
+</head>
+<body class="bg-black text-white overflow-hidden">
+    <!-- Top Navigation -->
+    <div class="fixed top-0 left-0 right-0 z-50 px-8 py-5 flex items-center justify-between">
+        <div class="flex items-center gap-x-3">
+            <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+                <span class="text-white text-2xl font-bold">N</span>
+            </div>
+            <div>
+                <h1 class="font-display text-3xl tracking-tighter font-semibold">NEBULA</h1>
+                <p class="text-[10px] text-zinc-500 -mt-1 tracking-[2px]">THREE.JS • 2026</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-x-2 text-sm">
+            <div class="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 flex items-center gap-x-2">
+                <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                <span class="text-emerald-400 text-xs font-medium">LIVE RENDERING</span>
+            </div>
+            <div class="text-xs px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-zinc-400">
+                60 FPS
+            </div>
+        </div>
+    </div>
+
+    <!-- Canvas -->
+    <canvas id="three-canvas" class="fixed inset-0 z-0"></canvas>
+
+    <!-- Instructions Overlay -->
+    <div class="fixed top-24 left-8 z-40 max-w-[220px]">
+        <div class="glass border border-white/10 rounded-3xl p-5 text-sm">
+            <div class="flex items-center gap-x-2 mb-3">
+                <div class="text-indigo-400">✦</div>
+                <span class="font-medium text-xs tracking-widest text-white/70">CONTROLS</span>
+            </div>
+            <div class="space-y-2 text-xs text-zinc-400">
+                <div class="flex items-center gap-x-2">
+                    <span class="font-mono bg-white/10 px-1.5 py-px rounded text-[10px]">DRAG</span>
+                    <span>Rotate view</span>
+                </div>
+                <div class="flex items-center gap-x-2">
+                    <span class="font-mono bg-white/10 px-1.5 py-px rounded text-[10px]">SCROLL</span>
+                    <span>Zoom in/out</span>
+                </div>
+                <div class="flex items-center gap-x-2">
+                    <span class="font-mono bg-white/10 px-1.5 py-px rounded text-[10px]">CLICK</span>
+                    <span>Create particle burst</span>
+                </div>
+                <div class="flex items-center gap-x-2">
+                    <span class="font-mono bg-white/10 px-1.5 py-px rounded text-[10px]">SPACE</span>
+                    <span>Supernova</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Controls -->
+    <div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+        <div class="glass border border-white/10 rounded-3xl px-6 py-4 shadow-2xl flex items-center gap-x-6">
+            
+            <!-- Sliders -->
+            <div class="flex items-center gap-x-8">
+                <!-- Rotation Speed -->
+                <div class="flex flex-col gap-y-1.5 w-40">
+                    <div class="flex justify-between items-baseline text-xs">
+                        <span class="text-zinc-400">Rotation Speed</span>
+                        <span id="rot-value" class="font-mono text-indigo-400 text-xs">1.0</span>
+                    </div>
+                    <input type="range" id="rot-speed" 
+                           class="control-slider w-full accent-indigo-500" 
+                           min="0" max="3" step="0.1" value="1">
+                </div>
+
+                <!-- Particle Size -->
+                <div class="flex flex-col gap-y-1.5 w-40">
+                    <div class="flex justify-between items-baseline text-xs">
+                        <span class="text-zinc-400">Particle Size</span>
+                        <span id="size-value" class="font-mono text-indigo-400 text-xs">0.08</span>
+                    </div>
+                    <input type="range" id="particle-size" 
+                           class="control-slider w-full accent-indigo-500" 
+                           min="0.02" max="0.25" step="0.01" value="0.08">
+                </div>
+            </div>
+
+            <div class="h-8 w-px bg-white/10"></div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-x-3">
+                <button onclick="triggerSupernova()"
+                        class="px-5 py-2.5 text-sm font-medium rounded-2xl bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 transition-all active:scale-[0.985] flex items-center gap-x-2">
+                    <span>💥</span>
+                    <span class="font-semibold">Supernova</span>
+                </button>
+                
+                <button onclick="randomizeTheme()"
+                        class="px-5 py-2.5 text-sm font-medium rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 transition-all active:scale-[0.985]">
+                    Randomize Colors
+                </button>
+                
+                <button onclick="resetView()"
+                        class="px-4 py-2.5 text-sm font-medium rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 transition-all active:scale-[0.985]">
+                    Reset View
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="fixed bottom-8 right-8 z-40 text-right">
+        <div class="glass border border-white/10 rounded-2xl px-4 py-2 text-xs">
+            <div class="flex items-center justify-end gap-x-3">
+                <div>
+                    <span id="particle-count" class="font-mono text-emerald-400 font-medium">32,847</span>
+                    <span class="text-zinc-500 text-[10px]">particles</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tailwind script
+        function initTailwind() {
+            document.documentElement.style.setProperty('--accent', '#6366f1');
+        }
+        initTailwind();
+
+        // Three.js variables
+        let scene, camera, renderer;
+        let galaxyGroup, galaxyPoints, backgroundStars;
+        let coreSphere, accretionDisk;
+        let planets = [];
+        let raycaster, mouse;
+        let isDragging = false;
+        let previousMouseX = 0, previousMouseY = 0;
+        let cameraRotationX = 0.6;
+        let cameraRotationY = 0;
+        let cameraDistance = 55;
+        let rotationSpeed = 1.0;
+        let activeBursts = [];
+        let colorTheme = 0;
+
+        // Animation variables
+        let lastTime = Date.now();
+
+        function initThree() {
+            const canvas = document.getElementById('three-canvas');
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ 
+                canvas: canvas, 
+                antialias: true,
+                alpha: false,
+                powerPreference: "high-performance"
+            });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+
+            // Scene
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0x05050f, 40, 180);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
+            updateCameraPosition();
+
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0x334466, 0.4);
+            scene.add(ambientLight);
+
+            const pointLight = new THREE.PointLight(0xffffff, 2.2, 300);
+            pointLight.position.set(0, 15, 0);
+            scene.add(pointLight);
+
+            const rimLight = new THREE.PointLight(0x6366f1, 1.5, 200);
+            rimLight.position.set(-30, -10, -40);
+            scene.add(rimLight);
+
+            // Create everything
+            createBackgroundStars();
+            createGalaxy();
+            createCore();
+            createPlanets();
+            
+            // Raycaster
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
+
+            // Event listeners
+            setupEventListeners(canvas);
+            
+            // Handle resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            // Start animation
+            animate();
+            
+            // Update particle count display
+            updateParticleCount();
+        }
+
+        function createBackgroundStars() {
+            const starCount = 8000;
+            const positions = new Float32Array(starCount * 3);
+            const colors = new Float32Array(starCount * 3);
+
+            for (let i = 0; i < starCount * 3; i += 3) {
+                // Large sphere around the scene
+                const radius = 80 + Math.random() * 120;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+
+                positions[i] = radius * Math.sin(phi) * Math.cos(theta);
+                positions[i + 1] = radius * Math.sin(phi) * Math.sin(theta);
+                positions[i + 2] = radius * Math.cos(phi);
+
+                // Slight color variation (mostly white/blue)
+                const brightness = 0.6 + Math.random() * 0.4;
+                colors[i] = brightness;
+                colors[i + 1] = brightness;
+                colors[i + 2] = brightness * 1.1;
+            }
+
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.035,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.85,
+                depthWrite: false
+            });
+
+            backgroundStars = new THREE.Points(geometry, material);
+            scene.add(backgroundStars);
+        }
+
+        function createGalaxy() {
+            const particleCount = 22000;
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            const sizes = new Float32Array(particleCount);
+
+            const maxRadius = 28;
+
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                
+                // Multi-arm spiral galaxy
+                const arm = i % 5;
+                const angle = (i / particleCount) * Math.PI * 14 + (arm * Math.PI * 2 / 5);
+                const radius = Math.pow(i / particleCount, 0.65) * maxRadius;
+                
+                // Spiral position
+                const x = radius * Math.cos(angle) * (0.9 + Math.random() * 0.2);
+                const z = radius * Math.sin(angle) * (0.9 + Math.random() * 0.2);
+                const y = (Math.random() - 0.5) * (2.5 + radius * 0.08);
+
+                positions[i3] = x;
+                positions[i3 + 1] = y;
+                positions[i3 + 2] = z;
+
+                // Beautiful color gradient (purple → cyan → white)
+                const distFactor = radius / maxRadius;
+                const hue = 0.75 - distFactor * 0.55; // purple to cyan
+                const color = new THREE.Color().setHSL(hue, 0.85, 0.75 + Math.random() * 0.2);
+
+                colors[i3] = color.r;
+                colors[i3 + 1] = color.g;
+                colors[i3 + 2] = color.b;
+
+                sizes[i] = 0.6 + Math.random() * 1.4;
+            }
+
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.08,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.95,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false,
+                sizeAttenuation: true
+            });
+
+            galaxyPoints = new THREE.Points(geometry, material);
+            
+            galaxyGroup = new THREE.Group();
+            galaxyGroup.add(galaxyPoints);
+            scene.add(galaxyGroup);
+        }
+
+        function createCore() {
+            // Central bright core
+            const coreGeometry = new THREE.SphereGeometry(2.2, 48, 48);
+            const coreMaterial = new THREE.MeshBasicMaterial({
+                color: 0xa5b4fc,
+                transparent: true,
+                opacity: 0.95
+            });
+            coreSphere = new THREE.Mesh(coreGeometry, coreMaterial);
+            scene.add(coreSphere);
+
+            // Inner brighter core
+            const innerCore = new THREE.Mesh(
+                new THREE.SphereGeometry(1.1, 32, 32),
+                new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9 })
+            );
+            scene.add(innerCore);
+
+            // Accretion disk (torus)
+            const diskGeometry = new THREE.TorusGeometry(4.5, 0.65, 32, 120);
+            const diskMaterial = new THREE.MeshPhongMaterial({
+                color: 0x6366f1,
+                emissive: 0x4338ca,
+                shininess: 25,
+                transparent: true,
+                opacity: 0.85
+            });
+            accretionDisk = new THREE.Mesh(diskGeometry, diskMaterial);
+            accretionDisk.rotation.x = Math.PI / 2.1;
+            scene.add(accretionDisk);
+
+            // Add point light at center
+            const coreLight = new THREE.PointLight(0x6366f1, 3, 80);
+            coreLight.position.set(0, 0, 0);
+            scene.add(coreLight);
+        }
+
+        function createPlanets() {
+            const planetData = [
+                { radius: 9, speed: 0.008, size: 0.9, color: 0x64748b },
+                { radius: 14, speed: 0.0045, size: 1.3, color: 0x22d3ee },
+                { radius: 20, speed: 0.0028, size: 1.6, color: 0xa78bfa },
+                { radius: 26, speed: 0.0016, size: 1.1, color: 0xf472b6 }
+            ];
+
+            planetData.forEach((data, index) => {
+                const geometry = new THREE.SphereGeometry(data.size, 32, 32);
+                const material = new THREE.MeshPhongMaterial({
+                    color: data.color,
+                    shininess: 15,
+                    emissive: new THREE.Color(data.color).multiplyScalar(0.1)
+                });
+                
+                const planet = new THREE.Mesh(geometry, material);
+                
+                // Initial position
+                const angle = index * (Math.PI * 2 / 4);
+                planet.userData = {
+                    radius: data.radius,
+                    speed: data.speed,
+                    angle: angle,
+                    originalColor: data.color
+                };
+                
+                scene.add(planet);
+                planets.push(planet);
+
+                // Add subtle ring to some planets
+                if (index === 2) {
+                    const ringGeo = new THREE.TorusGeometry(data.size * 1.8, 0.12, 16, 60);
+                    const ringMat = new THREE.MeshPhongMaterial({
+                        color: 0xc0c0ff,
+                        transparent: true,
+                        opacity: 0.4,
+                        shininess: 40
+                    });
+                    const ring = new THREE.Mesh(ringGeo, ringMat);
+                    ring.rotation.x = Math.PI / 2;
+                    planet.add(ring);
+                    planet.userData.ring = ring;
+                }
+            });
+        }
+
+        function updateCameraPosition() {
+            camera.position.x = cameraDistance * Math.sin(cameraRotationY) * Math.cos(cameraRotationX);
+            camera.position.y = cameraDistance * Math.sin(cameraRotationX);
+            camera.position.z = cameraDistance * Math.cos(cameraRotationY) * Math.cos(cameraRotationX);
+            camera.lookAt(0, 0, 0);
+        }
+
+        function setupEventListeners(canvas) {
+            // Mouse drag for rotation
+            canvas.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                previousMouseX = e.clientX;
+                previousMouseY = e.clientY;
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+
+                const deltaX = e.clientX - previousMouseX;
+                const deltaY = e.clientY - previousMouseY;
+
+                cameraRotationY += deltaX * 0.0035;
+                cameraRotationX += deltaY * 0.0035;
+
+                // Clamp vertical rotation
+                cameraRotationX = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, cameraRotationX));
+
+                updateCameraPosition();
+
+                previousMouseX = e.clientX;
+                previousMouseY = e.clientY;
+            });
+
+            // Zoom with scroll
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                cameraDistance += e.deltaY * 0.08;
+                cameraDistance = Math.max(12, Math.min(120, cameraDistance));
+                updateCameraPosition();
+            });
+
+            // Click to create particle burst
+            canvas.addEventListener('click', (e) => {
+                if (isDragging) return; // prevent burst on drag release
+                
+                const rect = canvas.getBoundingClientRect();
+                mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+                
+                // Create burst in front of camera
+                const burstPosition = new THREE.Vector3();
+                burstPosition.copy(camera.position).add(
+                    raycaster.ray.direction.clone().multiplyScalar(35)
+                );
+                
+                createBurst(burstPosition, 280, 0xffffff);
+            });
+
+            // Keyboard controls
+            window.addEventListener('keydown', (e) => {
+                if (e.key === ' ' || e.key === 'Spacebar') {
+                    e.preventDefault();
+                    triggerSupernova();
+                }
+                if (e.key.toLowerCase() === 'r') {
+                    resetView();
+                }
+            });
+
+            // Sliders
+            const rotSlider = document.getElementById('rot-speed');
+            const sizeSlider = document.getElementById('particle-size');
+
+            rotSlider.addEventListener('input', () => {
+                rotationSpeed = parseFloat(rotSlider.value);
+                document.getElementById('rot-value').textContent = rotationSpeed.toFixed(1);
+            });
+
+            sizeSlider.addEventListener('input', () => {
+                if (galaxyPoints) {
+                    galaxyPoints.material.size = parseFloat(sizeSlider.value);
+                    document.getElementById('size-value').textContent = parseFloat(sizeSlider.value).toFixed(2);
+                }
+            });
+
+            // Initial values
+            document.getElementById('rot-value').textContent = rotationSpeed.toFixed(1);
+            document.getElementById('size-value').textContent = '0.08';
+        }
+
+        function createBurst(position, count = 300, color = 0xffffff) {
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(count * 3);
+            const velocities = new Float32Array(count * 3);
+
+            for (let i = 0; i < count * 3; i += 3) {
+                positions[i] = position.x;
+                positions[i + 1] = position.y;
+                positions[i + 2] = position.z;
+
+                // Random outward velocity
+                const vel = new THREE.Vector3(
+                    (Math.random() - 0.5) * 2,
+                    (Math.random() - 0.5) * 2,
+                    (Math.random() - 0.5) * 2
+                ).normalize().multiplyScalar(0.15 + Math.random() * 0.45);
+
+                velocities[i] = vel.x;
+                velocities[i + 1] = vel.y;
+                velocities[i + 2] = vel.z;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.12,
+                color: color,
+                transparent: true,
+                opacity: 1,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+
+            const points = new THREE.Points(geometry, material);
+            scene.add(points);
+
+            activeBursts.push({
+                points: points,
+                geometry: geometry,
+                velocities: velocities,
+                life: 95,
+                maxLife: 95
+            });
+        }
+
+        function triggerSupernova() {
+            // Big central explosion
+            createBurst(new THREE.Vector3(0, 0, 0), 1200, 0xffaa33);
+            
+            // Secondary colorful bursts
+            setTimeout(() => {
+                createBurst(new THREE.Vector3(8, 3, -5), 450, 0x6366f1);
+            }, 80);
+            
+            setTimeout(() => {
+                createBurst(new THREE.Vector3(-7, -4, 6), 450, 0xa78bfa);
+            }, 160);
+        }
+
+        function updateBursts() {
+            for (let i = activeBursts.length - 1; i >= 0; i--) {
+                const burst = activeBursts[i];
+                const positions = burst.geometry.attributes.position.array;
+                const velocities = burst.velocities;
+
+                for (let j = 0; j < velocities.length; j += 3) {
+                    positions[j] += velocities[j];
+                    positions[j + 1] += velocities[j + 1];
+                    positions[j + 2] += velocities[j + 2];
+                    
+                    // Gentle slowdown
+                    velocities[j] *= 0.985;
+                    velocities[j + 1] *= 0.985;
+                    velocities[j + 2] *= 0.985;
+                }
+
+                burst.geometry.attributes.position.needsUpdate = true;
+
+                burst.life--;
+                
+                const lifeRatio = burst.life / burst.maxLife;
+                burst.points.material.opacity = lifeRatio * 0.95;
+                burst.points.material.size = 0.12 * (0.4 + lifeRatio * 0.6);
+
+                if (burst.life <= 0) {
+                    scene.remove(burst.points);
+                    burst.geometry.dispose();
+                    burst.points.material.dispose();
+                    activeBursts.splice(i, 1);
+                }
+            }
+        }
+
+        function updatePlanets() {
+            planets.forEach(planet => {
+                const data = planet.userData;
+                data.angle += data.speed * rotationSpeed;
+                
+                planet.position.x = Math.cos(data.angle) * data.radius;
+                planet.position.z = Math.sin(data.angle) * data.radius;
+                planet.position.y = Math.sin(data.angle * 1.7) * 1.5;
+
+                // Gentle rotation on own axis
+                planet.rotation.y += 0.008;
+
+                if (data.ring) {
+                    data.ring.rotation.z += 0.015;
+                }
+            });
+        }
+
+        function updateGalaxy() {
+            if (galaxyGroup) {
+                galaxyGroup.rotation.y += 0.00065 * rotationSpeed;
+                galaxyGroup.rotation.x = Math.sin(Date.now() * 0.0001) * 0.08;
+            }
+            
+            if (accretionDisk) {
+                accretionDisk.rotation.z += 0.018 * rotationSpeed;
+            }
+        }
+
+        function updateCameraAuto() {
+            if (!isDragging) {
+                cameraRotationY += 0.00035 * rotationSpeed;
+                updateCameraPosition();
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const currentTime = Date.now();
+            const delta = (currentTime - lastTime) / 16.67; // normalized to ~60fps
+            lastTime = currentTime;
+
+            // Update all animated elements
+            updateGalaxy();
+            updatePlanets();
+            updateBursts();
+            updateCameraAuto();
+
+            // Subtle core pulsing
+            if (coreSphere) {
+                const pulse = 1 + Math.sin(Date.now() * 0.003) * 0.08;
+                coreSphere.scale.set(pulse, pulse, pulse);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function randomizeTheme() {
+            colorTheme = (colorTheme + 1) % 4;
+            
+            if (!galaxyPoints) return;
+
+            const positions = galaxyPoints.geometry.attributes.position.array;
+            const colors = galaxyPoints.geometry.attributes.color.array;
+            const maxRadius = 28;
+
+            for (let i = 0; i < colors.length; i += 3) {
+                const x = positions[i];
+                const z = positions[i + 2];
+                const radius = Math.sqrt(x * x + z * z);
+                const distFactor = Math.min(radius / maxRadius, 1);
+
+                let hue;
+                switch (colorTheme) {
+                    case 0: // Default purple-cyan
+                        hue = 0.75 - distFactor * 0.55;
+                        break;
+                    case 1: // Fiery
+                        hue = 0.05 + distFactor * 0.08;
+                        break;
+                    case 2: // Emerald
+                        hue = 0.35 - distFactor * 0.15;
+                        break;
+                    case 3: // Cosmic pink
+                        hue = 0.9 - distFactor * 0.25;
+                        break;
+                }
+
+                const color = new THREE.Color().setHSL(hue, 0.85, 0.72 + Math.random() * 0.15);
+                colors[i] = color.r;
+                colors[i + 1] = color.g;
+                colors[i + 2] = color.b;
+            }
+
+            galaxyPoints.geometry.attributes.color.needsUpdate = true;
+
+            // Change core color too
+            if (coreSphere) {
+                const coreColors = [0xa5b4fc, 0xfca5a5, 0x86efac, 0xf0abfc];
+                coreSphere.material.color.setHex(coreColors[colorTheme]);
+            }
+        }
+
+        function resetView() {
+            cameraRotationX = 0.6;
+            cameraRotationY = 0;
+            cameraDistance = 55;
+            updateCameraPosition();
+        }
+
+        function updateParticleCount() {
+            const countEl = document.getElementById('particle-count');
+            // Approximate total particles
+            setInterval(() => {
+                const total = 22000 + 8000 + activeBursts.length * 300;
+                countEl.textContent = total.toLocaleString();
+            }, 2000);
+        }
+
+        // Initialize everything
+        function startVisualization() {
+            initThree();
+            
+            // Welcome supernova after 2.5 seconds
+            setTimeout(() => {
+                if (activeBursts.length === 0) {
+                    createBurst(new THREE.Vector3(0, 4, 0), 450, 0x6366f1);
+                }
+            }, 2500);
+
+            // Easter egg: press "h" for huge burst
+            window.addEventListener('keydown', function handler(e) {
+                if (e.key.toLowerCase() === 'h') {
+                    createBurst(new THREE.Vector3(0, 0, 0), 2000, 0xffffff);
+                    window.removeEventListener('keydown', handler);
+                }
+            });
+        }
+
+        // Boot the experience
+        window.onload = startVisualization;
+    </script>
+</body>
+</html>
