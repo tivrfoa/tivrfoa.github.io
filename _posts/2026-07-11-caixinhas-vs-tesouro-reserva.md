@@ -143,6 +143,85 @@ A matemática nos diz que $x\approx1,0459$. Isso significa que a Caixinha do Nub
 
 *(Atenção a um último detalhe: O Tesouro Reserva é isento da taxa de custódia da B3 apenas para valores até **R$ 10.000,00**. Se você investir acima desse valor, pagará 0,20% ao ano sobre o excedente).*
 
+# Battle between a **higher interest rate** and **uninterrupted compound interest**
+
+Prompt: If I increase Rendimento da caixinha to 105% and if CDI is 11%, caixinha is better, but if CDI is 12%, tesouro is better. why?
+
+[Simulador de Rendimento: Tesouro vs Caixinha (10 Anos)](https://tivrfoa.github.io/assets/html/caixinhas-vs-tesouro.html)
+
+**Gemini:**
+
+The reason for this shift comes down to a mathematical battle between a **higher interest rate** and **uninterrupted compound interest**.
+
+Based on the formulas provided in the document, here is exactly why the Tesouro Selic overtakes the Caixinha Nubank at higher CDI rates:
+
+### The Two Competing Forces
+
+The comparison between the two investments hinges on how they handle income tax (IR):
+
+* **Caixinha Nubank's Advantage (Higher Rate):** It yields a higher gross rate of 105% of the CDI (where $x = 1.05$).
+
+
+* **Caixinha Nubank's Disadvantage (Tax Drag):** Income tax of 15% is charged every 2 years, meaning the net amount is reinvested 5 times over the 10-year period.
+
+
+* **Tesouro Selic's Advantage (Tax Deferral):** Income tax of 15% is retained only once at the source at the very end of the 10 years, with no intermediate reinvestment.
+
+
+
+### Why the Shift Happens at 12%
+
+Compound interest grows exponentially. Because the Tesouro Selic does not pay taxes every 2 years, the money that *would* have gone to taxes remains in the account, generating even more interest on top of itself for the full 10 years.
+
+* **At a lower rate (11% CDI):** The compounding effect is weaker. The fact that the Caixinha starts with a higher multiplier (105% vs 100%) is powerful enough to compensate for the money lost to taxes every 2 years.
+
+
+* **At a higher rate (12% CDI):** The exponential power of compound interest becomes much stronger. The "tax drag"—the lost potential interest on the money you had to pay to the government every 2 years in the Caixinha—becomes massive. At this point, the extra 5% yield is no longer enough to beat the sheer force of the Tesouro's uninterrupted 10-year compounding.
+
+
+
+### The Math Behind It
+
+If we assume a principal $P = 1$, we can see this play out using the formulas from the document:
+
+**At 11% CDI:**
+
+* **Tesouro** calculates full 10-year compound interest first, then taxes 15% on the total profit:
+
+
+
+$$M_{\mathrm{Tesouro}} = 1 \cdot \left[1 + 0.85 \cdot \left( (1 + 0.11)^{10} - 1 \right)\right] \approx 2.5635$$
+
+
+* **Caixinha** taxes 15% on the profit every 2 years, compounding the net result 5 times:
+
+
+
+$$M_{\mathrm{Nubank}} = 1 \cdot \left[1 + 0.85 \cdot \left( (1 + 1.05 \cdot 0.11)^{2} - 1 \right)\right]^{5} \approx 2.5684$$
+
+
+* *Result: Caixinha wins.*
+
+**At 12% CDI:**
+
+* **Tesouro** uninterrupted compounding:
+
+
+
+$$M_{\mathrm{Tesouro}} = 1 \cdot \left[1 + 0.85 \cdot \left( (1 + 0.12)^{10} - 1 \right)\right] \approx 2.7899$$
+
+
+* **Caixinha** interrupted compounding:
+
+
+
+$$M_{\mathrm{Nubank}} = 1 \cdot \left[1 + 0.85 \cdot \left( (1 + 1.05 \cdot 0.12)^{2} - 1 \right)\right]^{5} \approx 2.7885$$
+
+
+* *Result: Tesouro wins.*
+
+In short, as the CDI rate rises, the penalty for interrupting your compound interest to pay taxes grows exponentially, eventually making tax deferral more valuable than a higher gross rate.
+
 # Referências
 
 [TesouroDireto - Tesouro Reserva](https://www.tesourodireto.com.br/tesouro-reserva)
