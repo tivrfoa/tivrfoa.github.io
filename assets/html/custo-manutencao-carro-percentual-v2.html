@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carro vs Investimento - Custo de Oportunidade</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 py-8">
+    <div class="max-w-4xl mx-auto px-4">
+        
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-slate-900">Custo de Oportunidade do Carro</h1>
+            <p class="text-slate-600 mt-2">Quanto você poderia ter acumulado se não tivesse comprado o carro</p>
+        </div>
+
+        <!-- Inputs Principais -->
+        <div class="bg-white rounded-3xl shadow p-8 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Valor de compra do carro</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3.5 text-slate-400">R$</span>
+                        <input type="number" id="valorCarro" value="140000" 
+                               class="w-full pl-9 pr-4 py-3 border border-slate-300 rounded-2xl text-xl font-semibold"
+                               oninput="calcularTudo()">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Taxa de rendimento esperada</label>
+                    <div class="flex items-center gap-3">
+                        <input type="number" id="taxa" value="10" step="0.5"
+                               class="w-24 text-center border border-slate-300 rounded-2xl py-3 text-xl font-semibold"
+                               oninput="calcularTudo()">
+                        <span class="text-lg font-medium">%</span>
+                        <input type="range" id="taxaSlider" min="4" max="18" step="0.5" value="10" 
+                               class="flex-1 accent-emerald-600" oninput="atualizarTaxa()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custos de Manutenção -->
+        <div class="bg-white rounded-3xl shadow p-8 mb-8">
+            <h2 class="font-semibold text-lg mb-5">Custos anuais de manutenção (% do valor do carro)</h2>
+            
+            <div class="space-y-5">
+                <div class="grid grid-cols-12 gap-4 items-center">
+                    <div class="col-span-6 font-medium">IPVA</div>
+                    <div class="col-span-3"><input type="number" id="pIPVA" value="3.0" step="0.1" class="w-full text-center border rounded-xl py-2" oninput="calcularTudo()"> <span class="text-sm text-slate-500">%</span></div>
+                    <div class="col-span-3 text-right font-semibold" id="vIPVA">R$ 4.200</div>
+                </div>
+                
+                <div class="grid grid-cols-12 gap-4 items-center">
+                    <div class="col-span-6 font-medium">Seguro</div>
+                    <div class="col-span-3"><input type="number" id="pSeguro" value="3.8" step="0.1" class="w-full text-center border rounded-xl py-2" oninput="calcularTudo()"> <span class="text-sm text-slate-500">%</span></div>
+                    <div class="col-span-3 text-right font-semibold" id="vSeguro">R$ 5.320</div>
+                </div>
+                
+                <div class="grid grid-cols-12 gap-4 items-center">
+                    <div class="col-span-6 font-medium">Revisões e Manutenção</div>
+                    <div class="col-span-3"><input type="number" id="pRevisao" value="2.2" step="0.1" class="w-full text-center border rounded-xl py-2" oninput="calcularTudo()"> <span class="text-sm text-slate-500">%</span></div>
+                    <div class="col-span-3 text-right font-semibold" id="vRevisao">R$ 3.080</div>
+                </div>
+                
+                <div class="grid grid-cols-12 gap-4 items-center">
+                    <div class="col-span-6 font-medium">Pneus, Freios e Desgaste</div>
+                    <div class="col-span-3"><input type="number" id="pDesgaste" value="1.5" step="0.1" class="w-full text-center border rounded-xl py-2" oninput="calcularTudo()"> <span class="text-sm text-slate-500">%</span></div>
+                    <div class="col-span-3 text-right font-semibold" id="vDesgaste">R$ 2.100</div>
+                </div>
+
+                <div class="pt-4 border-t flex justify-between items-center font-semibold text-lg">
+                    <div>Total de manutenção anual</div>
+                    <div id="totalManutencao" class="text-blue-600">R$ 14.700</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Período -->
+        <div class="bg-white rounded-3xl shadow p-8 mb-8">
+            <label class="block text-sm font-medium text-slate-700 mb-2">Período de posse do carro</label>
+            <div class="flex items-center gap-4">
+                <input type="range" id="anosSlider" min="3" max="15" value="8" class="flex-1 accent-blue-600" oninput="calcularTudo()">
+                <input type="number" id="anos" value="8" class="w-20 text-center border rounded-xl py-2 font-semibold" oninput="calcularTudo()">
+                <span class="text-slate-500">anos</span>
+            </div>
+        </div>
+
+        <!-- Resultado -->
+        <div class="bg-white rounded-3xl shadow p-8">
+            <h2 class="font-semibold text-xl mb-6">Resultado da Comparação</h2>
+            
+            <div class="space-y-6">
+                <div>
+                    <div class="text-sm text-slate-600">Valor inicial investido (compra do carro)</div>
+                    <div id="investimentoInicial" class="text-3xl font-bold">R$ 140.000</div>
+                </div>
+                
+                <div>
+                    <div class="text-sm text-slate-600">Total de manutenção em <span id="anosLabel">8</span> anos</div>
+                    <div id="totalManutencaoPeriodo" class="text-2xl font-semibold">R$ 0</div>
+                </div>
+
+                <div class="pt-4 border-t">
+                    <div class="text-sm text-emerald-700 font-medium">Valor total que você poderia ter investido</div>
+                    <div id="valorTotalInvestido" class="text-4xl font-bold text-emerald-600">R$ 0</div>
+                </div>
+
+                <div>
+                    <div class="text-sm text-emerald-700">Valor futuro após <span id="anosLabel2">8</span> anos investindo</div>
+                    <div id="valorFuturo" class="text-4xl font-bold text-emerald-600">R$ 0</div>
+                </div>
+                
+                <div class="bg-emerald-50 p-4 rounded-2xl">
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium">Rendimento total gerado</span>
+                        <span id="rendimentoTotal" class="font-bold text-xl text-emerald-700">R$ 0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function atualizarTaxa() {
+            document.getElementById('taxa').value = document.getElementById('taxaSlider').value;
+            calcularTudo();
+        }
+
+        function calcularTudo() {
+            const valorCarro = parseFloat(document.getElementById('valorCarro').value) || 0;
+            const anos = parseInt(document.getElementById('anos').value) || 8;
+            const taxa = parseFloat(document.getElementById('taxa').value) / 100;
+
+            // Atualiza labels de anos
+            document.getElementById('anosLabel').innerText = anos;
+            document.getElementById('anosLabel2').innerText = anos;
+            document.getElementById('anosSlider').value = anos;
+
+            // Percentuais
+            const pIPVA = parseFloat(document.getElementById('pIPVA').value) || 0;
+            const pSeguro = parseFloat(document.getElementById('pSeguro').value) || 0;
+            const pRevisao = parseFloat(document.getElementById('pRevisao').value) || 0;
+            const pDesgaste = parseFloat(document.getElementById('pDesgaste').value) || 0;
+
+            // Valores anuais
+            const vIPVA = valorCarro * (pIPVA / 100);
+            const vSeguro = valorCarro * (pSeguro / 100);
+            const vRevisao = valorCarro * (pRevisao / 100);
+            const vDesgaste = valorCarro * (pDesgaste / 100);
+
+            document.getElementById('vIPVA').innerText = 'R$ ' + vIPVA.toLocaleString('pt-BR');
+            document.getElementById('vSeguro').innerText = 'R$ ' + vSeguro.toLocaleString('pt-BR');
+            document.getElementById('vRevisao').innerText = 'R$ ' + vRevisao.toLocaleString('pt-BR');
+            document.getElementById('vDesgaste').innerText = 'R$ ' + vDesgaste.toLocaleString('pt-BR');
+
+            const totalAnualManut = vIPVA + vSeguro + vRevisao + vDesgaste;
+            document.getElementById('totalManutencao').innerText = 'R$ ' + totalAnualManut.toLocaleString('pt-BR');
+
+            // Cálculos de investimento
+            const totalManutencaoPeriodo = totalAnualManut * anos;
+            document.getElementById('totalManutencaoPeriodo').innerText = 'R$ ' + totalManutencaoPeriodo.toLocaleString('pt-BR');
+
+            // Valor total que poderia ter sido investido
+            const valorTotalQuePoderiaInvestir = valorCarro + totalManutencaoPeriodo;
+            document.getElementById('valorTotalInvestido').innerText = 'R$ ' + valorTotalQuePoderiaInvestir.toLocaleString('pt-BR');
+
+            // Valor futuro (investimento inicial + aportes anuais)
+            let valorFuturo = valorCarro * Math.pow(1 + taxa, anos);
+
+            // Aportes anuais de manutenção
+            if (taxa > 0 && totalAnualManut > 0) {
+                const fvAportes = totalAnualManut * ((Math.pow(1 + taxa, anos) - 1) / taxa);
+                valorFuturo += fvAportes;
+            } else {
+                valorFuturo += totalAnualManut * anos;
+            }
+
+            const rendimento = valorFuturo - valorTotalQuePoderiaInvestir;
+
+            document.getElementById('valorFuturo').innerText = 'R$ ' + valorFuturo.toLocaleString('pt-BR', {maximumFractionDigits: 0});
+            document.getElementById('rendimentoTotal').innerText = 'R$ ' + rendimento.toLocaleString('pt-BR', {maximumFractionDigits: 0});
+        }
+
+        function init() {
+            // Sincroniza slider de taxa
+            const taxaInput = document.getElementById('taxa');
+            const taxaSlider = document.getElementById('taxaSlider');
+
+            taxaInput.addEventListener('input', () => {
+                taxaSlider.value = taxaInput.value;
+                calcularTudo();
+            });
+
+            // Calcula ao carregar
+            setTimeout(() => {
+                calcularTudo();
+            }, 150);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
