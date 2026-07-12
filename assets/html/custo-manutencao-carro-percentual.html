@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manutenção do Carro vs Investimento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .section-title { font-size: 1.1rem; font-weight: 600; color: #1e2937; }
+    </style>
+</head>
+<body class="bg-slate-100 py-8">
+    <div class="max-w-4xl mx-auto px-4">
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-slate-900">Manutenção do Carro × Investimento</h1>
+            <p class="text-slate-600 mt-2">Veja quanto você gasta mantendo o carro e quanto esse dinheiro poderia render</p>
+        </div>
+
+        <!-- Inputs Principais -->
+        <div class="bg-white rounded-3xl shadow p-8 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Valor do Carro -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Valor do carro</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3.5 text-slate-400">R$</span>
+                        <input type="number" id="valorCarro" value="140000" 
+                               class="w-full pl-9 pr-4 py-3 border border-slate-300 rounded-2xl text-xl font-semibold focus:outline-none focus:border-blue-500"
+                               oninput="calcularTudo()">
+                    </div>
+                </div>
+
+                <!-- Taxa de Rendimento -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Taxa de rendimento ao ano</label>
+                    <div class="flex items-center gap-3">
+                        <div class="relative flex-1">
+                            <input type="number" id="taxaRendimento" value="10" step="0.5"
+                                   class="w-full pr-8 py-3 border border-slate-300 rounded-2xl text-xl font-semibold text-center focus:outline-none focus:border-emerald-500"
+                                   oninput="calcularTudo()">
+                            <span class="absolute right-4 top-3.5 text-slate-500 font-medium">%</span>
+                        </div>
+                        <input type="range" id="taxaSlider" min="4" max="18" step="0.5" value="10"
+                               class="flex-1 accent-emerald-600" oninput="atualizarTaxaSlider()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custos de Manutenção (% do valor do carro) -->
+        <div class="bg-white rounded-3xl shadow p-8 mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="section-title">Custos de Manutenção (calculados sobre o valor do carro)</h2>
+            </div>
+
+            <div class="space-y-4">
+                
+                <!-- IPVA -->
+                <div class="grid grid-cols-12 items-center gap-4">
+                    <div class="col-span-5">
+                        <span class="font-medium">IPVA</span>
+                    </div>
+                    <div class="col-span-3">
+                        <div class="flex items-center">
+                            <input type="number" id="percIPVA" value="3.0" step="0.1"
+                                   class="w-20 text-center border border-slate-300 rounded-xl py-2 font-medium"
+                                   oninput="calcularTudo()">
+                            <span class="ml-2 text-slate-500">%</span>
+                        </div>
+                    </div>
+                    <div class="col-span-4 text-right">
+                        <span id="valorIPVA" class="font-semibold text-lg">R$ 4.200</span>
+                    </div>
+                </div>
+
+                <!-- Seguro -->
+                <div class="grid grid-cols-12 items-center gap-4">
+                    <div class="col-span-5">
+                        <span class="font-medium">Seguro</span>
+                    </div>
+                    <div class="col-span-3">
+                        <div class="flex items-center">
+                            <input type="number" id="percSeguro" value="3.8" step="0.1"
+                                   class="w-20 text-center border border-slate-300 rounded-xl py-2 font-medium"
+                                   oninput="calcularTudo()">
+                            <span class="ml-2 text-slate-500">%</span>
+                        </div>
+                    </div>
+                    <div class="col-span-4 text-right">
+                        <span id="valorSeguro" class="font-semibold text-lg">R$ 5.320</span>
+                    </div>
+                </div>
+
+                <!-- Revisões e Manutenção -->
+                <div class="grid grid-cols-12 items-center gap-4">
+                    <div class="col-span-5">
+                        <span class="font-medium">Revisões e Manutenção</span>
+                    </div>
+                    <div class="col-span-3">
+                        <div class="flex items-center">
+                            <input type="number" id="percRevisoes" value="2.2" step="0.1"
+                                   class="w-20 text-center border border-slate-300 rounded-xl py-2 font-medium"
+                                   oninput="calcularTudo()">
+                            <span class="ml-2 text-slate-500">%</span>
+                        </div>
+                    </div>
+                    <div class="col-span-4 text-right">
+                        <span id="valorRevisoes" class="font-semibold text-lg">R$ 3.080</span>
+                    </div>
+                </div>
+
+                <!-- Pneus, Freios e Desgaste -->
+                <div class="grid grid-cols-12 items-center gap-4">
+                    <div class="col-span-5">
+                        <span class="font-medium">Pneus, Freios e Desgaste</span>
+                    </div>
+                    <div class="col-span-3">
+                        <div class="flex items-center">
+                            <input type="number" id="percDesgaste" value="1.5" step="0.1"
+                                   class="w-20 text-center border border-slate-300 rounded-xl py-2 font-medium"
+                                   oninput="calcularTudo()">
+                            <span class="ml-2 text-slate-500">%</span>
+                        </div>
+                    </div>
+                    <div class="col-span-4 text-right">
+                        <span id="valorDesgaste" class="font-semibold text-lg">R$ 2.100</span>
+                    </div>
+                </div>
+
+                <!-- Total -->
+                <div class="pt-4 border-t mt-2">
+                    <div class="grid grid-cols-12 items-center gap-4 font-semibold">
+                        <div class="col-span-5 text-lg">Total Anual de Manutenção</div>
+                        <div class="col-span-3"></div>
+                        <div class="col-span-4 text-right">
+                            <span id="totalAnual" class="text-2xl font-bold text-blue-600">R$ 14.700</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Período e Comparação -->
+        <div class="bg-white rounded-3xl shadow p-8">
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-slate-700 mb-2">Período de análise</label>
+                <div class="flex items-center gap-4">
+                    <input type="range" id="anosSlider" min="3" max="15" step="1" value="8"
+                           class="flex-1 accent-blue-600" oninput="calcularTudo()">
+                    <div class="w-20">
+                        <input type="number" id="anos" value="8" 
+                               class="w-full text-center border border-slate-300 rounded-xl py-2 font-semibold"
+                               oninput="calcularTudo()">
+                    </div>
+                    <span class="text-slate-500">anos</span>
+                </div>
+            </div>
+
+            <!-- Resultado da Comparação -->
+            <div id="resultado" class="hidden">
+                <div class="bg-slate-50 rounded-2xl p-6">
+                    <h3 class="font-semibold text-lg mb-4 text-slate-800">Comparação com Investimento</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-600">Total gasto com manutenção em <span id="anosTexto">8</span> anos</span>
+                            <span id="totalGasto" class="font-bold text-xl">R$ 0</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center pt-3 border-t">
+                            <span class="text-emerald-700 font-medium">Valor futuro se esse dinheiro fosse investido</span>
+                            <span id="valorFuturo" class="font-bold text-2xl text-emerald-600">R$ 0</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <span class="text-emerald-700">Rendimento total gerado</span>
+                            <span id="rendimentoGerado" class="font-semibold text-emerald-600">R$ 0</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-5 pt-4 border-t text-sm bg-white rounded-xl p-4">
+                        <div class="flex justify-between font-medium">
+                            <span>Você deixaria de ganhar:</span>
+                            <span id="diferenca" class="font-bold text-emerald-700 text-lg">R$ 0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function atualizarTaxaSlider() {
+            const slider = document.getElementById('taxaSlider');
+            const input = document.getElementById('taxaRendimento');
+            input.value = slider.value;
+            calcularTudo();
+        }
+
+        function calcularTudo() {
+            const valorCarro = parseFloat(document.getElementById('valorCarro').value) || 0;
+            const anos = parseInt(document.getElementById('anos').value) || 8;
+            const taxa = parseFloat(document.getElementById('taxaRendimento').value) / 100;
+
+            // Atualiza slider de anos
+            document.getElementById('anosSlider').value = anos;
+            document.getElementById('anosTexto').innerText = anos;
+
+            // Percentuais
+            const percIPVA = parseFloat(document.getElementById('percIPVA').value) || 0;
+            const percSeguro = parseFloat(document.getElementById('percSeguro').value) || 0;
+            const percRevisoes = parseFloat(document.getElementById('percRevisoes').value) || 0;
+            const percDesgaste = parseFloat(document.getElementById('percDesgaste').value) || 0;
+
+            // Valores em reais
+            const valorIPVA = (valorCarro * percIPVA) / 100;
+            const valorSeguro = (valorCarro * percSeguro) / 100;
+            const valorRevisoes = (valorCarro * percRevisoes) / 100;
+            const valorDesgaste = (valorCarro * percDesgaste) / 100;
+
+            // Atualiza valores na tela
+            document.getElementById('valorIPVA').innerText = 'R$ ' + valorIPVA.toLocaleString('pt-BR');
+            document.getElementById('valorSeguro').innerText = 'R$ ' + valorSeguro.toLocaleString('pt-BR');
+            document.getElementById('valorRevisoes').innerText = 'R$ ' + valorRevisoes.toLocaleString('pt-BR');
+            document.getElementById('valorDesgaste').innerText = 'R$ ' + valorDesgaste.toLocaleString('pt-BR');
+
+            // Total anual
+            const totalAnual = valorIPVA + valorSeguro + valorRevisoes + valorDesgaste;
+            document.getElementById('totalAnual').innerText = 'R$ ' + totalAnual.toLocaleString('pt-BR');
+
+            // Cálculo do investimento
+            if (totalAnual > 0 && anos > 0 && taxa >= 0) {
+                const totalGasto = totalAnual * anos;
+                
+                // Valor futuro com aportes anuais (juros compostos)
+                let valorFuturo = 0;
+                if (taxa > 0) {
+                    valorFuturo = totalAnual * ((Math.pow(1 + taxa, anos) - 1) / taxa);
+                } else {
+                    valorFuturo = totalAnual * anos;
+                }
+
+                const rendimento = valorFuturo - totalGasto;
+
+                // Atualiza resultados
+                document.getElementById('totalGasto').innerText = 'R$ ' + totalGasto.toLocaleString('pt-BR');
+                document.getElementById('valorFuturo').innerText = 'R$ ' + valorFuturo.toLocaleString('pt-BR', {maximumFractionDigits: 0});
+                document.getElementById('rendimentoGerado').innerText = 'R$ ' + rendimento.toLocaleString('pt-BR', {maximumFractionDigits: 0});
+                document.getElementById('diferenca').innerText = 'R$ ' + rendimento.toLocaleString('pt-BR', {maximumFractionDigits: 0});
+
+                document.getElementById('resultado').classList.remove('hidden');
+            }
+        }
+
+        // Sincroniza slider de anos com input
+        function sincronizarAnos() {
+            const slider = document.getElementById('anosSlider');
+            const input = document.getElementById('anos');
+
+            slider.addEventListener('input', () => {
+                input.value = slider.value;
+                calcularTudo();
+            });
+
+            input.addEventListener('input', () => {
+                slider.value = input.value;
+                calcularTudo();
+            });
+        }
+
+        // Inicialização
+        function init() {
+            // Sincroniza sliders
+            sincronizarAnos();
+
+            // Sincroniza taxa
+            const taxaInput = document.getElementById('taxaRendimento');
+            const taxaSlider = document.getElementById('taxaSlider');
+
+            taxaInput.addEventListener('input', () => {
+                taxaSlider.value = taxaInput.value;
+                calcularTudo();
+            });
+
+            // Calcula tudo pela primeira vez
+            setTimeout(() => {
+                calcularTudo();
+            }, 100);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
