@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora: Manutenção do Carro vs Investimento Imobiliário</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Poppins:wght@500;600&amp;display=swap');
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .title-font {
+            font-family: 'Poppins', system_ui, sans-serif;
+        }
+
+        .card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .result-card {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+        }
+
+        .section-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e2937;
+        }
+
+        .metric-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .input-focus {
+            transition: all 0.2s ease;
+        }
+        
+        .input-focus:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .slider {
+            accent-color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <div class="flex items-center justify-center gap-x-3 mb-4">
+                <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center">
+                    <i class="fas fa-car text-white text-3xl"></i>
+                </div>
+                <h1 class="title-font text-4xl font-bold text-slate-900">Manutenção do Carro</h1>
+            </div>
+            <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+                Calcule o custo real de manter seu carro e compare com o que esse dinheiro poderia render se investido em um imóvel ou aplicação financeira.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- SEÇÃO 1: Manutenção do Carro -->
+            <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+                <div class="px-8 pt-8 pb-6 bg-slate-900 text-white">
+                    <div class="flex items-center gap-x-3">
+                        <i class="fas fa-tools text-3xl"></i>
+                        <div>
+                            <h2 class="text-2xl font-semibold">Custo de Manutenção</h2>
+                            <p class="text-blue-200 text-sm">Estimativa anual e projetada</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-8">
+                    <div class="grid grid-cols-1 gap-5">
+                        
+                        <!-- Inputs de Manutenção -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1.5">IPVA anual (R$)</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3 text-slate-400">R$</span>
+                                <input type="number" id="ipva" value="4200" 
+                                       class="input-focus w-full pl-9 pr-4 py-3 border border-slate-200 rounded-2xl text-lg font-medium">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Seguro anual (R$)</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3 text-slate-400">R$</span>
+                                <input type="number" id="seguro" value="5500" 
+                                       class="input-focus w-full pl-9 pr-4 py-3 border border-slate-200 rounded-2xl text-lg font-medium">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Revisões e manutenção preventiva (R$)</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3 text-slate-400">R$</span>
+                                <input type="number" id="revisoes" value="2800" 
+                                       class="input-focus w-full pl-9 pr-4 py-3 border border-slate-200 rounded-2xl text-lg font-medium">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Pneus, freios e outros gastos (R$)</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3 text-slate-400">R$</span>
+                                <input type="number" id="outros" value="3200" 
+                                       class="input-focus w-full pl-9 pr-4 py-3 border border-slate-200 rounded-2xl text-lg font-medium">
+                            </div>
+                        </div>
+                        
+                        <div class="pt-2">
+                            <button onclick="calcularManutencao()"
+                                    class="w-full bg-blue-600 hover:bg-blue-700 transition-colors text-white font-semibold py-3.5 rounded-2xl flex items-center justify-center gap-x-2 text-lg">
+                                <i class="fas fa-calculator"></i>
+                                <span>Calcular Custo Anual</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Resultado Manutenção -->
+                        <div id="resultado-manutencao" class="hidden mt-4 p-5 bg-slate-50 rounded-2xl border border-slate-200">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-sm font-medium text-slate-600">Custo anual total</span>
+                                <span id="custo-anual" class="text-3xl font-bold text-emerald-600">R$ 0</span>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <div class="text-slate-500">Em 5 anos</div>
+                                    <div id="custo-5anos" class="font-semibold text-lg">R$ 0</div>
+                                </div>
+                                <div>
+                                    <div class="text-slate-500">Em 10 anos</div>
+                                    <div id="custo-10anos" class="font-semibold text-lg">R$ 0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SEÇÃO 2: Comparação com Investimento -->
+            <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+                <div class="px-8 pt-8 pb-6 bg-emerald-700 text-white">
+                    <div class="flex items-center gap-x-3">
+                        <i class="fas fa-chart-line text-3xl"></i>
+                        <div>
+                            <h2 class="text-2xl font-semibold">Comparação com Investimento</h2>
+                            <p class="text-emerald-200 text-sm">Oportunidade de rendimento</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-8">
+                    <div class="space-y-6">
+                        
+                        <!-- Inputs da Comparação -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Valor anual gasto com manutenção (R$)</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3 text-slate-400">R$</span>
+                                <input type="number" id="valor-anual-invest" value="15700" 
+                                       class="input-focus w-full pl-9 pr-4 py-3 border border-slate-200 rounded-2xl text-lg font-medium">
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1">* Preenchido automaticamente após calcular a manutenção</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Período de análise (anos)</label>
+                            <div class="flex items-center gap-x-4">
+                                <input type="range" id="anos-slider" min="1" max="20" step="1" value="10" 
+                                       class="slider flex-1" oninput="atualizarAnos()">
+                                <div class="w-16 text-center">
+                                    <input type="number" id="anos-input" value="10" 
+                                           class="w-full text-center border border-slate-200 rounded-xl py-1.5 font-medium" 
+                                           onchange="atualizarSlider()">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Taxa de Rendimento (ajustável) -->
+                        <div>
+                            <div class="flex justify-between items-center mb-1.5">
+                                <label class="text-sm font-medium text-slate-700">Taxa de rendimento anual</label>
+                                <div class="flex items-center gap-x-2 bg-emerald-50 px-3 py-1 rounded-xl">
+                                    <input type="number" id="taxa" value="9" step="0.5" 
+                                           class="w-14 text-center font-bold text-emerald-700 bg-transparent border-none focus:outline-none"
+                                           onchange="calcularComparacao()">
+                                    <span class="font-semibold text-emerald-700">%</span>
+                                </div>
+                            </div>
+                            
+                            <input type="range" id="taxa-slider" min="3" max="18" step="0.5" value="9" 
+                                   class="slider w-full accent-emerald-600" oninput="atualizarTaxa()">
+                            
+                            <div class="flex justify-between text-xs text-slate-500 mt-1">
+                                <div>Conservador (3%)</div>
+                                <div>Realista (9%)</div>
+                                <div>Otimista (15%+)</div>
+                            </div>
+                        </div>
+                        
+                        <button onclick="calcularComparacao()"
+                                class="w-full bg-emerald-600 hover:bg-emerald-700 transition-colors text-white font-semibold py-3.5 rounded-2xl flex items-center justify-center gap-x-2 text-lg mt-2">
+                            <i class="fas fa-balance-scale"></i>
+                            <span>Calcular Comparação</span>
+                        </button>
+                        
+                        <!-- Resultado da Comparação -->
+                        <div id="resultado-comparacao" class="hidden mt-6 p-6 bg-emerald-50 border border-emerald-100 rounded-2xl">
+                            <div class="mb-5">
+                                <div class="text-emerald-700 text-sm font-medium mb-1">Total gasto com manutenção em <span id="periodo-anos">10</span> anos</div>
+                                <div id="total-gasto" class="text-3xl font-bold text-emerald-800">R$ 0</div>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div class="bg-white p-4 rounded-2xl border border-emerald-200">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <div class="text-sm text-slate-600">Valor futuro se investido</div>
+                                            <div id="valor-futuro" class="text-2xl font-bold text-emerald-700">R$ 0</div>
+                                        </div>
+                                        <i class="fas fa-arrow-trend-up text-emerald-500 text-3xl"></i>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white p-4 rounded-2xl border border-emerald-200">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <div class="text-sm text-slate-600">Rendimento total gerado</div>
+                                            <div id="rendimento-total" class="text-2xl font-bold text-emerald-600">R$ 0</div>
+                                        </div>
+                                        <i class="fas fa-coins text-emerald-500 text-3xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-5 pt-4 border-t border-emerald-200 text-sm">
+                                <div class="flex justify-between font-medium">
+                                    <span class="text-slate-600">Diferença (oportunidade)</span>
+                                    <span id="diferenca" class="font-bold text-emerald-700">R$ 0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- Nota explicativa -->
+        <div class="mt-8 max-w-3xl mx-auto text-center">
+            <div class="inline-flex items-center gap-x-2 text-sm text-slate-500 bg-white px-4 py-2 rounded-2xl border">
+                <i class="fas fa-info-circle"></i>
+                <span>Essa é uma simulação educativa. Taxas de rendimento imobiliário variam conforme localização, tipo de imóvel e condições de mercado.</span>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        // Tailwind script
+        function initializeTailwind() {
+            document.documentElement.style.setProperty('--accent', '#3b82f6');
+        }
+        
+        // Atualiza o valor do slider de anos
+        function atualizarAnos() {
+            const slider = document.getElementById('anos-slider');
+            const input = document.getElementById('anos-input');
+            input.value = slider.value;
+            
+            // Se já tiver resultado, recalcula
+            const resultado = document.getElementById('resultado-comparacao');
+            if (!resultado.classList.contains('hidden')) {
+                calcularComparacao();
+            }
+        }
+        
+        function atualizarSlider() {
+            const slider = document.getElementById('anos-slider');
+            const input = document.getElementById('anos-input');
+            slider.value = input.value;
+            
+            const resultado = document.getElementById('resultado-comparacao');
+            if (!resultado.classList.contains('hidden')) {
+                calcularComparacao();
+            }
+        }
+        
+        // Atualiza taxa via slider
+        function atualizarTaxa() {
+            const slider = document.getElementById('taxa-slider');
+            const input = document.getElementById('taxa');
+            input.value = slider.value;
+            
+            const resultado = document.getElementById('resultado-comparacao');
+            if (!resultado.classList.contains('hidden')) {
+                calcularComparacao();
+            }
+        }
+        
+        // Função principal de cálculo de manutenção
+        function calcularManutencao() {
+            const ipva = parseFloat(document.getElementById('ipva').value) || 0;
+            const seguro = parseFloat(document.getElementById('seguro').value) || 0;
+            const revisoes = parseFloat(document.getElementById('revisoes').value) || 0;
+            const outros = parseFloat(document.getElementById('outros').value) || 0;
+            
+            const custoAnual = ipva + seguro + revisoes + outros;
+            
+            // Exibe resultado
+            document.getElementById('custo-anual').innerHTML = `R$ ${custoAnual.toLocaleString('pt-BR')}`;
+            
+            // Projeções
+            const cincoAnos = custoAnual * 5;
+            const dezAnos = custoAnual * 10;
+            
+            document.getElementById('custo-5anos').innerHTML = `R$ ${cincoAnos.toLocaleString('pt-BR')}`;
+            document.getElementById('custo-10anos').innerHTML = `R$ ${dezAnos.toLocaleString('pt-BR')}`;
+            
+            // Mostra o card de resultado
+            document.getElementById('resultado-manutencao').classList.remove('hidden');
+            
+            // Preenche automaticamente o campo de comparação
+            document.getElementById('valor-anual-invest').value = custoAnual;
+            
+            // Auto-calcula a comparação se o usuário já tiver usado
+            const resultadoComparacao = document.getElementById('resultado-comparacao');
+            if (!resultadoComparacao.classList.contains('hidden')) {
+                calcularComparacao();
+            }
+        }
+        
+        // Função de cálculo de comparação com investimento
+        function calcularComparacao() {
+            const valorAnual = parseFloat(document.getElementById('valor-anual-invest').value) || 0;
+            const anos = parseInt(document.getElementById('anos-input').value) || 10;
+            const taxa = parseFloat(document.getElementById('taxa').value) / 100;
+            
+            if (valorAnual <= 0 || anos <= 0) {
+                alert("Por favor, preencha valores válidos.");
+                return;
+            }
+            
+            // Atualiza o período na interface
+            document.getElementById('periodo-anos').innerHTML = anos;
+            
+            // 1. Total gasto com manutenção
+            const totalGasto = valorAnual * anos;
+            document.getElementById('total-gasto').innerHTML = `R$ ${totalGasto.toLocaleString('pt-BR')}`;
+            
+            // 2. Valor futuro (aportes anuais com juros compostos)
+            // Fórmula de Valor Futuro de Anuidade (FV of Annuity)
+            // FV = PMT × [((1 + r)^n − 1) / r]
+            let valorFuturo = 0;
+            
+            if (taxa > 0) {
+                valorFuturo = valorAnual * (((Math.pow(1 + taxa, anos) - 1) / taxa));
+            } else {
+                valorFuturo = valorAnual * anos;
+            }
+            
+            document.getElementById('valor-futuro').innerHTML = `R$ ${valorFuturo.toLocaleString('pt-BR', {maximumFractionDigits: 0})}`;
+            
+            // 3. Rendimento total gerado
+            const rendimentoTotal = valorFuturo - totalGasto;
+            document.getElementById('rendimento-total').innerHTML = `R$ ${rendimentoTotal.toLocaleString('pt-BR', {maximumFractionDigits: 0})}`;
+            
+            // 4. Diferença (oportunidade)
+            document.getElementById('diferenca').innerHTML = `R$ ${rendimentoTotal.toLocaleString('pt-BR', {maximumFractionDigits: 0})}`;
+            
+            // Mostra o resultado
+            document.getElementById('resultado-comparacao').classList.remove('hidden');
+        }
+        
+        // Inicialização
+        function init() {
+            initializeTailwind();
+            
+            // Atualiza sliders iniciais
+            const anosSlider = document.getElementById('anos-slider');
+            const anosInput = document.getElementById('anos-input');
+            const taxaSlider = document.getElementById('taxa-slider');
+            const taxaInput = document.getElementById('taxa');
+            
+            // Sincroniza sliders com inputs
+            anosSlider.addEventListener('input', atualizarAnos);
+            anosInput.addEventListener('input', atualizarSlider);
+            taxaSlider.addEventListener('input', atualizarTaxa);
+            
+            // Sincroniza input de taxa com slider
+            taxaInput.addEventListener('input', function() {
+                taxaSlider.value = this.value;
+            });
+            
+            // Calcula manutenção inicial com valores padrão
+            setTimeout(() => {
+                calcularManutencao();
+            }, 300);
+            
+            // Dica: calcula comparação automaticamente ao mudar o valor anual
+            const valorInput = document.getElementById('valor-anual-invest');
+            valorInput.addEventListener('input', function() {
+                const resultado = document.getElementById('resultado-comparacao');
+                if (!resultado.classList.contains('hidden')) {
+                    calcularComparacao();
+                }
+            });
+            
+            // Permite pressionar Enter nos inputs principais
+            const inputs = document.querySelectorAll('input[type="number"]');
+            inputs.forEach(input => {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        if (input.closest('#resultado-manutencao') || input.id.includes('ipva') || input.id.includes('seguro')) {
+                            calcularManutencao();
+                        } else {
+                            calcularComparacao();
+                        }
+                    }
+                });
+            });
+            
+            console.log('%c[Calculadora] Página inicializada com sucesso.', 'color:#64748b');
+        }
+        
+        // Inicia tudo
+        window.onload = init;
+    </script>
+</body>
+</html>
