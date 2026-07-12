@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Top 20 Software Patterns</title>
+
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #050816;
+    font-family: Arial, sans-serif;
+}
+
+#tooltip {
+    position: absolute;
+    background: rgba(0,0,0,0.85);
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    pointer-events: none;
+    display: none;
+    max-width: 260px;
+    font-size: 14px;
+}
+
+#title {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: white;
+    z-index: 100;
+}
+
+#title h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+#title p {
+    opacity: .8;
+}
+</style>
+
+</head>
+<body>
+
+<div id="title">
+    <h1>Top 20 Software Patterns</h1>
+    <p>Interactive Three.js Visualization</p>
+</div>
+
+<div id="tooltip"></div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.167.1/build/three.module.js"
+  }
+}
+</script>
+<script type="module">
+
+import * as THREE from 'three';
+import { OrbitControls } from 'https://unpkg.com/three@0.167.1/examples/jsm/controls/OrbitControls.js';
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x050816);
+
+const camera = new THREE.PerspectiveCamera(
+    60,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+);
+
+camera.position.set(0, 0, 50);
+
+const renderer = new THREE.WebGLRenderer({
+    antialias: true
+});
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+const ambient = new THREE.AmbientLight(0xffffff, 1.2);
+scene.add(ambient);
+
+const directional = new THREE.DirectionalLight(0xffffff, 2);
+directional.position.set(20,20,20);
+scene.add(directional);
+
+const patterns = [
+
+{ name:"Strategy", group:"Design", desc:"Interchangeable algorithms" },
+{ name:"Factory Method", group:"Design", desc:"Object creation abstraction" },
+{ name:"Builder", group:"Design", desc:"Step-by-step construction" },
+{ name:"Adapter", group:"Design", desc:"Connect incompatible interfaces" },
+{ name:"Decorator", group:"Design", desc:"Add behavior dynamically" },
+{ name:"Observer", group:"Design", desc:"Publish-subscribe updates" },
+{ name:"Command", group:"Design", desc:"Encapsulate actions" },
+{ name:"Repository", group:"Design", desc:"Persistence abstraction" },
+{ name:"Dependency Injection", group:"Design", desc:"Externalize dependencies" },
+{ name:"Unit of Work", group:"Design", desc:"Transaction coordination" },
+
+{ name:"Layered Architecture", group:"Architecture", desc:"Presentation, business, data layers" },
+{ name:"Hexagonal Architecture", group:"Architecture", desc:"Ports and adapters" },
+{ name:"CQRS", group:"Architecture", desc:"Separate reads and writes" },
+{ name:"Event Sourcing", group:"Architecture", desc:"Store events as source of truth" },
+{ name:"Microservices", group:"Architecture", desc:"Independent deployable services" },
+
+{ name:"Circuit Breaker", group:"Distributed", desc:"Prevent cascading failures" },
+{ name:"Retry Backoff", group:"Distributed", desc:"Smart retries" },
+{ name:"Saga", group:"Distributed", desc:"Distributed transactions" },
+{ name:"Outbox", group:"Distributed", desc:"Reliable event publishing" },
+{ name:"Cache Aside", group:"Distributed", desc:"Application-managed caching" }
+
+];
+
+const colors = {
+    Design: 0x4ea8ff,
+    Architecture: 0x33dd88,
+    Distributed: 0xffa500
+};
+
+const nodes = [];
+
+const sphereGeometry = new THREE.SphereGeometry(1.2, 32, 32);
+
+patterns.forEach((pattern, index) => {
+
+    const material = new THREE.MeshStandardMaterial({
+        color: colors[pattern.group],
+        emissive: colors[pattern.group],
+        emissiveIntensity: 0.3
+    });
+
+    const sphere = new THREE.Mesh(
+        sphereGeometry,
+        material
+    );
+
+    const radius = 15 + Math.random()*10;
+    const angle = (index / patterns.length) * Math.PI * 2;
+
+    sphere.position.set(
+        Math.cos(angle) * radius,
+        (Math.random()-0.5)*20,
+        Math.sin(angle) * radius
+    );
+
+    sphere.userData = pattern;
+
+    scene.add(sphere);
+    nodes.push(sphere);
+});
+
+const starGeometry = new THREE.BufferGeometry();
+const starVertices = [];
+
+for(let i=0;i<2000;i++){
+    starVertices.push(
+        (Math.random()-0.5)*500,
+        (Math.random()-0.5)*500,
+        (Math.random()-0.5)*500
+    );
+}
+
+starGeometry.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute(starVertices,3)
+);
+
+const stars = new THREE.Points(
+    starGeometry,
+    new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 0.5
+    })
+);
+
+scene.add(stars);
+
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+const tooltip = document.getElementById("tooltip");
+
+window.addEventListener("mousemove", event => {
+
+    mouse.x = (event.clientX/window.innerWidth)*2 -1;
+    mouse.y = -(event.clientY/window.innerHeight)*2 +1;
+
+    raycaster.setFromCamera(mouse,camera);
+
+    const hits = raycaster.intersectObjects(nodes);
+
+    if(hits.length){
+
+        const p = hits[0].object.userData;
+
+        tooltip.style.display = "block";
+        tooltip.style.left = event.clientX + 15 + "px";
+        tooltip.style.top = event.clientY + 15 + "px";
+
+        tooltip.innerHTML =
+            "<b>" + p.name + "</b><br>" +
+            p.group + "<br><br>" +
+            p.desc;
+
+    } else {
+        tooltip.style.display = "none";
+    }
+});
+
+window.addEventListener("click", () => {
+
+    raycaster.setFromCamera(mouse,camera);
+
+    const hits = raycaster.intersectObjects(nodes);
+
+    if(hits.length){
+
+        const node = hits[0].object;
+
+        camera.position.set(
+            node.position.x * 1.8,
+            node.position.y * 1.8,
+            node.position.z * 1.8
+        );
+
+        controls.target.copy(node.position);
+    }
+});
+
+function animate() {
+
+    requestAnimationFrame(animate);
+
+    nodes.forEach((n,i)=>{
+
+        n.rotation.y += 0.01;
+
+        const t = Date.now()*0.001;
+
+        n.position.y += Math.sin(t+i)*0.003;
+    });
+
+    controls.update();
+    renderer.render(scene,camera);
+}
+
+animate();
+
+window.addEventListener("resize", ()=>{
+
+    camera.aspect =
+        window.innerWidth /
+        window.innerHeight;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
+});
+
+</script>
+
+</body>
+</html>
+
