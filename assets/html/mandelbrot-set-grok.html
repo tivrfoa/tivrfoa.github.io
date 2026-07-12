@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MANDELBROT • Three.js</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Space Grotesk', 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        #three-canvas {
+            display: block;
+            cursor: grab;
+        }
+
+        #three-canvas:active {
+            cursor: grabbing;
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(20px);
+        }
+
+        .mandelbrot-glow {
+            box-shadow: 0 0 60px rgb(99 102 241 / 0.15);
+        }
+
+        .control-slider {
+            accent-color: #6366f1;
+        }
+
+        .info-value {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+    </style>
+</head>
+<body class="bg-[#05050f] text-white overflow-hidden">
+    <!-- Top Navigation -->
+    <div class="fixed top-0 left-0 right-0 z-50 px-8 py-5 flex items-center justify-between border-b border-white/10">
+        <div class="flex items-center gap-x-4">
+            <div class="flex items-center gap-x-3">
+                <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-violet-500 via-indigo-500 to-blue-600 flex items-center justify-center">
+                    <span class="text-white text-2xl font-bold tracking-tighter">M</span>
+                </div>
+                <div>
+                    <h1 class="font-display text-3xl tracking-[-1.5px] font-semibold">MANDELBROT</h1>
+                    <p class="text-[10px] text-zinc-500 -mt-1 tracking-[3px]">THREE.JS • GPU RENDERED</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-x-3">
+            <div onclick="randomInterestingLocation()" 
+                 class="px-4 py-2 text-sm rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors cursor-pointer flex items-center gap-x-2">
+                <span>🎲</span>
+                <span class="text-sm">Random Deep Zoom</span>
+            </div>
+            
+            <div onclick="resetView()" 
+                 class="px-5 py-2 text-sm rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors cursor-pointer">
+                Reset View
+            </div>
+        </div>
+    </div>
+
+    <!-- Canvas -->
+    <canvas id="three-canvas" class="fixed inset-0 z-0"></canvas>
+
+    <!-- Info Overlay -->
+    <div class="fixed top-20 left-8 z-40">
+        <div class="glass border border-white/10 rounded-3xl px-5 py-4 text-sm w-72">
+            <div class="grid grid-cols-2 gap-x-4 gap-y-3">
+                <div>
+                    <div class="text-xs text-zinc-500 mb-0.5">CENTER</div>
+                    <div id="center-value" class="info-value text-emerald-400 text-xs font-medium">0.0 + 0.0i</div>
+                </div>
+                <div>
+                    <div class="text-xs text-zinc-500 mb-0.5">ZOOM</div>
+                    <div id="zoom-value" class="info-value text-emerald-400 text-xs font-medium">1.00×</div>
+                </div>
+                <div>
+                    <div class="text-xs text-zinc-500 mb-0.5">ITERATIONS</div>
+                    <div id="iter-value" class="info-value text-emerald-400 text-xs font-medium">500</div>
+                </div>
+                <div>
+                    <div class="text-xs text-zinc-500 mb-0.5">MODE</div>
+                    <div id="mode-value" class="info-value text-emerald-400 text-xs font-medium">Mandelbrot</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Controls -->
+    <div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+        <div class="glass border border-white/10 rounded-3xl px-6 py-5 shadow-2xl flex items-end gap-x-8">
+            
+            <!-- Iterations -->
+            <div class="flex flex-col gap-y-2 w-56">
+                <div class="flex justify-between items-center px-1">
+                    <span class="text-xs text-zinc-400">Max Iterations</span>
+                    <span id="iter-display" class="font-mono text-indigo-400 text-sm">500</span>
+                </div>
+                <input type="range" id="iterations" 
+                       class="control-slider w-full" 
+                       min="50" max="2000" step="10" value="500">
+            </div>
+
+            <!-- Color Palette -->
+            <div class="flex flex-col gap-y-2 w-48">
+                <span class="text-xs text-zinc-400 px-1">Color Palette</span>
+                <div class="flex gap-x-1.5">
+                    <div onclick="setPalette(0)" class="w-8 h-8 rounded-xl cursor-pointer border border-white/20" 
+                         style="background: linear-gradient(to right, #000000, #1e3a8a, #3b82f6, #bae6fd)"></div>
+                    <div onclick="setPalette(1)" class="w-8 h-8 rounded-xl cursor-pointer border border-white/20" 
+                         style="background: linear-gradient(to right, #000000, #4c1d95, #c026d3, #fce7f3)"></div>
+                    <div onclick="setPalette(2)" class="w-8 h-8 rounded-xl cursor-pointer border border-white/20" 
+                         style="background: linear-gradient(to right, #000000, #14532d, #4ade80, #f0fdf4)"></div>
+                    <div onclick="setPalette(3)" class="w-8 h-8 rounded-xl cursor-pointer border border-white/20" 
+                         style="background: linear-gradient(to right, #000000, #431407, #f59e0b, #fefce8)"></div>
+                    <div onclick="setPalette(4)" class="w-8 h-8 rounded-xl cursor-pointer border border-white/20" 
+                         style="background: linear-gradient(to right, #000000, #312e81, #6366f1, #e0e7ff)"></div>
+                </div>
+            </div>
+
+            <div class="h-9 w-px bg-white/10"></div>
+
+            <!-- Julia Toggle -->
+            <div class="flex flex-col items-center gap-y-1">
+                <button onclick="toggleJuliaMode()"
+                        id="julia-btn"
+                        class="px-5 py-2 text-sm rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 transition-all flex items-center gap-x-2">
+                    <span>Julia Set</span>
+                </button>
+                <div class="text-[10px] text-zinc-500">Click to set seed</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Instructions -->
+    <div class="fixed bottom-8 right-8 z-40 text-xs text-zinc-400">
+        <div class="glass border border-white/10 rounded-2xl px-4 py-3 text-center">
+            <div class="flex gap-x-4 text-center">
+                <div><span class="font-medium text-white">Drag</span> to pan</div>
+                <div><span class="font-medium text-white">Scroll</span> to zoom</div>
+                <div><span class="font-medium text-white">Double-click</span> to zoom in</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tailwind
+        function initTailwind() {}
+
+        let scene, camera, renderer;
+        let mandelbrotMesh;
+        let uniforms;
+        let isDragging = false;
+        let previousMouseX = 0, previousMouseY = 0;
+        let isJuliaMode = false;
+        let juliaSeed = { x: -0.7, y: 0.27 };
+
+        // Current view state
+        let centerX = 0.0;
+        let centerY = 0.0;
+        let zoom = 1.0;
+        let maxIterations = 500;
+        let currentPalette = 0;
+
+        function initThree() {
+            const canvas = document.getElementById('three-canvas');
+            
+            renderer = new THREE.WebGLRenderer({ 
+                canvas: canvas, 
+                antialias: true,
+                powerPreference: "high-performance"
+            });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            scene = new THREE.Scene();
+            camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+            camera.position.z = 1;
+
+            // Create full-screen quad
+            const geometry = new THREE.PlaneGeometry(2, 2);
+            
+            uniforms = {
+                u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+                u_center: { value: new THREE.Vector2(centerX, centerY) },
+                u_zoom: { value: zoom },
+                u_maxIter: { value: maxIterations },
+                u_palette: { value: currentPalette },
+                u_julia: { value: 0.0 },
+                u_juliaSeed: { value: new THREE.Vector2(juliaSeed.x, juliaSeed.y) }
+            };
+
+            const material = new THREE.ShaderMaterial({
+                uniforms: uniforms,
+                vertexShader: `
+                    varying vec2 vUv;
+                    void main() {
+                        vUv = uv;
+                        gl_Position = vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec2 u_resolution;
+                    uniform vec2 u_center;
+                    uniform float u_zoom;
+                    uniform int u_maxIter;
+                    uniform int u_palette;
+                    uniform float u_julia;
+                    uniform vec2 u_juliaSeed;
+
+                    varying vec2 vUv;
+
+                    vec3 getColor(float t, int palette) {
+                        if (palette == 0) { // Classic blue
+                            return vec3(0.0, t * 0.6, t);
+                        } else if (palette == 1) { // Purple/Pink
+                            return vec3(t * 0.8, t * 0.2, t * 0.9);
+                        } else if (palette == 2) { // Green
+                            return vec3(t * 0.1, t * 0.9, t * 0.4);
+                        } else if (palette == 3) { // Fire
+                            return vec3(t, t * 0.6, t * 0.1);
+                        } else { // Cosmic
+                            float r = 0.5 + 0.5 * sin(t * 6.28 + 0.0);
+                            float g = 0.5 + 0.5 * sin(t * 6.28 + 2.0);
+                            float b = 0.5 + 0.5 * sin(t * 6.28 + 4.0);
+                            return vec3(r, g, b) * t;
+                        }
+                    }
+
+                    void main() {
+                        vec2 uv = (gl_FragCoord.xy - 0.5 * u_resolution) / min(u_resolution.x, u_resolution.y);
+                        vec2 c;
+                        vec2 z;
+
+                        if (u_julia > 0.5) {
+                            // Julia Set
+                            c = u_juliaSeed;
+                            z = u_center + uv / u_zoom;
+                        } else {
+                            // Mandelbrot Set
+                            c = u_center + uv / u_zoom;
+                            z = vec2(0.0);
+                        }
+
+                        int iter = 0;
+                        float smoothIter = 0.0;
+
+                        for (int i = 0; i < 2000; i++) {
+                            if (dot(z, z) > 4.0) break;
+                            
+                            float x = z.x * z.x - z.y * z.y;
+                            float y = 2.0 * z.x * z.y;
+                            
+                            z.x = x + c.x;
+                            z.y = y + c.y;
+                            
+                            iter++;
+                            
+                            if (i >= u_maxIter - 1) {
+                                smoothIter = float(u_maxIter);
+                                break;
+                            }
+                        }
+
+                        if (iter == u_maxIter) {
+                            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+                        } else {
+                            // Smooth coloring
+                            float zn = length(z);
+                            float log_zn = log(zn);
+                            float nu = log(log_zn / log(2.0)) / log(2.0);
+                            smoothIter = float(iter) + 1.0 - nu;
+
+                            float t = smoothIter / float(u_maxIter);
+                            t = clamp(t, 0.0, 1.0);
+                            
+                            // Add some banding reduction
+                            t = pow(t, 0.7);
+                            
+                            vec3 color = getColor(t, u_palette);
+                            gl_FragColor = vec4(color, 1.0);
+                        }
+                    }
+                `
+            });
+
+            mandelbrotMesh = new THREE.Mesh(geometry, material);
+            scene.add(mandelbrotMesh);
+
+            // Event listeners
+            setupEventListeners(canvas);
+
+            // Handle resize
+            window.addEventListener('resize', () => {
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                uniforms.u_resolution.value.set(window.innerWidth, window.innerHeight);
+            });
+
+            // Initial UI update
+            updateUI();
+
+            // Start render loop
+            animate();
+        }
+
+        function setupEventListeners(canvas) {
+            // Mouse drag to pan
+            canvas.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                previousMouseX = e.clientX;
+                previousMouseY = e.clientY;
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+
+                const dx = (e.clientX - previousMouseX) / renderer.domElement.clientWidth;
+                const dy = (e.clientY - previousMouseY) / renderer.domElement.clientHeight;
+
+                // Adjust for zoom
+                const scale = 2.0 / zoom;
+                centerX -= dx * scale;
+                centerY += dy * scale; // Y is inverted in screen space
+
+                uniforms.u_center.value.set(centerX, centerY);
+                updateUI();
+
+                previousMouseX = e.clientX;
+                previousMouseY = e.clientY;
+            });
+
+            // Zoom with mouse wheel (centered on mouse)
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = (e.clientX - rect.left) / rect.width;
+                const mouseY = (e.clientY - rect.top) / rect.height;
+
+                const zoomFactor = e.deltaY > 0 ? 0.85 : 1.18;
+                const newZoom = zoom * zoomFactor;
+
+                // Zoom towards mouse position
+                const scale = 2.0 / zoom;
+                const worldX = centerX + (mouseX - 0.5) * scale;
+                const worldY = centerY - (mouseY - 0.5) * scale;
+
+                centerX = worldX + (centerX - worldX) / zoomFactor;
+                centerY = worldY + (centerY - worldY) / zoomFactor;
+
+                zoom = newZoom;
+
+                uniforms.u_center.value.set(centerX, centerY);
+                uniforms.u_zoom.value = zoom;
+
+                updateUI();
+            });
+
+            // Double click to zoom in
+            canvas.addEventListener('dblclick', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = (e.clientX - rect.left) / rect.width;
+                const mouseY = (e.clientY - rect.top) / rect.height;
+
+                const scale = 2.0 / zoom;
+                const worldX = centerX + (mouseX - 0.5) * scale;
+                const worldY = centerY - (mouseY - 0.5) * scale;
+
+                centerX = worldX;
+                centerY = worldY;
+                zoom *= 3.5;
+
+                uniforms.u_center.value.set(centerX, centerY);
+                uniforms.u_zoom.value = zoom;
+                updateUI();
+            });
+
+            // Iterations slider
+            const iterSlider = document.getElementById('iterations');
+            iterSlider.addEventListener('input', () => {
+                maxIterations = parseInt(iterSlider.value);
+                uniforms.u_maxIter.value = maxIterations;
+                document.getElementById('iter-display').textContent = maxIterations;
+                document.getElementById('iter-value').textContent = maxIterations;
+            });
+
+            // Keyboard shortcuts
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'r' || e.key === 'R') {
+                    resetView();
+                }
+                if (e.key === 'j' || e.key === 'J') {
+                    toggleJuliaMode();
+                }
+            });
+        }
+
+        function updateUI() {
+            document.getElementById('center-value').textContent = 
+                `${centerX.toFixed(6)} + ${centerY.toFixed(6)}i`;
+            document.getElementById('zoom-value').textContent = 
+                zoom.toFixed(2) + '×';
+            document.getElementById('iter-value').textContent = maxIterations;
+        }
+
+        function setPalette(paletteIndex) {
+            currentPalette = paletteIndex;
+            uniforms.u_palette.value = currentPalette;
+        }
+
+        function toggleJuliaMode() {
+            isJuliaMode = !isJuliaMode;
+            uniforms.u_julia.value = isJuliaMode ? 1.0 : 0.0;
+
+            const btn = document.getElementById('julia-btn');
+            const modeEl = document.getElementById('mode-value');
+
+            if (isJuliaMode) {
+                btn.classList.add('!bg-indigo-600', '!border-indigo-500');
+                modeEl.textContent = 'Julia Set';
+                modeEl.classList.add('text-violet-400');
+            } else {
+                btn.classList.remove('!bg-indigo-600', '!border-indigo-500');
+                modeEl.textContent = 'Mandelbrot';
+                modeEl.classList.remove('text-violet-400');
+            }
+        }
+
+        function resetView() {
+            centerX = 0.0;
+            centerY = 0.0;
+            zoom = 1.0;
+            maxIterations = 500;
+
+            uniforms.u_center.value.set(centerX, centerY);
+            uniforms.u_zoom.value = zoom;
+            uniforms.u_maxIter.value = maxIterations;
+
+            document.getElementById('iterations').value = 500;
+            document.getElementById('iter-display').textContent = '500';
+
+            isJuliaMode = false;
+            uniforms.u_julia.value = 0.0;
+            document.getElementById('julia-btn').classList.remove('!bg-indigo-600', '!border-indigo-500');
+            document.getElementById('mode-value').textContent = 'Mandelbrot';
+
+            updateUI();
+        }
+
+        function randomInterestingLocation() {
+            const locations = [
+                { x: -0.743643887037151, y: 0.131825904205330, zoom: 45000 },      // Seahorse valley
+                { x: -0.16070135, y: 1.0375665, zoom: 12000 },                      // Elephant valley
+                { x: -0.101096, y: -0.956286, zoom: 8500 },                         // Spiral
+                { x: 0.001643721971153, y: -0.822467633298876, zoom: 320000 },      // Deep zoom
+                { x: -1.768778833, y: -0.001738912, zoom: 1800 }                    // Another nice spot
+            ];
+
+            const loc = locations[Math.floor(Math.random() * locations.length)];
+            
+            centerX = loc.x;
+            centerY = loc.y;
+            zoom = loc.zoom;
+            maxIterations = Math.max(800, Math.min(1800, Math.floor(Math.log(zoom) * 80)));
+
+            uniforms.u_center.value.set(centerX, centerY);
+            uniforms.u_zoom.value = zoom;
+            uniforms.u_maxIter.value = maxIterations;
+
+            document.getElementById('iterations').value = maxIterations;
+            document.getElementById('iter-display').textContent = maxIterations;
+
+            updateUI();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+
+        function startMandelbrot() {
+            initThree();
+            
+            // Set initial values in UI
+            document.getElementById('iterations').value = maxIterations;
+            document.getElementById('iter-display').textContent = maxIterations;
+
+            // Welcome message - show a nice starting point
+            setTimeout(() => {
+                // Start slightly zoomed in on a nice area
+                centerX = -0.75;
+                centerY = 0.1;
+                zoom = 2.5;
+                uniforms.u_center.value.set(centerX, centerY);
+                uniforms.u_zoom.value = zoom;
+                updateUI();
+            }, 800);
+        }
+
+        window.onload = startMandelbrot;
+    </script>
+</body>
+</html>
